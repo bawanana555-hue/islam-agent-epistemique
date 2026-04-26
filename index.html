@@ -1,1 +1,10 @@
 
+        <input type="file" id="upload-avatar" style="display:none" onchange="loadAvatar(event)">
+        <            fname: document.getElementById('user-firstname').value,
+            lname: document.getElementById('user-lastname').value,
+            title: document.getElementById('user-title').value,
+            key: document.getElementById('user-api-key').value,
+            avatar: document.getElementById('avatar-img').src
+        };
+        localStorage.setItem('iae_profile', JSON.stringify(profile));
+        alert("Profil et Clé API enregistrés
