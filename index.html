@@ -53,47 +53,4 @@ finite; }
 </div>
 
 <div class="input-wrapper">
-    <div class="donation-banner" id="don-text">
-        <span class="blink" id="blink-msg">Soutenir la connaissance est une aumône continue...</span>
-    </div>
-    <div class="input-area">
-        <input type="text" id="userInput" placeholder="Posez votre question ici..." onfocus="setReadingMode(true)" onblur="setReadingMode(false)">
-        <button class="send-btn" onclick="handleChat()">
-            <svg viewBox="0 0 24 24" width="24" height="24" fill="white"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
-        </button>
-    </div>
-</div>
-
-<div id="modal-profil" class="modal">
-    <div class="modal-content">
-        <h2 style="color:var(--vert-clair)">👤 Votre Profil</h2>
-        <input type="password" id="user-api-key" placeholder="Clé API Gemini (Obligatoire)" style="width:100%; padding:10px; margin:10px 0;">
-        <button onclick="saveProfile()" style="background:var(--vert-clair); color:white; border:none; width:100%; padding:10px; border-radius:5px; cursor:pointer">ENREGISTRER</button>
-        <button onclick="toggleModal('modal-profil', false)" style="background:#eee; border:none; width:100%; padding:10px; margin-top:5px; border-radius:5px;">FERMER</button>
-    </div>
-</div>
-
-<div id="modal-dons" class="modal">
-    <div class="modal-content">
-        <h2 style="color:var(--vert-clair)">💳 Soutenir l'Agent</h2>
-        <p style="font-size:0.9em; margin:10px 0;">T-Money (Togo) : +228 90 XX XX XX</p>
-        <button onclick="toggle       system_instruction: { parts: [{ text: SYSTEM_INSTRUCTION }] },
-                    contents: [{ role: "user", parts: [{ text: query }] }]
-                })
-            });
-            const data = await response.json();
-            loader.style.display = 'none';
-            const botText = data.candidates[0].content.parts[0].text;
-            addMsg(bo
-</script>
-
-</body>
-</html>
-        
-        
-
-
-
-
-
-
+    <
