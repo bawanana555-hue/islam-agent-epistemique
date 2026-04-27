@@ -10,7 +10,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="apple-mobile-web-app-title" content="IAE">
     <link rel="apple-touch-icon" href="./icons/icon-192.png">
-    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"><\/script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Lato:wght@300;400;700&display=swap');
         :root{--bg-main:#FFEFD5;--orange-creme:#FFF5E1;--orange-clair:#FFB347;--orange-fonce:#E67E22;--vert-clair:#2ECC71;--bleu-ciel:#87CEEB;--text-main:#2C3E50;--bordure-vert:2px solid var(--vert-clair)}
@@ -195,9 +195,9 @@ function addMsg(t,s,save=true){
 
 document.addEventListener('keydown',e=>{if(e.key==='Enter'&&document.activeElement.id==='userInput')handleChat()});
 window.onload=function(){loadHistory();if(!getApiKey())setTimeout(()=>toggleModal('modal-profil',true),1500)};
-<\/script>
+</script>
 <script>
 if('serviceWorker' in navigator){navigator.serviceWorker.register('./service-worker.js').then(()=>console.log('SW OK')).catch(e=>console.log('SW err:',e))}
-<\/script>
+</script>
 </body>
 </html>
