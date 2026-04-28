@@ -1,1 +1,20 @@
 ‎
+
+```json
+{
+  "name": "Islam Agent Epistemique",
+  "short_name": "IAE",
+  "description": "Agent IA de theologie islamique",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#FFEFD5",
+  "theme_color": "#27ae60",
+  "icons": [
+    { "src": "./icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "./icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable" },
+    { "src": "./icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" }
+  ]
+}
+```
+
+ 
