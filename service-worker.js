@@ -1,7 +1,5 @@
 
-*-worker.js
 
-```js
 const CACHE_NAME = "iae-v2";
 const urlsToCache = [
   "./",
@@ -38,6 +36,5 @@ self.addEventListener("fetch", function(event) {
     })
   );
 });
-```
 
  
