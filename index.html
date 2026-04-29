@@ -64,36 +64,38 @@
 
         /* --- Messages --- */
         .msg {
-            max-width: 100%; margin-bottom: 18px; padding: 18px;
+            max-width: 97%; margin-bottom: 18px; padding: 18px;
             border-radius: 18px; font-size: 20px; line-height: 1.85;
             border: var(--bordure-vert);
-            background: linear-gradient(135deg, #F5D5A0 0%, #FAEBD7 30%, #F5DEB3 70%, #F5D5A0 100%);
-            box-shadow: 2px 6px 20px rgba(0,0,0,0.1);
-            background-image: linear-gradient(135deg, #F5D5A0 0%, #FAEBD7 30%, #F5DEB3 70%, #F5D5A0 100%),
-              repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(39,174,96,0.04) 10px, rgba(39,174,96,0.04) 20px);
+            background: #F5D5A0;
+            box-shadow: 2px 4px 15px rgba(0,0,0,0.08);
         }
         .user-msg { align-self: flex-end; border-bottom-right-radius: 2px; border-color: var(--orange-clair); }
         .bot-msg { align-self: flex-start; border-bottom-left-radius: 2px; }
 
         /* --- Typographie académique --- */
-        .bot-msg p { margin-bottom: 18px; text-align: justify; font-size: 20px; color: var(--text-main); }
+        .bot-msg p { margin-bottom: 18px; text-align: justify; font-size: 20px;
+            word-spacing: 1px; letter-spacing: 0.2px; line-height: 1.85; color: var(--text-main); }
         .bot-msg h1 {
             color: var(--vert-clair);
             border-bottom: 3px solid var(--orange-fonce);
             margin: 18px 0 12px; padding-bottom: 6px;
             font-family: 'Amiri', serif; font-size: 2.1em;
+            word-spacing: 2px; letter-spacing: 0.3px; line-height: 1.4;
         }
         .bot-msg h2 {
             color: var(--vert-clair);
             border-bottom: 2px solid var(--orange-fonce);
             margin: 15px 0 10px; padding-bottom: 4px;
             font-family: 'Amiri', serif; font-size: 1.65em;
+            word-spacing: 2px; letter-spacing: 0.2px; line-height: 1.4;
         }
         .bot-msg h3 {
             color: var(--vert-clair);
             border-bottom: 1px solid var(--orange-fonce);
             margin: 12px 0 8px; padding-bottom: 3px;
             font-family: 'Amiri', serif; font-size: 1.45em;
+            word-spacing: 1px; letter-spacing: 0.2px; line-height: 1.4;
         }
         .bot-msg strong { color: #050505; font-weight: 800; }
         .bot-msg em { color: #333; }
@@ -133,9 +135,9 @@
         /* --- Zone de saisie --- */
         .input-wrapper { position: fixed; bottom: 0; left: 0; right: 0; background: var(--bg-main); padding: 8px 6px 22px; }
         .input-area {
-            display: flex; background: linear-gradient(135deg, #F5D5A0, #FAEBD7, #F5DEB3);
+            display: flex; background: #F5D5A0;
             border: 2px solid var(--vert-clair); border-radius: 30px;
-            padding: 8px; max-width: 100%; margin: 0 auto;
+            padding: 8px; max-width: 97%; margin: 0 auto;
         }
         .input-area input { flex: 1; border: none; background: transparent; outline: none; padding: 12px; font-size: 19px; color: var(--text-main); font-weight: 500; }
         .send-btn { background: var(--vert-clair); border: none; border-radius: 50%; width: 48px; height: 48px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
@@ -222,8 +224,8 @@
 <div class="input-wrapper">
     <div class="donation-banner"><span class="blink" id="blink-msg">Soutenir la connaissance est une aumône continue...</span></div>
     <div class="input-area">
-        <input type="text" id="userInput" placeholder="Posez votre question ici..." autocomplete="off" autocorrect="off" spellcheck="false" name="iae_q" onfocus="setReadingMode(true)">
-        <button class="send-btn" onclick="handleChat()">
+        <form autocomplete="off" style="display:contents" onsubmit="handleChat();return false"><input type="text" id="userInput" placeholder="Posez votre question ici..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" name="iae_q_x" data-form-type="other" onfocus="setReadingMode(true)">
+        </form><button class="send-btn" onclick="handleChat()">
             <svg viewBox="0 0 24 24" width="24" height="24" fill="white"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
         </button>
     </div>
