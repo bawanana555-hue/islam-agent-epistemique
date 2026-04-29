@@ -67,8 +67,10 @@
             max-width: 100%; margin-bottom: 18px; padding: 18px;
             border-radius: 18px; font-size: 20px; line-height: 1.85;
             border: var(--bordure-vert);
-            background: url('./icons/bg-quran.webp') center/cover no-repeat;
-            box-shadow: 2px 6px 20px rgba(0,0,0,0.12);
+            background: linear-gradient(135deg, #F5D5A0 0%, #FAEBD7 30%, #F5DEB3 70%, #F5D5A0 100%);
+            box-shadow: 2px 6px 20px rgba(0,0,0,0.1);
+            background-image: linear-gradient(135deg, #F5D5A0 0%, #FAEBD7 30%, #F5DEB3 70%, #F5D5A0 100%),
+              repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(39,174,96,0.04) 10px, rgba(39,174,96,0.04) 20px);
         }
         .user-msg { align-self: flex-end; border-bottom-right-radius: 2px; border-color: var(--orange-clair); }
         .bot-msg { align-self: flex-start; border-bottom-left-radius: 2px; }
@@ -131,7 +133,7 @@
         /* --- Zone de saisie --- */
         .input-wrapper { position: fixed; bottom: 0; left: 0; right: 0; background: var(--bg-main); padding: 8px 6px 22px; }
         .input-area {
-            display: flex; background: url('./icons/bg-quran.webp') center/cover no-repeat;
+            display: flex; background: linear-gradient(135deg, #F5D5A0, #FAEBD7, #F5DEB3);
             border: 2px solid var(--vert-clair); border-radius: 30px;
             padding: 8px; max-width: 100%; margin: 0 auto;
         }
