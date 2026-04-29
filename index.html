@@ -6,6 +6,9 @@
     <title>Islam Agent Épistémique</title>
     <link rel="manifest" href="./manifest.json">
     <meta name="theme-color" content="#27ae60">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="apple-mobile-web-app-title" content="IAE">
@@ -195,6 +198,19 @@
         .reading-mode .header { opacity: 0; pointer-events: none; transform: translateY(-20px); }
         .reading-mode .chat-container { margin-top: 10px; }
     </style>
+
+<script>
+if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.getRegistrations().then(function(regs) {
+        regs.forEach(function(reg) { reg.unregister(); });
+    });
+    if ('caches' in window) {
+        caches.keys().then(function(names) {
+            names.forEach(function(n) { caches.delete(n); });
+        });
+    }
+}
+</script>
 </head>
 <body>
 
@@ -416,7 +432,7 @@ window.onload = function() {
 
 <script>
 if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('./service-worker.js')
+    navigator.serviceWorker.register('./service-worker.js?v=34')
         .then(function() { console.log('SW OK'); })
         .catch(function(e) { console.log('SW err:', e); });
 }
