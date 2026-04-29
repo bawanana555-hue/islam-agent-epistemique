@@ -21,7 +21,7 @@
             --vert-clair: #2ECC71;
             --bleu-ciel: #87CEEB;
             --violet-clair: #9B59B6;
-            --text-main: #0a0a0a;
+            --text-main: #050505;
             --bordure-vert: 2px solid var(--vert-clair);
         }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; margin: 0; padding: 0; }
@@ -58,57 +58,57 @@
 
         /* --- Chat zone large --- */
         .chat-container {
-            flex: 1; margin-top: 150px; padding: 12px 3px 180px;
+            flex: 1; margin-top: 150px; padding: 8px 2px 180px;
             overflow-y: auto; display: flex; flex-direction: column;
         }
 
         /* --- Messages --- */
         .msg {
-            max-width: 99%; margin-bottom: 18px; padding: 18px;
-            border-radius: 18px; font-size: 19px; line-height: 1.8;
+            max-width: 100%; margin-bottom: 18px; padding: 18px;
+            border-radius: 18px; font-size: 20px; line-height: 1.85;
             border: var(--bordure-vert);
-            background: linear-gradient(135deg, #F5DEB3 0%, #FAEBD7 50%, #F5DEB3 100%);
-            box-shadow: 2px 4px 15px rgba(0,0,0,0.08);
-            background-size: 20px 20px;
+            background: url('./icons/bg-quran.webp') center/cover no-repeat;
+            box-shadow: 2px 6px 20px rgba(0,0,0,0.12);
         }
         .user-msg { align-self: flex-end; border-bottom-right-radius: 2px; border-color: var(--orange-clair); }
         .bot-msg { align-self: flex-start; border-bottom-left-radius: 2px; }
 
         /* --- Typographie académique --- */
-        .bot-msg p { margin-bottom: 16px; text-align: justify; font-size: 19px; color: var(--text-main); }
+        .bot-msg p { margin-bottom: 18px; text-align: justify; font-size: 20px; color: var(--text-main); }
         .bot-msg h1 {
             color: var(--vert-clair);
             border-bottom: 3px solid var(--orange-fonce);
             margin: 18px 0 12px; padding-bottom: 6px;
-            font-family: 'Amiri', serif; font-size: 1.9em;
+            font-family: 'Amiri', serif; font-size: 2.1em;
         }
         .bot-msg h2 {
             color: var(--vert-clair);
             border-bottom: 2px solid var(--orange-fonce);
             margin: 15px 0 10px; padding-bottom: 4px;
-            font-family: 'Amiri', serif; font-size: 1.5em;
+            font-family: 'Amiri', serif; font-size: 1.65em;
         }
         .bot-msg h3 {
             color: var(--vert-clair);
             border-bottom: 1px solid var(--orange-fonce);
             margin: 12px 0 8px; padding-bottom: 3px;
-            font-family: 'Amiri', serif; font-size: 1.3em;
+            font-family: 'Amiri', serif; font-size: 1.45em;
         }
-        .bot-msg strong { color: #1a1a1a; font-weight: 700; }
+        .bot-msg strong { color: #050505; font-weight: 800; }
         .bot-msg em { color: #333; }
         .bot-msg blockquote {
             border-left: 5px solid var(--bleu-ciel);
             padding: 12px 15px;
             margin: 16px 0;
             background: rgba(135, 206, 235, 0.08);
-            color: #8E44AD;
+            color: #7D3C98;
             font-style: italic;
-            font-size: 18px;
-            font-weight: 500;
+            font-size: 20px;
+            font-weight: 600;
+            letter-spacing: 0.2px;
             border-radius: 0 8px 8px 0;
         }
         .bot-msg ul, .bot-msg ol { padding-left: 22px; margin: 10px 0; }
-        .bot-msg li { margin: 6px 0; font-size: 19px; }
+        .bot-msg li { margin: 8px 0; font-size: 20px; }
 
         /* --- Indicateur de chargement (3 points colorés) --- */
         .typing-indicator {
@@ -131,11 +131,11 @@
         /* --- Zone de saisie --- */
         .input-wrapper { position: fixed; bottom: 0; left: 0; right: 0; background: var(--bg-main); padding: 8px 6px 22px; }
         .input-area {
-            display: flex; background: linear-gradient(135deg, #F5DEB3, #FAEBD7);
-            border: var(--bordure-vert); border-radius: 30px;
+            display: flex; background: url('./icons/bg-quran.webp') center/cover no-repeat;
+            border: 2px solid var(--vert-clair); border-radius: 30px;
             padding: 8px; max-width: 100%; margin: 0 auto;
         }
-        .input-area input { flex: 1; border: none; background: transparent; outline: none; padding: 10px; font-size: 18px; color: var(--text-main); }
+        .input-area input { flex: 1; border: none; background: transparent; outline: none; padding: 12px; font-size: 19px; color: var(--text-main); font-weight: 500; }
         .send-btn { background: var(--vert-clair); border: none; border-radius: 50%; width: 48px; height: 48px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
 
         /* --- Modals --- */
@@ -166,6 +166,26 @@
         .api-section { background: #fff3cd; border: 1px solid #ffc107; border-radius: 8px; padding: 12px; margin-top: 15px; }
         .api-section h4 { font-size: 0.9em; color: #856404; margin-bottom: 8px; }
         .api-hint { font-size: 0.75em; color: #856404; margin-top: 4px; }
+
+        /* --- Esthetique avancee --- */
+        .bot-msg p:first-of-type::first-letter {
+            font-size: 2.2em; font-family: 'Amiri', serif;
+            color: var(--vert-clair); font-weight: 700;
+            float: left; margin: 0 8px 0 0; line-height: 1;
+        }
+        .bot-msg h1::before { content: '\2756 '; color: var(--orange-fonce); }
+        .bot-msg h2::before { content: '\2726 '; color: var(--orange-clair); }
+        .bot-msg blockquote::before {
+            content: '\201C'; font-size: 3em; color: var(--bleu-ciel);
+            position: absolute; left: 8px; top: -5px; opacity: 0.4;
+        }
+        .bot-msg blockquote { position: relative; padding-left: 30px; }
+        .bot-msg hr { border: none; height: 2px;
+            background: linear-gradient(to right, transparent, var(--vert-clair), var(--orange-fonce), var(--vert-clair), transparent);
+            margin: 20px 0;
+        }
+        .msg { border-width: 2px; }
+        .user-msg { font-weight: 500; font-size: 19px; }
 
         /* --- Mode lecture --- */
         .reading-mode .header { opacity: 0; pointer-events: none; transform: translateY(-20px); }
