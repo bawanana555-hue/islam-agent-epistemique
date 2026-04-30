@@ -613,23 +613,61 @@ var verseAudioBase = "https://cdn.islamic.network/quran/audio/128/";
 function playVerseReciter(reciter) {
     if (!isPlaying) return;
     if (currentAyahIdx >= quranData.length) { stopAudio(); return; }
-    var verseNum = quranData[currentAyahIdx].absoluteVerse;
+    var ayah = quranData[currentAyahIdx];
+    var verseNum = ayah.absoluteVerse;
     if (!verseNum) { stopAudio(); return; }
-    highlightVerse(currentAyahIdx);
     var url = verseAudioBase + reciter + "/" + verseNum + ".mp3";
     wordAudio = new Audio(url);
     wordAudio.playbackRate = playbackSpeed;
+
+    var totalWords = ayah.words.length;
+    var wordTimers = [];
+    currentWordIdx = 0;
+
+    wordAudio.onplay = function() {
+        var dur = wordAudio.duration || 3;
+        var interval = (dur / totalWords) * 1000;
+        for (var i = 0; i < totalWords; i++) {
+            (function(idx) {
+                var t = setTimeout(function() {
+                    if (isPlaying) highlightWord(currentAyahIdx, idx);
+                }, interval * idx);
+                wordTimers.push(t);
+            })(i);
+        }
+    };
+
+    wordAudio.onloadedmetadata = function() {
+        var dur = wordAudio.duration;
+        var interval = (dur / totalWords) * 1000 / playbackSpeed;
+        wordTimers.forEach(function(t) { clearTimeout(t); });
+        wordTimers = [];
+        for (var i = 0; i < totalWords; i++) {
+            (function(idx) {
+                var t = setTimeout(function() {
+                    if (isPlaying) highlightWord(currentAyahIdx, idx);
+                }, interval * idx);
+                wordTimers.push(t);
+            })(i);
+        }
+    };
+
     wordAudio.onended = function() {
+        wordTimers.forEach(function(t) { clearTimeout(t); });
         currentAyahIdx++;
         currentWordIdx = 0;
         if (currentAyahIdx < quranData.length && isPlaying) {
-            setTimeout(function() { playVerseReciter(reciter); }, 400);
+            setTimeout(function() { playVerseReciter(reciter); }, 500);
         } else { stopAudio(); }
     };
+
     wordAudio.onerror = function() {
+        wordTimers.forEach(function(t) { clearTimeout(t); });
         currentAyahIdx++;
         if (isPlaying) playVerseReciter(reciter);
     };
+
+    highlightWord(currentAyahIdx, 0);
     wordAudio.play();
 }
 
