@@ -194,7 +194,31 @@
         .msg { border-width: 2px; }
         .user-msg { font-weight: 500; font-size: 19px; }
 
-        /* --- Mode lecture --- */
+        
+        /* --- Quran Reader --- */
+        .quran-header { text-align: center; margin-bottom: 15px; }
+        .quran-header h2 { color: var(--vert-clair); font-family: 'Amiri', serif; }
+        .surah-select { width: 100%; padding: 10px; border: 2px solid var(--vert-clair); border-radius: 8px; font-size: 15px; background: #FACD8A; margin: 8px 0; }
+        .quran-controls { display: flex; justify-content: center; gap: 8px; margin: 12px 0; flex-wrap: wrap; }
+        .q-btn { padding: 8px 14px; border: none; border-radius: 20px; font-weight: bold; cursor: pointer; font-size: 14px; color: white; }
+        .q-btn.play { background: var(--vert-clair); }
+        .q-btn.repeat { background: var(--orange-fonce); }
+        .q-btn.speed { background: #3498DB; }
+        .q-btn.nav { background: #8E44AD; }
+        .q-btn:active { opacity: 0.7; }
+        .quran-verse-area { max-height: 55vh; overflow-y: auto; padding: 10px; }
+        .quran-ayah { background: #FACD8A; border: 1px solid var(--vert-clair); border-radius: 10px; padding: 14px; margin: 10px 0; }
+        .quran-ayah.active-ayah { border: 2px solid var(--orange-fonce); background: #F5C060; }
+        .ayah-num { display: inline-block; background: var(--vert-clair); color: white; width: 28px; height: 28px; border-radius: 50%; text-align: center; line-height: 28px; font-size: 13px; font-weight: bold; margin-bottom: 8px; }
+        .arabic-words { direction: rtl; text-align: right; font-family: 'Amiri', serif; font-size: 26px; line-height: 2; margin: 8px 0; color: #050505; }
+        .arabic-word { display: inline; cursor: pointer; padding: 2px 4px; border-radius: 4px; transition: background 0.2s; }
+        .arabic-word:hover { background: rgba(39,174,96,0.15); }
+        .arabic-word.active-word { background: #2ECC71; color: white; border-radius: 6px; padding: 3px 6px; }
+        .translation-fr { font-size: 15px; color: #555; font-style: italic; margin-top: 8px; border-top: 1px solid #ddd; padding-top: 8px; }
+        .quran-loading { text-align: center; padding: 30px; color: #888; }
+        .speed-display { font-size: 12px; color: #555; text-align: center; }
+
+/* --- Mode lecture --- */
         .reading-mode .header { opacity: 0; pointer-events: none; transform: translateY(-20px); }
         .reading-mode .chat-container { margin-top: 10px; }
     </style>
@@ -217,6 +241,7 @@ if ('serviceWorker' in navigator) {
 <div class="header" id="main-header">
     <div class="header-row">
         <button onclick="toggleModal('modal-dons',true)" class="button-oval" style="background:var(--vert-clair)">DONS</button>
+        <button onclick="toggleModal('modal-coran',true)" class="button-oval" style="background:#3498DB;font-size:12px">CORAN</button>
         <div class="logo-box" id="logo-box" title="Cliquez pour changer le logo">
             <img id="logo-img" src="icons/icon-192.png" alt="Logo">
             <input type="file" accept="image/*" onchange="handleLogoUpload(event)">
@@ -424,6 +449,158 @@ function addMsg(t, s, save) {
 
 document.addEventListener('keydown', function(e) { if (e.key === 'Enter' && document.activeElement.id === 'userInput') handleChat(); });
 
+
+
+/* ====== CORAN — Lecture mot par mot ====== */
+var quranData = [];
+var currentAyahIdx = 0;
+var currentWordIdx = 0;
+var isPlaying = false;
+var playbackSpeed = 1.0;
+var wordAudio = null;
+var QURAN_AUDIO_BASE = "https://audio.qurancdn.com/";
+
+function loadSurahList() {
+    fetch("https://api.alquran.cloud/v1/surah")
+    .then(function(r) { return r.json(); })
+    .then(function(d) {
+        var sel = document.getElementById("surah-select");
+        d.data.forEach(function(s) {
+            var opt = document.createElement("option");
+            opt.value = s.number;
+            opt.textContent = s.number + ". " + s.name + " (" + s.englishName + ") - " + s.numberOfAyahs + " versets";
+            sel.appendChild(opt);
+        });
+    });
+}
+
+function loadSurah(num) {
+    if (!num) return;
+    var area = document.getElementById("quran-verses");
+    area.innerHTML = '<div class="quran-loading">Chargement...</div>';
+    stopAudio();
+
+    Promise.all([
+        fetch("https://api.quran.com/api/v4/verses/by_chapter/" + num + "?language=fr&words=true&translations=136&per_page=300&word_fields=text_uthmani").then(function(r){return r.json();}),
+        fetch("https://api.alquran.cloud/v1/surah/" + num + "/fr.hamidullah").then(function(r){return r.json();})
+    ]).then(function(results) {
+        var qData = results[0];
+        var frData = results[1].data;
+        quranData = [];
+        var html = "";
+
+        qData.verses.forEach(function(v, vi) {
+            var words = [];
+            var arabicHtml = "";
+            v.words.forEach(function(w, wi) {
+                if (w.char_type_name === "end") return;
+                words.push({ text: w.text_uthmani, audio: w.audio_url ? QURAN_AUDIO_BASE + w.audio_url : null });
+                arabicHtml += '<span class="arabic-word" data-ayah="' + vi + '" data-word="' + wi + '" onclick="playOneWord(' + vi + ',' + wi + ')">' + w.text_uthmani + '</span> ';
+            });
+
+            var frText = frData.ayahs[vi] ? frData.ayahs[vi].text : "";
+            quranData.push({ words: words, french: frText });
+
+            html += '<div class="quran-ayah" id="ayah-' + vi + '">';
+            html += '<span class="ayah-num">' + (vi + 1) + '</span>';
+            html += '<div class="arabic-words">' + arabicHtml + '</div>';
+            html += '<div class="translation-fr">' + frText + '</div>';
+            html += '</div>';
+        });
+
+        area.innerHTML = html;
+        currentAyahIdx = 0;
+        currentWordIdx = 0;
+    }).catch(function(e) {
+        area.innerHTML = '<div class="quran-loading">Erreur de chargement. Reessayez.</div>';
+    });
+}
+
+function highlightWord(ai, wi) {
+    document.querySelectorAll(".arabic-word.active-word").forEach(function(el) { el.classList.remove("active-word"); });
+    document.querySelectorAll(".quran-ayah.active-ayah").forEach(function(el) { el.classList.remove("active-ayah"); });
+    var wordEl = document.querySelector('[data-ayah="' + ai + '"][data-word="' + wi + '"]');
+    if (wordEl) {
+        wordEl.classList.add("active-word");
+        wordEl.closest(".quran-ayah").classList.add("active-ayah");
+        wordEl.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+}
+
+function playOneWord(ai, wi) {
+    var w = quranData[ai] && quranData[ai].words[wi];
+    if (!w || !w.audio) return;
+    stopAudio();
+    currentAyahIdx = ai;
+    currentWordIdx = wi;
+    highlightWord(ai, wi);
+    wordAudio = new Audio(w.audio);
+    wordAudio.playbackRate = playbackSpeed;
+    wordAudio.play();
+}
+
+function playAllWords() {
+    if (isPlaying) { stopAudio(); return; }
+    if (quranData.length === 0) return;
+    isPlaying = true;
+    document.getElementById("btn-play").innerHTML = "&#x23F8; Pause";
+    playNextWord();
+}
+
+function playNextWord() {
+    if (!isPlaying) return;
+    if (currentAyahIdx >= quranData.length) { stopAudio(); return; }
+    var ayah = quranData[currentAyahIdx];
+    if (currentWordIdx >= ayah.words.length) {
+        currentAyahIdx++;
+        currentWordIdx = 0;
+        if (currentAyahIdx >= quranData.length) { stopAudio(); return; }
+        setTimeout(playNextWord, 600);
+        return;
+    }
+    var w = ayah.words[currentWordIdx];
+    highlightWord(currentAyahIdx, currentWordIdx);
+    if (w.audio) {
+        wordAudio = new Audio(w.audio);
+        wordAudio.playbackRate = playbackSpeed;
+        wordAudio.onended = function() { currentWordIdx++; setTimeout(playNextWord, 200); };
+        wordAudio.onerror = function() { currentWordIdx++; playNextWord(); };
+        wordAudio.play();
+    } else {
+        currentWordIdx++;
+        playNextWord();
+    }
+}
+
+function stopAudio() {
+    isPlaying = false;
+    if (wordAudio) { wordAudio.pause(); wordAudio = null; }
+    document.getElementById("btn-play").innerHTML = "&#x25B6; Lire";
+}
+
+function repeatWord() {
+    if (quranData.length === 0) return;
+    playOneWord(currentAyahIdx, currentWordIdx);
+}
+
+function changeSpeed() {
+    var speeds = [0.5, 0.75, 1.0, 1.25, 1.5];
+    var idx = speeds.indexOf(playbackSpeed);
+    playbackSpeed = speeds[(idx + 1) % speeds.length];
+    document.getElementById("speed-display").textContent = "Vitesse: x" + playbackSpeed;
+    document.querySelector(".q-btn.speed").textContent = "x" + playbackSpeed;
+}
+
+function prevAyah() {
+    if (currentAyahIdx > 0) { stopAudio(); currentAyahIdx--; currentWordIdx = 0; highlightWord(currentAyahIdx, 0); }
+}
+
+function nextAyah() {
+    if (currentAyahIdx < quranData.length - 1) { stopAudio(); currentAyahIdx++; currentWordIdx = 0; highlightWord(currentAyahIdx, 0); }
+}
+
+loadSurahList();
+
 window.onload = function() {
     loadHistory(); loadImages();
     if (!getApiKey()) setTimeout(function() { toggleModal('modal-profil', true); }, 1500);
@@ -438,5 +615,34 @@ if ('serviceWorker' in navigator) {
 }
 </script>
 
+
+<!-- MODAL CORAN -->
+<div id="modal-coran" class="modal">
+    <div class="modal-content" style="max-width:500px;max-height:92vh">
+        <div class="quran-header">
+            <h2>&#x1F4D6; Lecture du Saint Coran</h2>
+            <p style="font-size:0.8em;color:#888">Mot par mot avec audio</p>
+        </div>
+
+        <select id="surah-select" class="surah-select" onchange="loadSurah(this.value)">
+            <option value="">Choisir une sourate...</option>
+        </select>
+
+        <div class="quran-controls">
+            <button class="q-btn play" id="btn-play" onclick="playAllWords()">&#x25B6; Lire</button>
+            <button class="q-btn repeat" onclick="repeatWord()">&#x1F501; Mot</button>
+            <button class="q-btn speed" onclick="changeSpeed()">&#x23E9; x1</button>
+            <button class="q-btn nav" onclick="prevAyah()">&#x25C0;</button>
+            <button class="q-btn nav" onclick="nextAyah()">&#x25B6;</button>
+        </div>
+        <div class="speed-display" id="speed-display">Vitesse: x1.0</div>
+
+        <div class="quran-verse-area" id="quran-verses">
+            <div class="quran-loading">Choisissez une sourate ci-dessus</div>
+        </div>
+
+        <button onclick="stopAudio();toggleModal('modal-coran',false)" style="background:var(--vert-clair);color:white;border:none;width:100%;padding:12px;margin-top:10px;border-radius:8px;cursor:pointer;font-weight:bold">FERMER</button>
+    </div>
+</div>
 </body>
 </html>
