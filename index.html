@@ -494,10 +494,13 @@ function loadSurah(num) {
         qData.verses.forEach(function(v, vi) {
             var words = [];
             var arabicHtml = "";
-            v.words.forEach(function(w, wi) {
+            var wordIdx = 0;
+            v.words.forEach(function(w) {
                 if (w.char_type_name === "end") return;
+                var idx = wordIdx;
                 words.push({ text: w.text_uthmani, audio: w.audio_url ? QURAN_AUDIO_BASE + w.audio_url : null });
-                arabicHtml += '<span class="arabic-word" data-ayah="' + vi + '" data-word="' + wi + '" onclick="playOneWord(' + vi + ',' + wi + ')">' + w.text_uthmani + '</span> ';
+                arabicHtml += '<span class="arabic-word" data-ayah="' + vi + '" data-word="' + idx + '" onclick="playOneWord(' + vi + ',' + idx + ')">' + w.text_uthmani + '</span> ';
+                wordIdx++;
             });
 
             var frText = frData.ayahs[vi] ? frData.ayahs[vi].text : "";
@@ -575,8 +578,7 @@ function playNextWord() {
         wordAudio.onerror = function() { currentWordIdx++; playNextWord(); };
         wordAudio.play();
     } else {
-        currentWordIdx++;
-        playNextWord();
+        setTimeout(function() { currentWordIdx++; playNextWord(); }, 400);
     }
 }
 
