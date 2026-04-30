@@ -482,10 +482,12 @@ function loadSurah(num) {
 
     Promise.all([
         fetch("https://api.quran.com/api/v4/verses/by_chapter/" + num + "?language=fr&words=true&translations=136&per_page=300&word_fields=text_uthmani").then(function(r){return r.json();}),
-        fetch("https://api.alquran.cloud/v1/surah/" + num + "/fr.hamidullah").then(function(r){return r.json();})
+        fetch("https://api.alquran.cloud/v1/surah/" + num + "/fr.hamidullah").then(function(r){return r.json();}),
+        fetch("https://api.alquran.cloud/v1/surah/" + num).then(function(r){return r.json();})
     ]).then(function(results) {
         var qData = results[0];
         var frData = results[1].data;
+        var arData = results[2].data;
         quranData = [];
         var html = "";
 
@@ -499,7 +501,8 @@ function loadSurah(num) {
             });
 
             var frText = frData.ayahs[vi] ? frData.ayahs[vi].text : "";
-            quranData.push({ words: words, french: frText });
+            var absNum = arData.ayahs[vi] ? arData.ayahs[vi].number : 0;
+            quranData.push({ words: words, french: frText, absoluteVerse: absNum });
 
             html += '<div class="quran-ayah" id="ayah-' + vi + '">';
             html += '<span class="ayah-num">' + (vi + 1) + '</span>';
@@ -542,9 +545,14 @@ function playOneWord(ai, wi) {
 function playAllWords() {
     if (isPlaying) { stopAudio(); return; }
     if (quranData.length === 0) return;
+    var reciter = document.getElementById("reciter-select").value;
     isPlaying = true;
     document.getElementById("btn-play").innerHTML = "&#x23F8; Pause";
-    playNextWord();
+    if (reciter === "wbw") {
+        playNextWord();
+    } else {
+        playVerseReciter(reciter);
+    }
 }
 
 function playNextWord() {
@@ -599,6 +607,43 @@ function nextAyah() {
     if (currentAyahIdx < quranData.length - 1) { stopAudio(); currentAyahIdx++; currentWordIdx = 0; highlightWord(currentAyahIdx, 0); }
 }
 
+
+var verseAudioBase = "https://cdn.islamic.network/quran/audio/128/";
+
+function playVerseReciter(reciter) {
+    if (!isPlaying) return;
+    if (currentAyahIdx >= quranData.length) { stopAudio(); return; }
+    var verseNum = quranData[currentAyahIdx].absoluteVerse;
+    if (!verseNum) { stopAudio(); return; }
+    highlightVerse(currentAyahIdx);
+    var url = verseAudioBase + reciter + "/" + verseNum + ".mp3";
+    wordAudio = new Audio(url);
+    wordAudio.playbackRate = playbackSpeed;
+    wordAudio.onended = function() {
+        currentAyahIdx++;
+        currentWordIdx = 0;
+        if (currentAyahIdx < quranData.length && isPlaying) {
+            setTimeout(function() { playVerseReciter(reciter); }, 400);
+        } else { stopAudio(); }
+    };
+    wordAudio.onerror = function() {
+        currentAyahIdx++;
+        if (isPlaying) playVerseReciter(reciter);
+    };
+    wordAudio.play();
+}
+
+function highlightVerse(ai) {
+    document.querySelectorAll(".arabic-word.active-word").forEach(function(el) { el.classList.remove("active-word"); });
+    document.querySelectorAll(".quran-ayah.active-ayah").forEach(function(el) { el.classList.remove("active-ayah"); });
+    var ayahEl = document.getElementById("ayah-" + ai);
+    if (ayahEl) {
+        ayahEl.classList.add("active-ayah");
+        ayahEl.querySelectorAll(".arabic-word").forEach(function(w) { w.classList.add("active-word"); });
+        ayahEl.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+}
+
 loadSurahList();
 
 window.onload = function() {
@@ -626,6 +671,15 @@ if ('serviceWorker' in navigator) {
 
         <select id="surah-select" class="surah-select" onchange="loadSurah(this.value)">
             <option value="">Choisir une sourate...</option>
+        </select>
+
+        <select id="reciter-select" class="surah-select" style="font-size:13px">
+            <option value="wbw">Mot par mot (Apprentissage)</option>
+            <option value="ar.alafasy">Mishari al-Afasy</option>
+            <option value="ar.abdulbasitmurattal">AbdulBaset AbdulSamad</option>
+            <option value="ar.abdurrahmaansudais">Abdur-Rahman as-Sudais</option>
+            <option value="ar.husary">Mahmoud Khalil al-Husary</option>
+            <option value="ar.husarymuallim">Al-Husary Muallim (Enfants)</option>
         </select>
 
         <div class="quran-controls">
