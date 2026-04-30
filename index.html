@@ -626,7 +626,7 @@ function playVerseReciter(reciter) {
 
     wordAudio.onplay = function() {
         var dur = wordAudio.duration || 3;
-        var interval = (dur / totalWords) * 1000;
+        var interval = (dur / totalWords) * 1100;
         for (var i = 0; i < totalWords; i++) {
             (function(idx) {
                 var t = setTimeout(function() {
@@ -639,7 +639,7 @@ function playVerseReciter(reciter) {
 
     wordAudio.onloadedmetadata = function() {
         var dur = wordAudio.duration;
-        var interval = (dur / totalWords) * 1000 / playbackSpeed;
+        var interval = (dur / totalWords) * 1100 / playbackSpeed;
         wordTimers.forEach(function(t) { clearTimeout(t); });
         wordTimers = [];
         for (var i = 0; i < totalWords; i++) {
@@ -657,7 +657,7 @@ function playVerseReciter(reciter) {
         currentAyahIdx++;
         currentWordIdx = 0;
         if (currentAyahIdx < quranData.length && isPlaying) {
-            setTimeout(function() { playVerseReciter(reciter); }, 500);
+            setTimeout(function() { playVerseReciter(reciter); }, 800);
         } else { stopAudio(); }
     };
 
@@ -667,8 +667,8 @@ function playVerseReciter(reciter) {
         if (isPlaying) playVerseReciter(reciter);
     };
 
-    highlightWord(currentAyahIdx, 0);
     wordAudio.play();
+    setTimeout(function() { if (isPlaying) highlightWord(currentAyahIdx, 0); }, 300);
 }
 
 function highlightVerse(ai) {
