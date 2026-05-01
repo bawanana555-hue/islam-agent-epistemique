@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>Islam Agent Épistémique</title>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Lato:wght@300;400;700&display=swap');
+        
+        :root {
+            --bg-creme: #FFF2DF; 
+            --orange-fonce: #E67E22;
+            --vert-accueil: #27ae60;
+            --violet-spirituel: #8e44ad;
+            --bleu-ciel: #87CEEB;
+            --noir-profond: #000000;
+        }
+
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; margin: 0; padding: 0; }
+        
+        body {
+            background: var(--bg-creme);
+            font-family: 'Lato', sans-serif;
+            color: var(--noir-profond);
+            display: flex; flex-direction: column; height: 100dvh; overflow: hidden;
+        }
+
+        /* --- Header Fixé (Correction visibilité Profil) --- */
+        .header {
+            position: fixed; top: 0; left: 0; right: 0;
+            background: var(--bg-creme); padding: 10px 5px; z-index: 1000; text-align: center;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+        }
+        .header-row { 
+            display: flex; align-items: center; justify-content: center; 
+            width: 100%; max-width: 800px; margin: 0 auto; gap: 8px; flex-wrap: nowrap;
+        }
+        
+        .welcome-area { margin-top: 8px; }
+        .welcome-area h1 { font-family: 'Amiri', serif; color: #3498DB; font-size: 1.2em; }
+        .sub-green { color: var(--vert-accueil); font-weight: bold; font-size: 0.85em; display: block; border-bottom: 2px solid var(--orange-fonce); width: fit-content; margin: 2px auto; }
+        .sub-violet { color: var(--violet-spirituel); font-style: italic; font-size: 0.75em; display: block; }
+
+        .logo-box { width: 45px; height: 45px; border: 2px solid var(--vert-accueil); border-radius: 10px; background: white; overflow: hidden; position: relative; flex-shrink: 0; }
+        .logo-box img { width: 100%; height: 100%; object-fit: cover; }
+
+        /* --- Vues --- */
+        #chat-view, #quran-view {
+            flex: 1; margin-top: 170px; padding: 10px 10px 180px;
+            overflow-y: auto; display: flex; flex-direction: column; z-index: 10;
+        }
+        #quran-view { display: none; margin-top: 150px; padding-bottom: 250px; }
+
+        /* --- Style Académique (Correction Esthétique) --- */
+        .bot-msg h1, .bot-msg h2 { 
+            color: var(--vert-accueil) !important; font-family: 'Amiri', serif; 
+            border-bottom: 3px solid var(--orange-fonce) !important; 
+            margin: 15px 0 10px; padding-bottom: 5px; font-size: 1.4em;
+        }
+        .bot-msg blockquote { 
+            border-left: 5px solid var(--bleu-ciel) !important; 
+            margin: 15px 0; padding: 10px 15px;
+            background: rgba(135, 206, 235, 0.1); 
+            color: var(--violet-spirituel) !important; 
+            font-style: italic; border-radius: 0 10px 10px 0;
+        }
+        .bot-msg strong { color: var(--noir-profond); font-weight: 900; }
+
+        /* --- Module Coran (CRAYON) --- */
+        .ayah-block { background: white; margin-bottom: 15px; padding: 20px; border-radius: 15px; border: 1px solid #eee; transition: 0.3s; }
+        .active-ayah { 
+            border: 3px solid var(--orange-fonce) !important; 
+            background: #FFF9C4 !important; transform: scale(1.02); 
+        }
+        .ar-txt { font-family: 'Amiri', serif; font-size: 28px; direction: rtl; display: block; line-height: 1.8; color: #1a1a1a; }
+        
+        /* --- Contrôles Coran intégrés à la vue --- */
+        .quran-footer-fixed {
+            position: fixed; bottom: 85px; left: 0; right: 0;
+            background: white; padding: 15px; border-top: 3px solid var(--vert-accueil); z-index: 500;
+            display: none; /* Caché par défaut, activé par switchMode */
+        }
+
+        /* --- Saisie & Chargement --- */
+        .input-wrapper { position: fixed; bottom: 0; left: 0; right: 0; background: var(--bg-creme); padding: 5px 10px 25px; z-index: 600; }
+        .input-area { display: flex; background: white; border: 2.5px solid var(--vert-accueil); border-radius: 30px; padding: 5px; max-width: 600px; margin: 0 auto; }
+        .input-area input { flex: 1; border: none; outline: none; padding: 12px; font-size: 16px; background: transparent; color: var(--noir-profond); }
+
+        /* Loader 3 points colorés */
+        .loader { display: none; text-align: center; margin: 10px 0; }
+        .dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; animation: bounce 1.4s infinite; margin: 0 4px; }
+        .d1 { background: #E74C3C; animation-delay: -0.32s; }
+        .d2 { background: #F1C40F; animation-delay: -0.16s; }
+        .d3 { background: #2ECC71; }
+        @keyframes bounce { 0%, 80%, 100% { transform: scale(0); } 40% { transform: scale(1); } }
+
+        .button-oval { padding: 8px 10px; border-radius: 20px; border: none; color: white; font-weight: bold; cursor: pointer; font-size: 10px; flex-shrink: 0; }
+        .msg { max-width: 95%; margin-bottom: 20px; padding: 18px; border-radius: 15px; background: #fff; border: 1px solid #eee; }
+        .user-msg { align-self: flex-end; border-right: 5px solid var(--orange-fonce); background: #fdf6ec; }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <div class="header-row">
+        <button onclick="toggleModal('modal-dons',true)" class="button-oval" style="background:var(--vert-accueil)">DONS</button>
+        <button onclick="switchMode('quran')" class="button-oval" style="background:var(--orange-fonce)">📖 LECTURE</button>
+        <div class="logo-box">
+            <img id="logo-img" src="icons/icon-192.png">
+            <input type="file" accept="image/*" onchange="handleLogoUpload(event)" style="position:absolute; inset:0; opacity:0; cursor:pointer;">
+        </div>
+        <button onclick="switchMode('chat')" class="button-oval" style="background:#3498DB">💬 AGENT</button>
+        <button onclick="toggleModal('modal-profil',true)" class="button-oval" style="background:var(--orange-clair)">PROFIL</button>
+    </div>
+    <div class="welcome-area">
+        <h1>Islam Agent Épistémique</h1>
+        <span class="sub-green">Bienvenue sur les pages de la théologie islamique</span>
+        <span class="sub-violet">Je suis votre Premier Agent Épistémique d'Afrique pour l'islam</span>
+    </div>
+</div>
+
+<div id="chat-view">
+    <div id="chat-messages"></div>
+    <div class="loader" id="chat-loader"><div class="dot d1"></div><div class="dot d2"></div><div class="dot d3"></div></div>
+</div>
+
+<div id="quran-view">
+    <div style="background:white; padding:10px; border-radius:10px; margin-bottom:10px;">
+        <select id="surah-select" onchange="loadSurah()" style="width:100%; border:none; font-size:16px; outline:none;"></select>
+    </div>
+    <div id="quran-content"></div>
+</div>
+
+<!-- Contrôles Audio (Séparés pour la gestion du Z-index) -->
+<div class="quran-footer-fixed" id="quran-audio-ctrl">
+    <audio id="quran-audio" style="display:none;"></audio>
+    <div style="display:flex; align-items:center; gap:10px; margin-bottom:10px;">
+        <button onclick="playPause()" id="play-btn" style="border:none; background:none; font-size:24px; cursor:pointer;">▶️</button>
+        <input type="range" id="seek-bar" value="0" style="flex:1; accent-color:var(--orange-fonce);">
+    </div>
+    <div style="display:flex; justify-content:space-between; align-items:center;">
+        <button onclick="changeSurah(-1)" style="border:none; padding:5px 15px; border-radius:5px;">⏮️</button>
+        <button onclick="toggleRepeat()" id="repeat-btn" style="border:none; padding:5px 15px; border-radius:5px;">🔁</button>
+        <select id="speed-select" onchange="changeSpeed()" style="padding:5px; border-radius:5px;">
+            <option value="0.8">0.8x</option>
+            <option value="1" selected>1.0x</option>
+            <option value="1.2">1.2x</option>
+        </select>
+        <button onclick="changeSurah(1)" style="border:none; padding:5px 15px; border-radius:5px;">⏭️</button>
+    </div>
+</div>
+
+<div class="input-wrapper" id="input-chat-wrap">
+    <div style="text-align:center; font-size:11px; color:var(--orange-fonce); font-weight:bold; margin-bottom:5px;" id="don-banner">Soutenir la connaissance est une aumône continue...</div>
+    <div class="input-area">
+        <input type="text" id="userInput" placeholder="Posez votre question académique...">
+        <button class="button-oval" style="background:var(--vert-accueil); width:40px; height:40px; border-radius:50%; font-size:18px;" onclick="handleChat()">➔</button>
+    </div>
+</div>
+
+<!-- MODAL PROFIL -->
+<div id="modal-profil" class="modal">
+    <div class="modal-content">
+        <h2 style="text-align:center; color:var(--vert-accueil); font-family:'Amiri', serif;">👤 Profil & API</h2>
+        <div style="text-align:center; margin:15px 0;">
+            <div id="avatar-btn" onclick="document.getElementById('avatar-input').click()" style="width:80px; height:80px; border-radius:50%; border:3px solid var(--vert-accueil); margin:0 auto; overflow:hidden; cursor:pointer; background:#f0f0f0; display:flex; align-items:center; justify-content:center;">
+                <img id="avatar-img" style="width:100%; height:100%; object-fit:cover; display:none;">
+                <span id="avatar-plus">➕</span>
+            </div>
+            <input type="file" id="avatar-input" hidden accept="image/*" onchange="handleAvatar(event)">
+        </div>
+        <input type="text" id="p-nom" style="width:100%; padding:10px; margin-bottom:8px;" placeholder="Votre Nom">
+        <input type="text" id="p-prenom" style="width:100%; padding:10px; margin-bottom:8px;" placeholder="Votre Prénom">
+        <input type="text" id="p-titre" style="width:100%; padding:10px; margin-bottom:8px;" placeholder="Titre (ex: Chercheur IAE)">
+        <input type="password" id="p-key" style="width:100%; padding:10px; background:#fff9c4;" placeholder="Clé API Gemini">
+        <button onclick="saveProfile()" style="background:var(--vert-accueil); color:white; border:none; width:100%; padding:12px; border-radius:10px; margin-top:15px; font-weight:bold;">ENREGISTRER</button>
+        <button onclick="toggleModal('modal-profil',false)" style="background:#eee; width:100%; padding:10px; border-radius:10px; margin-top:8px; border:none;">FERMER</button>
+    </div>
+</div>
+
+<!-- MODAL DONS -->
+<div id="modal-dons" class="modal">
+    <div class="modal-content">
+        <h2 style="text-align:center; color:var(--vert-accueil);">💳 Dons Volontaires</h2>
+        <div style="margin-top:15px; font-size:14px; line-height:1.6;">
+            <p><b>🇹🇬 Local :</b> +228 99-54-97-11 (T-Money/Flooz)</p>
+            <p><b>🌍 International :</b> Western Union / MoneyGram</p>
+            <p><b>Nom :</b> Nana Bawa Bouraima | Lomé - Togo</p>
+            <a href="https://cinetpay.com" target="_blank" style="display:block; text-align:center; background:var(--orange-fonce); color:white; padding:10px; border-radius:8px; text-decoration:none; margin-top:15px;">Payer via CinetPay ➔</a>
+        </div>
+        <button onclick="toggleModal('modal-dons',false)" style="background:var(--vert-accueil); color:white; border:none; width:100%; padding:12px; border-radius:10px; margin-top:15px; font-weight:bold;">FERMER</button>
+    </div>
+</div>
+
+<script>
+let isRepeat = false;
+let versesCache = [];
+const audio = document.getElementById('quran-audio');
+
+function switchMode(mode) {
+    const chatV = document.getElementById('chat-view');
+    const quranV = document.getElementById('quran-view');
+    const audioC = document.getElementById('quran-audio-ctrl');
+    const inputW = document.getElementById('input-chat-wrap');
+    
+    if(mode === 'quran') {
+        chatV.style.display = 'none'; inputW.style.display = 'none';
+        quranV.style.display = 'flex'; audioC.style.display = 'block';
+        if(document.getElementById('surah-select').options.length === 0) fetchSurahs();
+    } else {
+        chatV.style.display = 'flex'; inputW.style.display = 'block';
+        quranV.style.display = 'none'; audioC.style.display = 'none';
+    }
+}
+
+function toggleModal(id, show) { document.getElementById(id).style.display = show ? 'flex' : 'none'; }
+
+// AGENT LOGIC
+async function handleChat() {
+    const input = document.getElementById('userInput');
+    const q = input.value.trim();
+    const key = localStorage.getItem('iae_api_key');
+    if(!q || !key) return alert("Configurez votre Clé API dans PROFIL");
+    
+    addMsg(q, 'user');
+    input.value = '';
+    document.getElementById('chat-loader').style.display = 'block';
+
+    try {
+        const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${key}`, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({contents: [{parts: [{text: "Tu es un savant. Réponds en Markdown académique (H1, Blockquotes). Ajoute des étoiles ✨. Question: " + q}]}]})
+        });
+        const data = await res.json();
+        addMsg(data.candidates[0].content.parts[0].text, 'bot');
+    } catch(e) { addMsg("⚠️ Erreur API.", 'bot'); }
+    document.getElementById('chat-loader').style.display = 'none';
+}
+
+function addMsg(t, s) {
+    const d = document.createElement('div');
+    d.className = 'msg ' + s + '-msg';
+    d.innerHTML = (s === 'bot' ? marked.parse(t) : t);
+    document.getElementById('chat-messages').appendChild(d);
+    document.getElementById('chat-view').scrollTop = document.getElementById('chat-view').scrollHeight;
+}
+
+// QURAN LOGIC
+async function fetchSurahs() {
+    const res = await fetch("https://api.quran.com/api/v4/chapters?language=fr");
+    const data = await res.json();
+    const select = document.getElementById('surah-select');
+    data.chapters.forEach(s => select.add(new Option(`${s.id}. ${s.name_simple}`, s.id)));
+    loadSurah();
+}
+
+async function loadSurah() {
+    const id = document.getElementById('surah-select').value;
+    const content = document.getElementById('quran-content');
+    content.innerHTML = "Chargement...";
+    const res = await fetch(`https://api.quran.com/api/v4/verses/by_chapter/${id}?language=fr&translations=31,131&fields=text_uthmani`);
+    const data = await res.json();
+    versesCache = data.verses;
+    
+    const audioRes = await fetch(`https://api.quran.com/api/v4/chapter_recitations/7/${id}`);
+    const audioData = await audioRes.json();
+    audio.src = audioData.audio_file.audio_url;
+
+    content.innerHTML = versesCache.map((v, i) => `
+        <div id="ayah-${i}" class="ayah-block">
+            <span class="ar-txt">${v.text_uthmani}</span>
+            <span style="color:var(--noir-profond); display:block; margin-top:10px;"><b>FR:</b> ${v.translations[0].text}</span>
+            <span style="color:#666; font-size:13px; display:block;"><b>EN:</b> ${v.translations[1].text}</span>
+        </div>
+    `).join('');
+}
+
+function playPause() {
+    if(audio.paused) { audio.play(); document.getElementById('play-btn').innerText = "⏸️"; }
+    else { audio.pause(); document.getElementById('play-btn').innerText = "▶️"; }
+}
+
+function changeSurah(dir) {
+    const s = document.getElementById('surah-select');
+    s.selectedIndex += dir;
+    loadSurah();
+}
+
+audio.ontimeupdate = () => {
+    if(!versesCache.length) return;
+    const idx = Math.floor((audio.currentTime / audio.duration) * versesCache.length);
+    document.querySelectorAll('.ayah-block').forEach(el => el.classList.remove('active-ayah'));
+    const cur = document.getElementById(`ayah-${idx}`);
+    if(cur) { cur.classList.add('active-ayah'); cur.scrollIntoView({behavior:'smooth', block:'center'}); }
+    document.getElementById('seek-bar').value = (audio.currentTime / audio.duration) * 100;
+};
+
+// PROFILE
+function saveProfile() {
+    localStorage.setItem('iae_api_key', document.getElementById('p-key').value);
+    localStorage.setItem('p_nom', document.getElementById('p-nom').value);
+    localStorage.setItem('p_prenom', document.getElementById('p-prenom').value);
+    localStorage.setItem('p_titre', document.getElementById('p-titre').value);
+    alert("Profil Sauvé !");
+    toggleModal('modal-profil', false);
+}
+
+function handleAvatar(e) {
+    const reader = new FileReader();
+    reader.onload = (event) => {
+        document.getElementById('avatar-img').src = event.target.result;
+        document.getElementById('avatar-img').style.display = 'block';
+        document.getElementById('avatar-plus').style.display = 'none';
+        localStorage.setItem('iae_avatar', event.target.result);
+    };
+    reader.readAsDataURL(e.target.files[0]);
+}
+
+function handleLogoUpload(e) {
+    const reader = new FileReader();
+    reader.onload = (event) => {
+        document.getElementById('logo-img').src = event.target.result;
+        localStorage.setItem('iae_logo', event.target.result);
+    };
+    reader.readAsDataURL(e.target.files[0]);
+}
+
+window.onload = () => {
+    if(localStorage.getItem('iae_logo')) document.getElementById('logo-img').src = localStorage.getItem('iae_logo');
+    if(localStorage.getItem('iae_avatar')) {
+        document.getElementById('avatar-img').src = localStorage.getItem('iae_avatar');
+        document.getElementById('avatar-img').style.display = 'block';
+        document.getElementById('avatar-plus').style.display = 'none';
+    }
+    document.getElementById('p-key').value = localStorage.getItem('iae_api_key') || '';
+    document.getElementById('p-nom').value = localStorage.getItem('p_nom') || '';
+    document.getElementById('p-prenom').value = localStorage.getItem('p_prenom') || '';
+    document.getElementById('p-titre').value = localStorage.getItem('p_titre') || '';
+    
+    const bMsgs = ["Soutenir la connaissance est une aumône continue...", "L'éducation est une lumière.", "Aidez l'IAE par vos dons."];
+    let i = 0; setInterval(() => { document.getElementById('don-banner').innerText = bMsgs[i++ % bMsgs.length]; }, 4000);
+    document.getElementById('userInput').addEventListener('keydown', (e) => { if(e.key === 'Enter') handleChat(); });
+};
+</script>
+</body>
+</html>
