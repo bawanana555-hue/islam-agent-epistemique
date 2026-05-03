@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Islam Agent Épistémique</title>
+    <link rel="manifest" href="manifest.json">
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Lato:wght@400;700&display=swap');
+        
+        :root {
+            --bg-creme: #FFF2DF; 
+            --orange-fonce: #E67E22;
+            --vert-expert: #27ae60;
+            --violet-spirituel: #8e44ad;
+            --bleu-ciel: #3498DB;
+            --noir: #1a1a1a;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+        
+        body {
+            background: var(--bg-creme);
+            font-family: 'Lato', sans-serif;
+            color: var(--noir);
+            height: 100dvh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* --- HEADER --- */
+        header {
+            background: var(--bg-creme);
+            padding: 10px;
+            z-index: 2000;
+            border-bottom: 2px solid var(--orange-fonce);
+            text-align: center;
+        }
+
+        .nav-buttons {
+            display: flex; justify-content: space-between; align-items: center;
+            max-width: 600px; margin: 0 auto 5px; gap: 5px;
+        }
+
+        .btn {
+            flex: 1; padding: 10px 5px; border-radius: 12px; border: none;
+            color: white; font-weight: bold; font-size: 11px; cursor: pointer; text-transform: uppercase;
+        }
+
+        /* --- LOGO ACTIF (RÉPARÉ) --- */
+        .logo-box { 
+            width: 60px; height: 60px; border: 3px solid var(--vert-expert); 
+            border-radius: 50%; overflow: hidden; background: #eee; flex-shrink: 0; 
+            cursor: pointer; position: relative; display: flex; align-items: center; justify-content: center;
+        }
+        .logo-box img { width: 100%; height: 100%; object-fit: cover; display: block; }
+        .logo-box input { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; }
+
+        .author-info { font-size: 13px; font-weight: bold; margin-top: 5px; }
+        .author-title { color: var(--vert-expert); font-size: 10px; text-transform: uppercase; letter-spacing: 1px; }
+
+        /* --- ZONE DE CONTENU --- */
+        main { flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; padding-bottom: 200px; }
+
+        .msg { max-width: 90%; margin-bottom: 20px; padding: 15px; border-radius: 15px; background: white; border: 1px solid #ddd; line-height: 1.6; }
+        .bot-msg { border-left: 5px solid var(--vert-expert); }
+        .user-msg { align-self: flex-end; border-right: 5px solid var(--orange-fonce); background: #fffcf5; }
+
+        /* --- QURAN & AUDIO --- */
+        #quran-ui { display: none; width: 100%; }
+        .ayah-card { background: white; padding: 20px; border-radius: 15px; margin-bottom: 15px; border: 1px solid #eee; }
+        .active-ayah { border: 3px solid var(--orange-fonce) !important; background: #FFF9C4 !important; }
+        .ar { font-family: 'Amiri', serif; font-size: 26px; direction: rtl; display: block; line-height: 1.8; }
+
+        /* --- FOOTER & ANTI-PARASITE --- */
+        footer {
+            position: fixed; bottom: 0; left: 0; right: 0;
+            background: var(--bg-creme); padding: 10px; z-index: 3000;
+            border-top: 2px solid var(--vert-expert);
+        }
+
+        /* TECHNIQUE RADICALE POUR LIBÉRER LE CHAMP DE SAISIE */
+        .input-box { 
+            display: flex; background: white; border: 2px solid var(--vert-expert); 
+            border-radius: 30px; padding: 5px; align-items: center;
+        }
+        #userInput { 
+            flex: 1; border: none; outline: none; padding: 12px; font-size: 16px; 
+            background: transparent; width: 100%;
+        }
+        /* Cache les suggestions automatiques qui cachent l'écran */
+        #userInput::-webkit-contacts-auto-fill-button, 
+        #userInput::-webkit-credentials-auto-fill-button { display: none !important; }
+
+        /* --- MODALS --- */
+        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 5000; align-items: center; justify-content: center; padding: 20px; }
+        .modal-content { background: white; padding: 25px; border-radius: 25px; width: 100%; max-width: 450px; max-height: 90vh; overflow-y: auto; }
+        
+        .don-item { border-bottom: 1px solid #eee; padding: 10px 0; }
+        .don-item h4 { color: var(--orange-fonce); margin-bottom: 4px; }
+
+        .loader { display: none; text-align: center; margin-bottom: 8px; }
+        .dot { width: 8px; height: 8px; background: var(--vert-expert); border-radius: 50%; display: inline-block; animation: bounce 1.4s infinite; margin: 0 2px; }
+        @keyframes bounce { 0%, 100% { transform: scale(0.3); } 50% { transform: scale(1); } }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="nav-buttons">
+        <button class="btn" style="background:var(--vert-expert)" onclick="openModal('modal-dons')">Dons</button>
+        <button class="btn" style="background:var(--orange-fonce)" onclick="setMode('quran')">Lecture</button>
+        
+        <!-- LOGO RE-RENDU ACTIF -->
+        <div class="logo-box" title="Changer la photo">
+            <img id="header-avatar" src="https://via.placeholder.com/100?text=LOGO">
+            <input type="file" accept="image/*" onchange="uploadAvatar(event)">
+        </div>
+
+        <button class="btn" style="background:var(--bleu-ciel)" onclick="setMode('chat')">Agent</button>
+        <button class="btn" style="background:var(--orange-fonce)" onclick="openModal('modal-profil')">Profil</button>
+    </div>
+    
+    <div class="author-info">
+        <span id="display-prenom">Prénom</span> <span id="display-nom">Nom</span>
+        <div id="display-titre" class="author-title">Titre de l'Auteur</div>
+    </div>
+</header>
+
+<main id="main-content">
+    <div id="chat-ui"><div id="messages"></div></div>
+    <div id="quran-ui">
+        <select id="surah-select" onchange="loadSurah()" style="width:100%; padding:15px; border-radius:15px; margin-bottom:15px; border:2px solid var(--orange-fonce);"></select>
+        <div id="verses-container"></div>
+    </div>
+</main>
+
+<footer>
+    <div id="audio-ui" style="display:none; margin-bottom:10px; background:white; padding:10px; border-radius:15px;">
+        <audio id="main-audio"></audio>
+        <div style="display:flex; align-items:center; gap:10px;">
+            <button onclick="playAudio()" id="play-btn" style="border:none; background:none; font-size:24px;">▶️</button>
+            <input type="range" id="seek-bar" style="flex:1" value="0">
+        </div>
+    </div>
+
+    <div class="loader" id="loader"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+    
+    <div class="input-box">
+        <!-- Champ protégé contre le parasite -->
+        <input type="text" id="userInput" 
+               placeholder="Entrez votre question académique..." 
+               autocomplete="one-time-code"
+               name="iae_secure_field"
+               onkeydown="if(event.key==='Enter') askAgent()">
+        <button onclick="askAgent()" style="border:none; background:var(--vert-expert); color:white; width:45px; height:45px; border-radius:50%; margin-left:5px;">➔</button>
+    </div>
+</footer>
+
+<!-- MODAL DONS (TOTALITÉ RÉTABLIE) -->
+<div id="modal-dons" class="modal">
+    <div class="modal-content">
+        <h2 style="text-align:center; color:var(--vert-expert); margin-bottom:15px;">💳 Soutien Volontaire</h2>
+        
+        <div class="don-item">
+            <h4>🇹🇬 Paiement Local (Togo)</h4>
+            <p><b>T-Money :</b> +228 90 61 34 32</p>
+            <p><b>Flooz :</b> +228 99 54 97 11</p>
+            <small>Nana Bawa Bouraima</small>
+        </div>
+
+        <div class="don-item">
+            <h4>🌍 International</h4>
+            <p><b>Western Union / MoneyGram :</b> Contactez-nous pour les détails du transfert.</p>
+        </div>
+
+        <div class="don-item">
+            <h4>🔗 En Ligne</h4>
+            <a href="https://votre-lien-cinetpay.com" target="_blank" style="display:block; text-align:center; background:var(--orange-fonce); color:white; padding:12px; border-radius:10px; text-decoration:none; margin-top:10px; font-weight:bold;">CinetPay</a>
+        </div>
+
+        <button onclick="closeModal('modal-dons')" style="width:100%; padding:12px; border:none; border-radius:10px; margin-top:15px;">Fermer</button>
+    </div>
+</div>
+
+<!-- MODAL PROFIL -->
+<div id="modal-profil" class="modal">
+    <div class="modal-content">
+        <h3 style="text-align:center; margin-bottom:15px;">Configurer mon Profil</h3>
+        <input type="text" id="p-prenom" placeholder="Prénom" style="width:100%; padding:12px; margin-bottom:10px; border-radius:10px; border:1px solid #ddd;">
+        <input type="text" id="p-nom" placeholder="Nom" style="width:100%; padding:12px; margin-bottom:10px; border-radius:10px; border:1px solid #ddd;">
+        <input type="text" id="p-titre" placeholder="Votre Titre (Ex: Chercheur)" style="width:100%; padding:12px; margin-bottom:10px; border-radius:10px; border:1px solid #ddd;">
+        <input type="password" id="p-key" placeholder="Clé API Gemini (Gratuite)" style="width:100%; padding:12px; margin-bottom:10px; border-radius:10px; border:1px solid #ddd; background:#fff9c4;">
+        
+        <button onclick="saveProfile()" style="width:100%; padding:12px; background:var(--vert-expert); color:white; border:none; border-radius:10px; font-weight:bold;">ENREGISTRER</button>
+        <button onclick="closeModal('modal-profil')" style="width:100%; padding:10px; border:none; margin-top:5px; background:transparent;">Annuler</button>
+    </div>
+</div>
+
+<script>
+/* --- LOGIQUE PROFIL & AVATAR (RÉPARÉE) --- */
+function uploadAvatar(e) {
+    const file = e.target.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function(event) {
+            const data = event.target.result;
+            document.getElementById('header-avatar').src = data;
+            localStorage.setItem('iae_avatar', data);
+        };
+        reader.readAsDataURL(file);
+    }
+}
+
+function saveProfile() {
+    localStorage.setItem('iae_prenom', document.getElementById('p-prenom').value);
+    localStorage.setItem('iae_nom', document.getElementById('p-nom').value);
+    localStorage.setItem('iae_titre', document.getElementById('p-titre').value);
+    localStorage.setItem('iae_key', document.getElementById('p-key').value);
+    syncUI();
+    closeModal('modal-profil');
+}
+
+function syncUI() {
+    document.getElementById('display-prenom').innerText = localStorage.getItem('iae_prenom') || 'Prénom';
+    document.getElementById('display-nom').innerText = localStorage.getItem('iae_nom') || 'Nom';
+    document.getElementById('display-titre').innerText = localStorage.getItem('iae_titre') || 'Titre de l\'Auteur';
+    const avatar = localStorage.getItem('iae_avatar');
+    if(avatar) document.getElementById('header-avatar').src = avatar;
+}
+
+/* --- LOGIQUE AGENT (GÉRER LE MOTEUR GRATUIT) --- */
+async function askAgent() {
+    const input = document.getElementById('userInput');
+    const q = input.value.trim();
+    if(!q) return;
+
+    addM(q, 'user');
+    input.value = '';
+    document.getElementById('loader').style.display = 'block';
+
+    const key = localStorage.getItem('iae_key');
+    if(!key) {
+        addM("⚠️ Veuillez configurer votre clé API gratuite Gemini dans le profil.", 'bot');
+        document.getElementById('loader').style.display = 'none';
+        return;
+    }
+
+    try {
+        const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${key}`, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ contents: [{parts: [{text: "Tu es un savant expert. Réponds en Markdown : " + q}]}]})
+        });
+        const data = await res.json();
+        addM(data.candidates[0].content.parts[0].text, 'bot');
+    } catch(e) {
+        addM("❌ Erreur de connexion au moteur IA.", 'bot');
+    }
+    document.getElementById('loader').style.display = 'none';
+}
+
+function addM(t, s) {
+    const d = document.createElement('div');
+    d.className = `msg ${s}-msg`;
+    d.innerHTML = s === 'bot' ? marked.parse(t) : t;
+    document.getElementById('messages').appendChild(d);
+    document.getElementById('main-content').scrollTop = document.getElementById('main-content').scrollHeight;
+}
+
+/* --- LOGIQUE QURAN & SUIVI --- */
+let verses = [];
+const audio = document.getElementById('main-audio');
+
+async function loadSurah() {
+    const id = document.getElementById('surah-select').value;
+    const res = await fetch(`https://api.quran.com/api/v4/verses/by_chapter/${id}?language=fr&translations=31&fields=text_uthmani`);
+    const data = await res.json();
+    verses = data.verses;
+
+    document.getElementById('verses-container').innerHTML = verses.map((v, i) => `
+        <div id="ayah-${i}" class="ayah-card">
+            <span class="ar">${v.text_uthmani}</span>
+            <span class="fr">${v.translations[0].text}</span>
+        </div>
+    `).join('');
+
+    const aRes = await fetch(`https://api.quran.com/api/v4/chapter_recitations/7/${id}`);
+    const aData = await aRes.json();
+    audio.src = aData.audio_file.audio_url;
+}
+
+audio.ontimeupdate = () => {
+    if(!verses.length) return;
+    const idx = Math.floor((audio.currentTime / audio.duration) * verses.length);
+    document.querySelectorAll('.ayah-card').forEach(el => el.classList.remove('active-ayah'));
+    const cur = document.getElementById(`ayah-${idx}`);
+    if(cur) {
+        cur.classList.add('active-ayah');
+        cur.scrollIntoView({behavior:'smooth', block:'center'});
+    }
+    document.getElementById('seek-bar').value = (audio.currentTime / audio.duration) * 100;
+};
+
+/* --- SERVICES --- */
+function openModal(id) { document.getElementById(id).style.display = 'flex'; }
+function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+function setMode(m) {
+    const isQ = (m === 'quran');
+    document.getElementById('chat-ui').style.display = isQ ? 'none' : 'block';
+    document.getElementById('quran-ui').style.display = isQ ? 'block' : 'none';
+    document.getElementById('audio-ui').style.display = isQ ? 'block' : 'none';
+    if(isQ && document.getElementById('surah-select').options.length === 0) fetchS();
+}
+
+async function fetchS() {
+    const res = await fetch("https://api.quran.com/api/v4/chapters?language=fr");
+    const data = await res.json();
+    const sel = document.getElementById('surah-select');
+    data.chapters.forEach(s => sel.add(new Option(`${s.id}. ${s.name_simple}`, s.id)));
+    loadSurah();
+}
+
+function playAudio() {
+    if(audio.paused) { audio.play(); document.getElementById('play-btn').innerText = "⏸️"; }
+    else { audio.pause(); document.getElementById('play-btn').innerText = "▶️"; }
+}
+
+window.onload = () => {
+    syncUI();
+    document.getElementById('p-prenom').value = localStorage.getItem('iae_prenom') || '';
+    document.getElementById('p-nom').value = localStorage.getItem('iae_nom') || '';
+    document.getElementById('p-titre').value = localStorage.getItem('iae_titre') || '';
+    document.getElementById('p-key').value = localStorage.getItem('iae_key') || '';
+    addM("Salam Alaykoum. Je suis prêt pour vos recherches.", 'bot');
+};
+</script>
+</body>
+</html>
