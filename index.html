@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>Islam Agent Épistémique</title>
+    <!-- Manifeste PWA pour installation écran d'accueil -->
+    <link rel="manifest" href="data:application/json;base64,ewogICJuYW1lIjogIklzbGFtIEFnZW50IMliquidc3TDqW1pcXVlIiwKICAic2hvcnRfbmFtZSI6ICJJQUUiLAogICJzdGFydF91cmwiOiAiLiIsCiAgImRpc3BsYXkiOiAic3RhbmRhbG9uZSIsCiAgImJhY2tncm91bmRfY29sb3IiOiAiI0ZGRUZENTUiLAogICJ0aGVtZV9jb3xvciI6ICIjMkVjQzcxIiwKICAiaWNvbnMiOiBbCiAgICB7ICJzcmMiOiAiaWNvbnMvaWNvbi0xOTIucG5nIiwgInNpemVzIjogIjE5MngxOTIiLCAidHlwZSI6ICJpbWFnZS9wbmciIH0KICBdCn0=">
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Lato:wght@300;400;700&display=swap');
+        :root {
+            --bg-main: #FFEFD5; --orange-creme: #FFF5E1; --orange-clair: #FFB347;
+            --orange-fonce: #E67E22; --vert-clair: #2ECC71; --bleu-ciel: #87CEEB;
+            --text-main: #2C3E50; --highlight: rgba(46, 204, 113, 0.2);
+        }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; margin: 0; padding: 0; }
+        body { background: var(--bg-main); font-family: 'Lato', sans-serif; color: var(--text-main); display: flex; flex-direction: column; height: 100dvh; overflow: hidden; }
+        
+        /* HEADER & LOGO */
+        .header { position: fixed; top: 0; left: 0; right: 0; background: var(--bg-main); padding: 15px 10px; z-index: 100; text-align: center; border-bottom: 1px solid rgba(0,0,0,0.05); }
+        .header-row { display: flex; align-items: center; justify-content: space-between; max-width: 600px; margin: 0 auto; }
+        .logo-container { width: 55px; height: 55px; border: 2.5px solid var(--vert-clair); border-radius: 12px; background: white; overflow: hidden; display: flex; align-items: center; justify-content: center; }
+        .logo-container img { width: 100%; height: 100%; object-fit: cover; }
+        .welcome-area h1 { font-family: 'Amiri', serif; color: #3498DB; font-size: 1.3em; margin-top: 5px; }
+
+        /* CHAT */
+        .chat-container { flex: 1; margin-top: 175px; padding: 20px 15px 180px; overflow-y: auto; display: flex; flex-direction: column; }
+        .msg { max-width: 85%; margin-bottom: 20px; padding: 16px; border-radius: 18px; font-size: 16px; border: 2px solid var(--vert-clair); background: var(--orange-creme); position: relative; }
+        .bot-msg { align-self: flex-start; border-bottom-left-radius: 2px; }
+        .user-msg { align-self: flex-end; border-color: var(--orange-clair); border-bottom-right-radius: 2px; }
+
+        /* INPUT */
+        .input-wrapper { position: fixed; bottom: 0; left: 0; right: 0; background: var(--bg-main); padding: 10px 15px 25px; }
+        .input-area { display: flex; background: var(--orange-creme); border: 2px solid var(--vert-clair); border-radius: 30px; padding: 8px; max-width: 600px; margin: 0 auto; }
+        .input-area input { flex: 1; border: none; background: transparent; outline: none; padding: 10px; font-size: 16px; }
+        .send-btn { background: var(--vert-clair); border: none; border-radius: 50%; width: 45px; height: 45px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+
+        /* MODALS */
+        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 2000; align-items: center; justify-content: center; padding: 15px; }
+        .modal-content { background: white; padding: 20px; border-radius: 20px; width: 100%; max-width: 450px; max-height: 90vh; overflow-y: auto; }
+        .modal-h { color: var(--vert-clair); border-bottom: 2px solid var(--orange-fonce); margin-bottom: 15px; padding-bottom: 5px; }
+        
+        /* FORM STYLES */
+        .form-group { margin-bottom: 12px; }
+        .form-group label { display: block; font-size: 0.85em; font-weight: bold; margin-bottom: 4px; color: #555; }
+        .form-group input { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px; }
+        .pay-section { background: #f9f9f9; padding: 10px; border-radius: 10px; margin-bottom: 10px; border-left: 4px solid var(--bleu-ciel); }
+        .btn-full { width: 100%; padding: 12px; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; margin-top: 5px; }
+        
+        /* AVATAR */
+        .avatar-box { width: 80px; height: 80px; border-radius: 50%; border: 3px solid var(--orange-clair); margin: 0 auto 15px; overflow: hidden; background: #eee; position: relative; }
+        .avatar-box img { width: 100%; height: 100%; object-fit: cover; }
+        
+        .reading-mode .header { opacity: 0; transform: translateY(-30px); pointer-events: none; }
+        .reading-mode .chat-container { margin-top: 20px; }
+    </style>
+</head>
+<body id="app-body">
+
+<div class="header" id="main-header">
+    <div class="header-row">
+        <button onclick="toggleModal('modal-dons', true)" style="background:var(--vert-clair); color:white; border:none; padding:10px 18px; border-radius:25px; font-weight:bold; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">DONS</button>
+        <div class="logo-container">
+            <img src="icons/icon-192.png" alt="Logo" onerror="this.src='https://via.placeholder.com/150?text=Islam+Agent'">
+        </div>
+        <button onclick="toggleModal('modal-profil', true)" style="background:var(--orange-clair); color:white; border:none; padding:10px 18px; border-radius:25px; font-weight:bold; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">PROFIL</button>
+    </div>
+    <div class="welcome-area">
+        <h1>Islam Agent Épistémique</h1>
+    </div>
+</div>
+
+<div class="chat-container" id="chat"></div>
+
+<div class="input-wrapper">
+    <div class="input-area">
+        <input type="text" id="userInput" placeholder="Posez votre question..." onfocus="document.body.classList.add('reading-mode')">
+        <button class="send-btn" onclick="handleChat()">
+            <svg viewBox="0 0 24 24" width="24" height="24" fill="white"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+        </button>
+    </div>
+</div>
+
+<!-- MODAL PROFIL (COMPLET) -->
+<div id="modal-profil" class="modal">
+    <div class="modal-content">
+        <h2 class="modal-h">👤 Profil de l'Auteur</h2>
+        <div class="avatar-box" id="avatar-container">
+            <!-- Avatar prêt pour votre photo propriétaire -->
+            <img id="profile-img-preview" src="https://via.placeholder.com/150?text=Auteur" alt="Avatar Propriétaire">
+        </div>
+        <div class="form-group">
+            <label>Nom de l'auteur</label>
+            <input type="text" id="auth-nom" placeholder="Entrez votre nom">
+        </div>
+        <div class="form-group">
+            <label>Prénom de l'auteur</label>
+            <input type="text" id="auth-prenom" placeholder="Entrez votre prénom">
+        </div>
+        <div class="form-group">
+            <label>Titre / Fonction</label>
+            <input type="text" id="auth-titre" placeholder="Expert en Théologie, etc.">
+        </div>
+        <div class="form-group" style="border-top: 1px dashed #ccc; padding-top: 10px;">
+            <label>Clé API Gemini (Moteur IA)</label>
+            <input type="password" id="api-key" placeholder="Collez votre clé gratuite">
+        </div>
+        <button onclick="saveProfile()" class="btn-full" style="background:var(--vert-clair); color:white;">ENREGISTRER LE PROFIL</button>
+        <button onclick="toggleModal('modal-profil', false)" class="btn-full" style="background:#eee; margin-top:8px;">Fermer</button>
+    </div>
+</div>
+
+<!-- MODAL DONS (COMPLET & ACTIF) -->
+<div id="modal-dons" class="modal">
+    <div class="modal-content">
+        <h2 class="modal-h">💳 Soutenir la Mission</h2>
+        
+        <div class="pay-section">
+            <p style="font-weight:bold; color:var(--orange-fonce); margin-bottom:5px;">🌍 Payement Local (Togo/UEMOA)</p>
+            <p><strong>T-Money :</strong> +228 90 XX XX XX</p>
+            <p><strong>Flooz :</strong> +228 99 XX XX XX</p>
+        </div>
+
+        <div class="pay-section">
+            <p style="font-weight:bold; color:var(--bleu-ciel); margin-bottom:5px;">✈️ Payement International</p>
+            <p><strong>Western Union :</strong> [Nom de l'Auteur]</p>
+            <p><strong>MoneyGram :</strong> [Nom de l'Auteur]</p>
+        </div>
+
+        <div class="pay-section">
+            <p style="font-weight:bold; color:var(--vert-clair); margin-bottom:5px;">💻 Payement en ligne</p>
+            <button onclick="window.open('https://www.cinetpay.com', '_blank')" class="btn-full" style="background:#004a99; color:white; font-size:0.9em;">Payer via CinetPay</button>
+        </div>
+
+        <button onclick="toggleModal('modal-dons', false)" class="btn-full" style="background:#eee; margin-top:10px;">Fermer</button>
+    </div>
+</div>
+
+<script>
+    // BASE DE CONNAISSANCE LOCALE
+    const LOCAL_DB = [
+        { tags: ["bonjour", "salut"], response: "Paix sur vous. Je suis l'Islam Agent Épistémique, dévoué à votre apprentissage." },
+        { tags: ["tauhid"], response: "Le **Tauhid** est l'unicité absolue de Dieu, pilier de toute la science théologique." },
+        { tags: ["piliers"], response: "L'Islam repose sur 5 piliers : Shahada, Salat, Zakat, Sawm et Hajj." }
+    ];
+
+    function toggleModal(id, show) { document.getElementById(id).style.display = show ? 'flex' : 'none'; }
+
+    // Chargement des données au démarrage
+    window.onload = () => {
+        document.getElementById('auth-nom').value = localStorage.getItem('iae_nom') || '';
+        document.getElementById('auth-prenom').value = localStorage.getItem('iae_prenom') || '';
+        document.getElementById('auth-titre').value = localStorage.getItem('iae_titre') || '';
+        document.getElementById('api-key').value = localStorage.getItem('iae_key') || '';
+    };
+
+    function saveProfile() {
+        localStorage.setItem('iae_nom', document.getElementById('auth-nom').value);
+        localStorage.setItem('iae_prenom', document.getElementById('auth-prenom').value);
+        localStorage.setItem('iae_titre', document.getElementById('auth-titre').value);
+        localStorage.setItem('iae_key', document.getElementById('api-key').value);
+        alert("Profil et Clé API mis à jour !");
+        toggleModal('modal-profil', false);
+    }
+
+    async function handleChat() {
+        const input = document.getElementById('userInput');
+        const query = input.value.trim();
+        if(!query) return;
+
+        addMsg(query, 'user');
+        input.value = '';
+
+        let found = LOCAL_DB.find(item => item.tags.some(t => query.toLowerCase().includes(t)));
+        if(found) { setTimeout(() => addMsg(found.response, 'bot'), 400); return; }
+
+        const key = localStorage.getItem('iae_key');
+        if(!key) { addMsg("⚠️ Configurez votre Clé API dans 'Profil' pour les questions complexes.", 'bot'); return; }
+
+        try {
+            const resp = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${key}`, {
+                method: "POST", headers: {"Content-Type": "application/json"},
+                body: JSON.stringify({ contents: [{ role: "user", parts: [{ text: query }] }] })
+            });
+            const data = await resp.json();
+            addMsg(data.candidates[0].content.parts[0].text, 'bot');
+        } catch (e) { addMsg("Erreur technique. Utilisez les mots-clés locaux.", 'bot'); }
+    }
+
+    function addMsg(text, side) {
+        const chat = document.getElementById('chat');
+        const div = document.createElement('div');
+        div.className = `msg ${side}-msg`;
+        div.innerHTML = side === 'bot' ? marked.parse(text) : text;
+        chat.appendChild(div);
+        chat.scrollTop = chat.scrollHeight;
+    }
+
+    // Gestion de l'installation (PWA)
+    let deferredPrompt;
+    window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        deferredPrompt = e;
+    });
+</script>
+</body>
+</html>
