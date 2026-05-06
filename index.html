@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <title>Islam Agent Épistémique</title>
+    <link rel="manifest" href="./manifest.json">
+    <meta name="theme-color" content="#27ae60">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="IAE">
+    <link rel="apple-touch-icon" href="./icons/icon-192.png">
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"><\/script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Lato:wght@300;400;700&display=swap');
+        :root{--bg-main:#FFEFD5;--orange-creme:#FFF5E1;--orange-clair:#FFB347;--orange-fonce:#E67E22;--vert-clair:#2ECC71;--bleu-ciel:#87CEEB;--text-main:#2C3E50;--bordure-vert:2px solid var(--vert-clair);--rouge-alerte:#E74C3C}
+        *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;margin:0;padding:0;-webkit-user-select:none;user-select:none}
+        input,textarea,button{-webkit-user-select:text;user-select:text}
+        html,body{width:100%;height:100%;overflow:hidden}
+        body{background:var(--bg-main);font-family:'Lato',sans-serif;color:var(--text-main);display:flex;flex-direction:column}
+        .header{position:fixed;top:0;left:0;right:0;background:var(--bg-main);padding:12px 10px;z-index:100;text-align:center;transition:opacity .4s ease;border-bottom:var(--bordure-vert)}
+        .header-row{display:flex;align-items:center;justify-content:space-between;width:100%;max-width:600px;margin:0 auto}
+        .header-row button{padding:8px 12px;font-size:14px}
+        .welcome-area{margin-top:8px}
+        .welcome-area h1{font-family:'Amiri',serif;color:#3498DB;font-size:1.3em;margin:0}
+        .welcome-area .sub1{color:#8E44AD;font-size:1em;font-weight:bold;margin:3px 0 0}
+        .welcome-area .sub2{color:#16A085;font-size:.85em;font-style:italic;margin:2px 0 0}
+        .chat-container{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:140px 15px 200px 15px;display:flex;flex-direction:column;gap:10px}
+        .msg{max-width:90%;padding:14px;border-radius:16px;font-size:15px;line-height:1.5;border:var(--bordure-vert);background:var(--orange-creme);box-shadow:0 2px 8px rgba(0,0,0,.1)}
+        .user-msg{align-self:flex-end;border-bottom-right-radius:2px;background:var(--bleu-ciel);color:white;border:none}
+        .bot-msg{align-self:flex-start;border-bottom-left-radius:2px}
+        .bot-msg p{margin-bottom:12px;text-align:justify}
+        .bot-msg h1,.bot-msg h2{color:var(--vert-clair);border-bottom:2px solid var(--orange-fonce);margin:12px 0 8px;font-family:'Amiri',serif}
+        .error-msg{background:var(--rouge-alerte);color:white;border:none}
+        .typing{display:none;align-self:flex-start;padding:10px;margin-bottom:15px}
+        .dot{width:8px;height:8px;margin:0 3px;border-radius:50%;display:inline-block;animation:bounce 1.4s infinite ease-in-out;background:var(--vert-clair)}
+        @keyframes bounce{0%,80%,100%{transform:scale(0)}40%{transform:scale(1)}}
+        .donation-banner{text-align:center;font-size:.8em;font-weight:bold;height:18px;margin-bottom:4px;color:var(--orange-fonce)}
+        .input-wrapper{position:fixed;bottom:0;left:0;right:0;background:var(--bg-main);padding:8px 15px 20px;border-top:var(--bordure-vert);max-height:200px}
+        .donation-banner{animation:pulse 2s ease-in-out infinite}
+        @keyframes pulse{0%,100%{opacity:.7}50%{opacity:1}}
+        .input-area{display:flex;gap:8px;background:white;border:2px solid var(--vert-clair);border-radius:25px;padding:6px;align-items:center}
+        .input-area input{flex:1;border:none;background:transparent;outline:none;padding:10px;font-size:16px;color:var(--text-main);min-height:44px}
+        .input-icon{color:var(--orange-fonce);font-size:20px;padding:0 8px;cursor:default}
+        .send-btn{background:var(--vert-clair);border:none;border-radius:50%;width:44px;height:44px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:background .2s;active:brightness(0.9)}
+        .send-btn:active{filter:brightness(0.9)}
+        .send-btn svg{width:22px;height:22px}
+        .modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:1000;align-items:center;justify-content:center;padding:20px;overflow-y:auto}
+        .modal-content{background:white;padding:22px;border-radius:12px;width:100%;max-width:400px;max-height:90vh;overflow-y:auto}
+        .button-oval{padding:10px 16px;border-radius:20px;border:none;color:white;font-weight:bold;cursor:pointer;font-size:14px}
+        .avatar-wrapper{text-align:center;margin:15px 0}
+        .avatar-circle{width:80px;height:80px;border-radius:50%;border:3px solid var(--vert-clair);background:#f0f0f0;margin:0 auto;display:flex;align-items:center;justify-content:center;font-size:40px}
+        .profil-field{width:100%;padding:10px;margin:8px 0;border:1px solid #ddd;border-radius:8px;font-size:15px}
+        .profil-field:focus{border-color:var(--vert-clair);outline:none;background:#f9f9f9}
+        .profil-label{font-weight:bold;font-size:.9em;color:#555;margin-top:10px;display:block}
+        .don-section{background:#f9f9f9;border-radius:10px;padding:12px;margin:10px 0;border-left:4px solid var(--vert-clair)}
+        .don-section h3{font-size:1em;color:var(--orange-fonce);margin-bottom:8px}
+        .don-section p{font-size:.9em;margin:4px 0;color:#444}
+        .don-btn{display:block;width:100%;padding:12px;margin-top:8px;border:none;border-radius:8px;color:white;font-weight:bold;font-size:1em;cursor:pointer;text-decoration:none;text-align:center}
+        .api-section{background:#fff3cd;border:2px solid #ffc107;border-radius:8px;padding:12px;margin-top:15px}
+        .api-section h4{font-size:.9em;color:#856404;margin-bottom:8px}
+        .api-hint{font-size:.8em;color:#856404;margin-top:6px}
+        .reading-mode .header{opacity:0;pointer-events:none}
+        .alert-banner{background:var(--rouge-alerte);color:white;padding:10px;border-radius:8px;margin:10px 0;font-size:.9em;text-align:center}
+        @media(max-width:480px){
+            .header{padding:10px 8px}
+            .welcome-area h1{font-size:1.2em}
+            .msg{font-size:14px;padding:12px}
+            .input-area{padding:4px}
+        }
+    </style>
+</head>
+<body>
+<div class="header" id="main-header">
+    <div class="header-row">
+        <button onclick="toggleModal('modal-dons',true)" class="button-oval" style="background:var(--vert-clair)">💚 DONS</button>
+        <div style="width:45px;height:45px;border:2px solid var(--vert-clair);border-radius:8px;background:white;overflow:hidden">
+            <img src="icons/icon-192.png" alt="Logo IAE" style="width:100%;height:100%;object-fit:cover">
+        </div>
+        <button onclick="toggleModal('modal-profil',true)" class="button-oval" style="background:var(--orange-clair)">👤 PROFIL</button>
+    </div>
+    <div class="welcome-area">
+        <h1>Islam Agent Épistémique</h1>
+        <div class="sub1">Théologie & Sciences Islamiques</div>
+        <div class="sub2">Votre Agent Épistémique Africain pour l'Islam</div>
+    </div>
+</div>
+
+<div class="chat-container" id="chat"></div>
+<div class="typing" id="loader"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+
+<div class="input-wrapper">
+    <div class="donation-banner" id="blink-msg">💰 Soutenir la connaissance est une aumône continue...</div>
+    <div class="input-area">
+        <span class="input-icon">✏️</span>
+        <input type="text" id="userInput" placeholder="Posez votre question islamique..." onfocus="setReadingMode(true)" autocomplete="off">
+        <button class="send-btn" onclick="handleChat()" title="Envoyer (Entrée)">
+            <svg viewBox="0 0 24 24" width="24" height="24" fill="white"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+        </button>
+    </div>
+</div>
+
+<!-- MODAL PROFIL -->
+<div id="modal-profil" class="modal" onclick="if(event.target.id==='modal-profil') toggleModal('modal-profil',false)">
+    <div class="modal-content">
+        <h2 style="color:var(--vert-clair);text-align:center">👤 Configuration du Profil</h2>
+        <div class="avatar-wrapper"><div class="avatar-circle">👤</div></div>
+        
+        <label class="profil-label">Nom</label>
+        <input type="text" id="profil-nom" class="profil-field" placeholder="Votre nom">
+        
+        <label class="profil-label">Prénom</label>
+        <input type="text" id="profil-prenom" class="profil-field" placeholder="Votre prénom">
+        
+        <label class="profil-label">Titre/Fonction</label>
+        <input type="text" id="profil-titre" class="profil-field" placeholder="Ex: Chercheur, Étudiant">
+        
+        <div class="api-section">
+            <h4>🔑 Clé API CodeWords</h4>
+            <input type="password" id="profil-apikey" class="profil-field" placeholder="Votre clé API" autocomplete="off">
+            <p class="api-hint">📍 Obtenez-la sur : <strong>codewords.agemo.ai/account/keys</strong></p>
+            <p class="api-hint" style="margin-top:8px;color:#d32f2f"><strong>⚠️ IMPORTANT :</strong> Si vous avez un message d'erreur "clé API invalide", changez votre clé sur le site CodeWords.</p>
+        </div>
+        
+        <button onclick="saveProfile()" style="background:var(--vert-clair);color:white;border:none;width:100%;padding:12px;border-radius:8px;cursor:pointer;font-weight:bold;margin-top:15px;font-size:16px">✅ ENREGISTRER</button>
+        <button onclick="toggleModal('modal-profil',false)" style="background:#eee;border:none;width:100%;padding:10px;margin-top:8px;border-radius:8px;cursor:pointer;font-size:14px">FERMER</button>
+    </div>
+</div>
+
+<!-- MODAL DONS -->
+<div id="modal-dons" class="modal" onclick="if(event.target.id==='modal-dons') toggleModal('modal-dons',false)">
+    <div class="modal-content">
+        <h2 style="color:var(--vert-clair);text-align:center">💳 Soutenir l'Agent</h2>
+        <p style="text-align:center;font-size:.9em;color:#777;margin:8px 0 15px">Vos dons permettent de maintenir ce service gratuit pour tous.</p>
+        
+        <div class="don-section">
+            <h3>🇹🇬 Paiement Local (Togo)</h3>
+            <p><strong>T-Money :</strong> +228 99-54-97-11</p>
+            <p><strong>Flooz :</strong> +228 99-54-97-11</p>
+            <p style="font-size:.85em;color:#888">Nom : Nana Bawa Bouraima</p>
+        </div>
+        
+        <div class="don-section">
+            <h3>🌍 Paiement International</h3>
+            <p><strong>Western Union / MoneyGram</strong></p>
+            <p>Bénéficiaire : <strong>Nana Bawa Bouraima</strong></p>
+            <p>Ville : <strong>Lomé</strong> — Pays : <strong>Togo</strong></p>
+        </div>
+        
+        <div class="don-section">
+            <h3>💳 En Ligne</h3>
+            <a href="https://cinetpay.com" target="_blank" class="don-btn" style="background:var(--orange-fonce)">Payer via CinetPay →</a>
+        </div>
+        
+        <p style="text-align:center;font-size:.8em;color:#888;margin-top:10px">📧 <strong>bawanana555@gmail.com</strong></p>
+        <button onclick="toggleModal('modal-dons',false)" style="background:var(--vert-clair);color:white;border:none;width:100%;padding:12px;margin-top:12px;border-radius:8px;cursor:pointer;font-weight:bold">FERMER</button>
+    </div>
+</div>
+
+<script>
+const IAE_API_URL = "https://runtime.codewords.ai/run/iae_gemini_proxy_c3d3a092";
+const ISLAMIC_KEYWORDS = [
+    'islam', 'quran', 'coran', 'hadith', 'sunna', 'fiqh', 'imam', 'fatwa', 'salat', 'zakat',
+    'hajj', 'ramadan', 'ummah', 'deen', 'tawhid', 'sharia', 'shariah', 'prophète', 'prophet',
+    'foi', 'religion', 'spirituel', 'théologie', 'jurisprudence', 'islamic', 'musulman',
+    'allah', 'dieu', 'créateur', 'révélation', 'prophétie', 'sourate', 'verset', 'croyance',
+    'pratique', 'rituel', 'ablution', 'mosquée', 'prière', 'jeûne', 'morale', 'éthique',
+    'droit', 'loi', 'mariage', 'héritage', 'commerce', 'miséricorde', 'justice', 'adab',
+    'tasawwuf', 'soufisme', 'mystique', 'essentialisme', 'scolastique', 'kalam'
+];
+
+const blinkMessages = [
+    "💰 Soutenir la connaissance est une aumône continue...",
+    "🤲 Vos dons permettent de maintenir ce service gratuit.",
+    "❤️ Contribuez à l'éveil du savoir islamique."
+];
+
+let msgIdx = 0;
+setInterval(() => {
+    msgIdx = (msgIdx + 1) % blinkMessages.length;
+    document.getElementById('blink-msg').innerText = blinkMessages[msgIdx];
+}, 4000);
+
+function isIslamicQuestion(text) {
+    const lower = text.toLowerCase();
+    return ISLAMIC_KEYWORDS.some(kw => lower.includes(kw));
+}
+
+function setReadingMode(a) {
+    if (a) document.body.classList.add('reading-mode');
+}
+
+function toggleModal(id, show) {
+    const modal = document.getElementById(id);
+    modal.style.display = show ? 'flex' : 'none';
+    if (show && id === 'modal-profil') loadProfile();
+}
+
+function saveProfile() {
+    const p = {
+        nom: document.getElementById('profil-nom').value.trim(),
+        prenom: document.getElementById('profil-prenom').value.trim(),
+        titre: document.getElementById('profil-titre').value.trim()
+    };
+    localStorage.setItem('iae_profil', JSON.stringify(p));
+    const k = document.getElementById('profil-apikey').value.trim();
+    if (k) localStorage.setItem('iae_api_key', k);
+    alert("✅ Profil et clé API enregistrés !");
+    toggleModal('modal-profil', false);
+}
+
+function loadProfile() {
+    const p = JSON.parse(localStorage.getItem('iae_profil') || '{}');
+    document.getElementById('profil-nom').value = p.nom || '';
+    document.getElementById('profil-prenom').value = p.prenom || '';
+    document.getElementById('profil-titre').value = p.titre || '';
+    document.getElementById('profil-apikey').value = localStorage.getItem('iae_api_key') || '';
+}
+
+function getApiKey() {
+    return localStorage.getItem('iae_api_key') || '';
+}
+
+function loadHistory() {
+    const h = JSON.parse(localStorage.getItem('iae_history') || '[]');
+    h.forEach(m => addMsg(m.text, m.side, false));
+}
+
+function saveToHistory(t, s) {
+    let h = JSON.parse(localStorage.getItem('iae_history') || '[]');
+    h.push({ text: t, side: s });
+    if (h.length > 30) h.shift();
+    localStorage.setItem('iae_history', JSON.stringify(h));
+}
+
+async function handleChat() {
+    const input = document.getElementById('userInput');
+    const q = input.value.trim();
+    
+    if (!q) return;
+    
+    // Vérifier si c'est une question islamique
+    if (!isIslamicQuestion(q)) {
+        addMsg("⚠️ Désolé, je suis spécialisé dans les sciences et valeurs islamiques uniquement. Veuillez poser une question liée à l'Islam, à la théologie, au Coran, à la jurisprudence islamique (Fiqh), etc.", 'bot');
+        return;
+    }
+    
+    const k = getApiKey();
+    if (!k) {
+        addMsg("🔑 Erreur : Clé API manquante. Cliquez sur PROFIL pour la configurer.", 'bot');
+        toggleModal('modal-profil', true);
+        return;
+    }
+    
+    addMsg(q, 'user');
+    input.value = '';
+    setReadingMode(true);
+    document.getElementById('loader').style.display = 'block';
+    
+    try {
+        const r = await fetch(IAE_API_URL, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": "Bearer " + k
+            },
+            body: JSON.stringify({ question: q })
+        });
+        
+        document.getElementById('loader').style.display = 'none';
+        
+        if (!r.ok) {
+            if (r.status === 401) {
+                addMsg("🔑 Erreur d'authentification : Votre clé API est invalide ou expirée. Vérifiez-la sur codewords.agemo.ai et mettez-à-jour votre profil.", 'bot');
+            } else if (r.status === 429) {
+                addMsg("⏳ Trop de requêtes. Attendez quelques secondes avant de réessayer.", 'bot');
+            } else {
+                addMsg(`❌ Erreur serveur ${r.status}. Veuillez réessayer.`, 'bot');
+            }
+            throw new Error("HTTP " + r.status);
+        }
+        
+        const d = await r.json();
+        if (d.answer) {
+            addMsg(d.answer, 'bot');
+        } else {
+            addMsg("❌ Réponse vide reçue. Réessayez.", 'bot');
+        }
+    } catch (e) {
+        document.getElementById('loader').style.display = 'none';
+        console.error("IAE Error:", e);
+        if (!e.message.includes("HTTP")) {
+            addMsg("❌ Erreur de connexion. Vérifiez votre internet et votre clé API.", 'bot');
+        }
+    }
+}
+
+function addMsg(t, s, save = true) {
+    const d = document.createElement('div');
+    d.className = 'msg ' + s + '-msg';
+    if (s === 'bot') {
+        d.innerHTML = marked.parse(t);
+    } else {
+        d.textContent = t;
+    }
+    document.getElementById('chat').appendChild(d);
+    document.getElementById('chat').scrollTop = document.getElementById('chat').scrollHeight;
+    if (save) saveToHistory(t, s);
+}
+
+document.addEventListener('keydown', e => {
+    if (e.key === 'Enter' && document.activeElement.id === 'userInput') {
+        e.preventDefault();
+        handleChat();
+    }
+});
+
+window.addEventListener('load', function() {
+    loadHistory();
+    if (!getApiKey()) {
+        setTimeout(() => toggleModal('modal-profil', true), 1200);
+    }
+});
+
+// Empêcher le zoom et les gestes
+document.addEventListener('touchmove', function(e) {
+    if (e.touches.length > 1) e.preventDefault();
+}, false);
+</script>
+
+<script>
+if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('./service-worker.js')
+        .then(() => console.log('✅ Service Worker enregistré'))
+        .catch(e => console.log('⚠️ SW erreur:', e));
+}
+</script>
+</body>
+</html>
