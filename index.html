@@ -1,0 +1,543 @@
+
+ 
+
+ 
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<title>Islam Agent Épistémique</title>
+<link rel="manifest" href="manifest.json" />
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Lato:wght@400;700&display=swap');
+
+  :root {
+    --bg-creme: #FFF2DF;
+    --orange-fonce: #E67E22;
+    --vert-expert: #27ae60;
+    --violet-spirituel: #8e44ad;
+    --bleu-ciel: #3498DB;
+    --noir: #1a1a1a;
+    --vert-clair: #90ee90;
+    --orange-clair: #ffa500;
+  }
+
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  body {
+    background: var(--bg-creme);
+    font-family: 'Lato', sans-serif;
+    color: var(--noir);
+    height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  /* --- HEADER --- */
+  header {
+    background: var(--bg-creme);
+    padding: 10px;
+    z-index: 2000;
+    border-bottom: 2px solid var(--orange-fonce);
+    text-align: center;
+  }
+
+  .nav-buttons {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 600px;
+    margin: 0 auto 5px;
+    gap: 5px;
+  }
+
+  .btn {
+    flex: 0 0 110px;
+    padding: 8px 5px;
+    border-radius: 12px;
+    border: none;
+    color: white;
+    font-weight: bold;
+    font-size: 12px;
+    cursor: pointer;
+    text-transform: uppercase;
+    user-select: none;
+    transition: background-color 0.3s ease;
+  }
+  .btn:hover {
+    filter: brightness(0.9);
+  }
+
+  .btn-dons {
+    background-color: var(--vert-clair);
+  }
+
+  .btn-profil {
+    background-color: var(--orange-clair);
+  }
+
+  /* --- LOGO ACTIF --- */
+  .logo-box {
+    width: 60px;
+    height: 60px;
+    border: 3px solid var(--vert-expert);
+    border-radius: 50%;
+    overflow: hidden;
+    background: #eee;
+    flex-shrink: 0;
+    cursor: pointer;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .logo-box img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  .logo-box input {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    cursor: pointer;
+    width: 100%;
+  }
+
+  .author-info {
+    font-size: 13px;
+    font-weight: bold;
+    margin-top: 5px;
+  }
+  .author-title {
+    color: var(--vert-expert);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  /* --- ZONE DE CONTENU --- */
+  main {
+    flex: 1;
+    overflow-y: auto;
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    padding-bottom: 200px;
+  }
+
+  .msg {
+    max-width: 90%;
+    margin-bottom: 20px;
+    padding: 15px;
+    border-radius: 15px;
+    background: white;
+    border: 1px solid #ddd;
+    line-height: 1.6;
+  }
+  .bot-msg {
+    border-left: 5px solid var(--vert-expert);
+  }
+  .user-msg {
+    align-self: flex-end;
+    border-right: 5px solid var(--orange-fonce);
+    background: #fffcf5;
+  }
+
+  /* --- QURAN & AUDIO --- */
+  #quran-ui {
+    display: none;
+    width: 100%;
+  }
+  .ayah-card {
+    background: white;
+    padding: 20px;
+    border-radius: 15px;
+    margin-bottom: 15px;
+    border: 1px solid #eee;
+  }
+  .active-ayah {
+    border: 3px solid var(--orange-fonce) !important;
+    background: #FFF9C4 !important;
+  }
+  .ar {
+    font-family: 'Amiri', serif;
+    font-size: 26px;
+    direction: rtl;
+    display: block;
+    line-height: 1.8;
+  }
+
+  /* --- FOOTER & ANTI-PARASITE --- */
+  footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: var(--bg-creme);
+    padding: 10px;
+    z-index: 3000;
+    border-top: 2px solid var(--vert-expert);
+  }
+
+  /* TECHNIQUE RADICALE POUR LIBÉRER LE CHAMP DE SAISIE */
+  .input-box {
+    display: flex;
+    background: white;
+    border: 2px solid var(--vert-expert);
+    border-radius: 30px;
+    padding: 5px;
+    align-items: center;
+  }
+  #userInput {
+    flex: 1;
+    border: none;
+    outline: none;
+    padding: 12px;
+    font-size: 16px;
+    background: transparent;
+    width: 100%;
+  }
+  /* Cache les suggestions automatiques qui cachent l'écran */
+  #userInput::-webkit-contacts-auto-fill-button,
+  #userInput::-webkit-credentials-auto-fill-button {
+    display: none !important;
+  }
+
+  /* --- MODALS --- */
+  .modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.85);
+    z-index: 5000;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+  .modal-content {
+    background: white;
+    padding: 25px;
+    border-radius: 25px;
+    width: 100%;
+    max-width: 450px;
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+
+  .don-item {
+    border-bottom: 1px solid #eee;
+    padding: 10px 0;
+  }
+  .don-item h4 {
+    color: var(--orange-fonce);
+    margin-bottom: 4px;
+  }
+
+  .loader {
+    display: none;
+    text-align: center;
+    margin-bottom: 8px;
+  }
+  .dot {
+    width: 8px;
+    height: 8px;
+    background: var(--vert-expert);
+    border-radius: 50%;
+    display: inline-block;
+    animation: bounce 1.4s infinite;
+    margin: 0 2px;
+  }
+  @keyframes bounce {
+    0%,
+    100% {
+      transform: scale(0.3);
+    }
+    50% {
+      transform: scale(1);
+    }
+  }
+
+  /* Crayon suiveur */
+  #lecture-suiveur {
+    font-size: 18px;
+    line-height: 1.5;
+    margin: 20px 0;
+    user-select: none;
+  }
+  #lecture-suiveur span {
+    position: relative;
+    margin-right: 4px;
+  }
+  #lecture-suiveur span.active::after {
+    content: '✏️';
+    position: absolute;
+    top: -25px;
+    left: 0;
+    font-size: 24px;
+    color: red;
+  }
+</style>
+</head>
+<body>
+<header>
+  <div class="nav-buttons">
+    <button class="btn btn-dons" id="btnDons">Dons volontaires</button>
+    <button class="btn btn-profil" id="btnProfil">Profil</button>
+    <div class="logo-box" title="Changer la photo">
+      <img id="header-avatar" src="https://via.placeholder.com/100?text=LOGO" alt="Avatar" />
+      <input type="file" accept="image/*" id="avatarInput" />
+    </div>
+  </div>
+  <div class="author-info">
+    <span id="display-prenom">Prénom</span> <span id="display-nom">Nom</span>
+    <div id="display-titre" class="author-title">Titre de l'Auteur</div>
+  </div>
+</header>
+
+<main id="main-content">
+  <div id="chat-ui">
+    <div id="messages"></div>
+  </div>
+  <div id="quran-ui" style="display:none;">
+    <select id="surah-select" style="width:100%; padding:15px; border-radius:15px; margin-bottom:15px; border:2px solid var(--orange-fonce);"></select>
+    <div id="verses-container"></div>
+  </div>
+
+  <div id="lecture-suiveur">Voici un exemple de texte à lire mot à mot avec un crayon suiveur.</div>
+</main>
+
+<footer>
+  <div id="audio-ui" style="display:none; margin-bottom:10px; background:white; padding:10px; border-radius:15px;">
+    <audio id="main-audio"></audio>
+    <div style="display:flex; align-items:center; gap:10px;">
+      <button onclick="playAudio()" id="play-btn" style="border:none; background:none; font-size:24px;">▶️</button>
+      <input type="range" id="seek-bar" style="flex:1" value="0" />
+    </div>
+  </div>
+
+  <div class="loader" id="loader">
+    <div class="dot"></div>
+    <div class="dot"></div>
+    <div class="dot"></div>
+  </div>
+
+  <div class="input-box">
+    <input
+      type="text"
+      id="userInput"
+      placeholder="Entrez votre question académique..."
+      autocomplete="one-time-code"
+      name="iae_secure_field"
+      onfocus="this.placeholder=''"
+      onblur="this.placeholder='Entrez votre question académique...'"
+      onkeydown="if(event.key==='Enter') askAgent()"
+    />
+    <button
+      onclick="askAgent()"
+      style="border:none; background:var(--vert-expert); color:white; width:45px; height:45px; border-radius:50%; margin-left:5px;"
+      >➔</button
+    >
+  </div>
+</footer>
+
+<!-- MODAL DONS -->
+<div id="modal-dons" class="modal">
+  <div class="modal-content">
+    <h2 style="text-align:center; color:var(--vert-expert); margin-bottom:15px;">💳 Soutien Volontaire</h2>
+
+    <div class="don-item">
+      <h4>🇹🇬 Paiement Local (Togo)</h4>
+      <p><b>T-Money :</b> +228 90 61 34 32</p>
+      <p><b>Flooz :</b> +228 99 54 97 11</p>
+      <small>Nana Bawa Bouraima</small>
+    </div>
+
+    <div class="don-item">
+      <h4>🌍 International</h4>
+      <p><b>Western Union / MoneyGram :</b> Contactez-nous pour les détails du transfert.</p>
+    </div>
+
+    <div class="don-item">
+      <h4>🔗 En Ligne</h4>
+      <a
+        href="https://votre-lien-cinetpay.com"
+        target="_blank"
+        style="display:block; text-align:center; background:var(--orange-fonce); color:white; padding:12px; border-radius:10px; text-decoration:none; margin-top:10px; font-weight:bold;"
+        >CinetPay</a
+      >
+    </div>
+
+    <button onclick="closeModal('modal-dons')" style="width:100%; padding:12px; border:none; border-radius:10px; margin-top:15px;">
+      Fermer
+    </button>
+  </div>
+</div>
+
+<!-- MODAL PROFIL -->
+<div id="modal-profil" class="modal">
+  <div class="modal-content">
+    <h3 style="text-align:center; margin-bottom:15px;">Configurer mon Profil</h3>
+    <input
+      type="text"
+      id="p-prenom"
+      placeholder="Prénom"
+      style="width:100%; padding:12px; margin-bottom:10px; border-radius:10px; border:1px solid #ddd;"
+      onfocus="this.placeholder=''"
+      onblur="this.placeholder='Prénom'"
+    />
+    <input
+      type="text"
+      id="p-nom"
+      placeholder="Nom"
+      style="width:100%; padding:12px; margin-bottom:10px; border-radius:10px; border:1px solid #ddd;"
+      onfocus="this.placeholder=''"
+      onblur="this.placeholder='Nom'"
+    />
+    <input
+      type="text"
+      id="p-titre"
+      placeholder="Votre Titre (Ex: Chercheur)"
+      style="width:100%; padding:12px; margin-bottom:10px; border-radius:10px; border:1px solid #ddd;"
+      onfocus="this.placeholder=''"
+      onblur="this.placeholder='Votre Titre (Ex: Chercheur)'"
+    />
+    <input
+      type="password"
+      id="p-key"
+      placeholder="Clé API Gemini (Gratuite)"
+      style="width:100%; padding:12px; margin-bottom:10px; border-radius:10px; border:1px solid #ddd; background:#fff9c4;"
+      onfocus="this.placeholder=''"
+      onblur="this.placeholder='Clé API Gemini (Gratuite)'"
+    />
+
+    <button
+      onclick="saveProfile()"
+      style="width:100%; padding:12px; background:var(--vert-expert); color:white; border:none; border-radius:10px; font-weight:bold; cursor:pointer;"
+    >
+      Sauvegarder
+    </button>
+    <button
+      onclick="closeModal('modal-profil')"
+      style="width:100%; padding:12px; background:#ddd; color:#333; border:none; border-radius:10px; font-weight:bold; margin-top:10px; cursor:pointer;"
+    >
+      Fermer
+    </button>
+  </div>
+</div>
+
+<script>
+  // Gestion ouverture/fermeture modals
+  function openModal(id) {
+    document.getElementById(id).style.display = 'flex';
+  }
+  function closeModal(id) {
+    document.getElementById(id).style.display = 'none';
+  }
+
+  // Gestion avatar upload dans header
+  const avatarInput = document.getElementById('avatarInput');
+  const avatarPreview = document.getElementById('header-avatar');
+  avatarInput.addEventListener('change', (event) => {
+    const file = event.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      avatarPreview.src = e.target.result;
+      localStorage.setItem('avatar', e.target.result);
+    };
+    reader.readAsDataURL(file);
+  });
+
+  // Sauvegarde profil dans localStorage et affichage dans header
+  function saveProfile() {
+    const prenom = document.getElementById('p-prenom').value.trim();
+    const nom = document.getElementById('p-nom').value.trim();
+    const titre = document.getElementById('p-titre').value.trim();
+    const apiKey = document.getElementById('p-key').value.trim();
+
+    const profile = { prenom, nom, titre, apiKey };
+    localStorage.setItem('userProfile', JSON.stringify(profile));
+
+    // Mise à jour affichage header
+    document.getElementById('display-prenom').textContent = prenom || 'Prénom';
+    document.getElementById('display-nom').textContent = nom || 'Nom';
+    document.getElementById('display-titre').textContent = titre || "Titre de l'Auteur";
+
+    alert('Profil sauvegardé !');
+    closeModal('modal-profil');
+  }
+
+  // Charger profil au démarrage
+  function loadProfile() {
+    const profile = JSON.parse(localStorage.getItem('userProfile'));
+    if (profile) {
+      document.getElementById('p-prenom').value = profile.prenom || '';
+      document.getElementById('p-nom').value = profile.nom || '';
+      document.getElementById('p-titre').value = profile.titre || '';
+      document.getElementById('p-key').value = profile.apiKey || '';
+
+      document.getElementById('display-prenom').textContent = profile.prenom || 'Prénom';
+      document.getElementById('display-nom').textContent = profile.nom || 'Nom';
+      document.getElementById('display-titre').textContent = profile.titre || "Titre de l'Auteur";
+    }
+
+    const avatar = localStorage.getItem('avatar');
+    if (avatar) {
+      avatarPreview.src = avatar;
+    }
+  }
+
+  // Fermer modals en cliquant en dehors du contenu
+  window.onclick = function (event) {
+    ['modal-dons', 'modal-profil'].forEach((id) => {
+      const modal = document.getElementById(id);
+      if (event.target === modal) {
+        modal.style.display = 'none';
+      }
+    });
+  };
+
+  // Crayon suiveur mot à mot
+  const texte = document.getElementById('lecture-suiveur').textContent;
+  const container = document.getElementById('lecture-suiveur');
+  const mots = texte.split(' ');
+  container.innerHTML = mots.map((m) => `<span>${m} </span>`).join('');
+  const spans = container.querySelectorAll('span');
+  let index = 0;
+  setInterval(() => {
+    spans.forEach((s) => s.classList.remove('active'));
+    spans[index].classList.add('active');
+    index = (index + 1) % spans.length;
+  }, 600);
+
+  // Initialisation
+  window.onload = loadProfile;
+
+  // Placeholder pour fonction askAgent (à implémenter)
+  function askAgent() {
+    const input = document.getElementById('userInput');
+    if (!input.value.trim()) return;
+    alert('Fonction askAgent non implémentée. Texte saisi : ' + input.value);
+    input.value = '';
+  }
+
+  // Gestion boutons Dons et Profil
+  document.getElementById('btnDons').addEventListener('click', () => openModal('modal-dons'));
+  document.getElementById('btnProfil').addEventListener('click', () => openModal('modal-profil'));
+</script>
+</body>
+</html>
+ 
+
+ 
+
