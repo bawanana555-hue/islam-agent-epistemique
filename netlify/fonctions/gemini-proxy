@@ -1,0 +1,174 @@
+/* ============================================================
+   Islam Agent Épistémique — Proxy Netlify Function
+   Fichier : netlify/functions/gemini-proxy.js
+   
+   ► Ce fichier doit être placé dans le dossier :
+       netlify/functions/gemini-proxy.js
+   
+   ► La clé API Gemini doit être configurée dans Netlify :
+       Site settings → Environment variables
+       Nom de la variable : GEMINI_API_KEY
+       Valeur : votre clé obtenue sur https://aistudio.google.com
+   ============================================================ */
+
+// Modèle Gemini utilisé (gratuit et très performant)
+const GEMINI_MODEL = 'gemini-2.0-flash';
+
+// URL de l'API Gemini Google
+const GEMINI_API_BASE = 'https://generativelanguage.googleapis.com/v1beta/models';
+
+exports.handler = async function (event, context) {
+
+  /* ── 1. Autoriser uniquement les requêtes POST ── */
+  if (event.httpMethod !== 'POST') {
+    return {
+      statusCode: 405,
+      headers: corsHeaders(),
+      body: JSON.stringify({ error: 'Méthode non autorisée. Utilisez POST.' })
+    };
+  }
+
+  /* ── 2. Répondre aux requêtes OPTIONS (pré-vol CORS) ── */
+  if (event.httpMethod === 'OPTIONS') {
+    return {
+      statusCode: 200,
+      headers: corsHeaders(),
+      body: ''
+    };
+  }
+
+  /* ── 3. Récupérer la clé API depuis les variables d'environnement Netlify ── */
+  const API_KEY = process.env.GEMINI_API_KEY;
+
+  if (!API_KEY) {
+    console.error('[Proxy] ❌ GEMINI_API_KEY manquante dans les variables Netlify.');
+    return {
+      statusCode: 500,
+      headers: corsHeaders(),
+      body: JSON.stringify({
+        error: 'Clé API non configurée. Ajoutez GEMINI_API_KEY dans Netlify → Environment variables.'
+      })
+    };
+  }
+
+  /* ── 4. Parser le corps de la requête ── */
+  let requestBody;
+  try {
+    requestBody = JSON.parse(event.body);
+  } catch (e) {
+    return {
+      statusCode: 400,
+      headers: corsHeaders(),
+      body: JSON.stringify({ error: 'Corps de requête JSON invalide.' })
+    };
+  }
+
+  /* ── 5. Valider que les champs requis sont présents ── */
+  if (!requestBody.contents || !Array.isArray(requestBody.contents)) {
+    return {
+      statusCode: 400,
+      headers: corsHeaders(),
+      body: JSON.stringify({ error: 'Le champ "contents" est requis et doit être un tableau.' })
+    };
+  }
+
+  /* ── 6. Construire la requête vers l'API Gemini ── */
+  const geminiUrl = `${GEMINI_API_BASE}/${GEMINI_MODEL}:generateContent?key=${API_KEY}`;
+
+  const geminiPayload = {
+    // Instruction système (personnalité de l'agent islamique)
+    system_instruction: requestBody.system_instruction || {
+      parts: [{ text: 'Tu es un assistant islamique expert et bienveillant.' }]
+    },
+    // Historique de la conversation
+    contents: requestBody.contents,
+    // Paramètres de génération
+    generationConfig: {
+      maxOutputTokens: requestBody.generationConfig?.maxOutputTokens || 2048,
+      temperature:     requestBody.generationConfig?.temperature     || 0.7,
+      topP:            requestBody.generationConfig?.topP            || 0.95,
+      topK:            requestBody.generationConfig?.topK            || 40
+    },
+    // Paramètres de sécurité (permissifs pour le contenu islamique académique)
+    safetySettings: [
+      { category: 'HARM_CATEGORY_HARASSMENT',        threshold: 'BLOCK_ONLY_HIGH' },
+      { category: 'HARM_CATEGORY_HATE_SPEECH',       threshold: 'BLOCK_ONLY_HIGH' },
+      { category: 'HARM_CATEGORY_SEXUALLY_EXPLICIT', threshold: 'BLOCK_ONLY_HIGH' },
+      { category: 'HARM_CATEGORY_DANGEROUS_CONTENT', threshold: 'BLOCK_ONLY_HIGH' }
+    ]
+  };
+
+  /* ── 7. Appel à l'API Gemini ── */
+  let geminiResponse;
+  try {
+    geminiResponse = await fetch(geminiUrl, {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body:    JSON.stringify(geminiPayload)
+    });
+  } catch (networkError) {
+    console.error('[Proxy] ❌ Erreur réseau vers Gemini :', networkError.message);
+    return {
+      statusCode: 502,
+      headers: corsHeaders(),
+      body: JSON.stringify({
+        error: 'Impossible de joindre l\'API Gemini. Vérifiez votre connexion réseau Netlify.'
+      })
+    };
+  }
+
+  /* ── 8. Traiter la réponse de Gemini ── */
+  const geminiData = await geminiResponse.json();
+
+  if (!geminiResponse.ok) {
+    console.error('[Proxy] ❌ Erreur API Gemini :', geminiData);
+    return {
+      statusCode: geminiResponse.status,
+      headers: corsHeaders(),
+      body: JSON.stringify({
+        error: geminiData?.error?.message || 'Erreur inconnue de l\'API Gemini.',
+        details: geminiData
+      })
+    };
+  }
+
+  /* ── 9. Vérifier que la réponse contient du contenu ── */
+  const candidate = geminiData?.candidates?.[0];
+  if (!candidate || !candidate.content) {
+    console.warn('[Proxy] ⚠️ Réponse Gemini vide ou bloquée :', geminiData);
+    return {
+      statusCode: 200,
+      headers: corsHeaders(),
+      body: JSON.stringify({
+        candidates: [{
+          content: {
+            parts: [{ text: 'Je ne peux pas répondre à cette question pour le moment. Veuillez reformuler votre question.' }],
+            role: 'model'
+          }
+        }]
+      })
+    };
+  }
+
+  /* ── 10. Retourner la réponse au client ── */
+  console.log('[Proxy] ✅ Réponse Gemini transmise avec succès.');
+  return {
+    statusCode: 200,
+    headers: corsHeaders(),
+    body: JSON.stringify(geminiData)
+  };
+};
+
+/* ══════════════════════════════════════════════════
+   Fonction utilitaire : en-têtes CORS
+   Permet à votre frontend d'appeler ce proxy
+   depuis n'importe quel domaine Netlify.
+══════════════════════════════════════════════════ */
+function corsHeaders() {
+  return {
+    'Access-Control-Allow-Origin':  '*',
+    'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+    'Access-Control-Allow-Methods': 'POST, OPTIONS',
+    'Content-Type':                 'application/json'
+  };
+}
