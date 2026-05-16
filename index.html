@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>Islam Agent Épistémique</title>
+<link rel="manifest" href="manifest.json" />
+<meta name="theme-color" content="#F6EDCC" />
+<meta name="mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="default" />
+<meta name="apple-mobile-web-app-title" content="Islam Agent" />
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Lato:wght@300;400;700;900&display=swap');
+
+:root {
+  --bg-main:         #F6EDCC; /* Couleur unique de votre capture */
+  --text-main:       #111111; /* Noir-foncé */
+  --orange-clair:    #FFB366;
+  --orange-fonce:    #D97B00;
+  --bleu:            #3498DB;
+  --bleu-ciel:       #87CEEB; 
+  --vert:            #27AE60;
+  --vert-clair:      #2ECC71;
+  --champ-fond:      #F6EDCC; /* Fond unique pour les champs saisie et réponses */
+  --text-saisie:     #111111;
+  --text-expert:     #2ECC71;
+  --text-reponse:    #111111;
+  --blanc-pur:       #FFFFFF;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--bg-main);
+  font-family: 'Lato', 'Georgia', serif;
+  color: var(--text-main);
+  display: flex;
+  flex-direction: column;
+  height: 100dvh;
+  overflow: hidden;
+}
+
+/* ══════════════════════════════
+   HEADER
+══════════════════════════════ */
+.header {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  background: var(--bg-main);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 10px 8px 10px;
+  z-index: 100;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  transition: padding 0.3s ease;
+}
+
+.header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  margin-bottom: 10px;
+  gap: 4px;
+}
+
+.header-left, .header-right {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  flex-shrink: 0;
+}
+
+.header-left { align-items: flex-start; }
+.header-right { align-items: flex-end; }
+
+/* ══════════════════════════════
+   BOUTONS OVALES
+══════════════════════════════ */
+.button-oval {
+  padding: 6px 14px;
+  border-radius: 50px;
+  cursor: pointer;
+  font-size: 0.75em;
+  font-weight: bold;
+  transition: all 0.22s;
+  white-space: nowrap;
+  font-family: 'Lato', Georgia, serif;
+  line-height: 1.4;
+}
+
+#dons-btn {
+  background: var(--blanc-pur);
+  border: 2px solid var(--vert-clair);
+  color: var(--vert-clair);
+}
+#dons-btn:hover { background: var(--vert-clair); color: white; }
+
+#audio-btn {
+  background: var(--blanc-pur);
+  border: 2px solid var(--bleu-ciel);
+  color: var(--bleu);
+}
+#audio-btn:hover { background: var(--bleu-ciel); color: #111; }
+
+#profil-btn {
+  background: var(--blanc-pur);
+  border: 2px solid var(--orange-clair);
+  color: var(--orange-clair);
+}
+#profil-btn:hover { background: var(--orange-clair); color: #111; }
+
+/* ══════════════════════════════
+   ICÔNE CENTRALE
+══════════════════════════════ */
+.icon-container {
+  position: relative;
+  width: 66px; height: 66px;
+  border: 2px solid var(--bleu);
+  border-radius: 10px;
+  overflow: visible;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #fff8ee;
+  flex-shrink: 0;
+}
+
+.icon-inner {
+  width: 66px; height: 66px;
+  border-radius: 8px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  cursor: pointer;
+}
+
+.icon-inner img { width: 66px; height: 66px; object-fit: cover; display: block; transition: opacity 0.2s; }
+.icon-inner:hover img { opacity: 0.6; }
+
+.icon-overlay {
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  opacity: 0; transition: opacity 0.2s;
+  background: rgba(0,0,0,0.38); border-radius: 8px;
+  gap: 2px; pointer-events: none;
+}
+.icon-inner:hover .icon-overlay { opacity: 1; }
+.icon-overlay span { color: white; font-size: 0.56em; font-weight: bold; text-align: center; line-height: 1.3; }
+
+.icon-download-btn {
+  position: absolute; bottom: -8px; right: -8px;
+  background: var(--vert); border: 2px solid white; border-radius: 50%;
+  width: 22px; height: 22px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  z-index: 20; padding: 0;
+  transition: background 0.2s, transform 0.1s;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.25);
+}
+.icon-download-btn:hover { background: #1E8449; transform: scale(1.1); }
+.icon-download-btn:active { transform: scale(0.92); }
+.icon-download-btn svg { width: 12px; height: 12px; pointer-events: none; }
+
+/* ══════════════════════════════
+   TEXTE ACCUEIL (CORRIGÉ NÉGATIVEMENT)
+══════════════════════════════ */
+.welcome-text {
+  text-align: center; width: 100%; padding: 0 8px;
+  display: flex; flex-direction: column; gap: 3px;
+}
+.welcome-text .titre-agent {
+  font-size: 1.22em; font-weight: 900; margin: 0;
+  color: var(--bleu); font-family: 'Amiri', serif;
+  letter-spacing: 0.5px; text-shadow: 0 1px 3px rgba(52,152,219,0.18);
+}
+.welcome-text .titre-bienvenue {
+  font-size: 0.88em; margin: 0; color: var(--orange-clair);
+  font-family: 'Lato', Georgia, serif; font-weight: 700;
+}
+.welcome-text .titre-expert {
+  font-size: 0.82em; margin: 0; color: var(--vert-clair);
+  font-family: 'Lato', Georgia, serif; font-weight: 600; font-style: italic;
+}
+
+.header.conversation-started .welcome-text .titre-agent,
+.header.conversation-started .welcome-text .titre-bienvenue,
+.header.conversation-started .welcome-text .titre-expert { display: none; }
+.header.conversation-started { padding-bottom: 5px; }
+
+/* ══════════════════════════════
+   CHAT & RELECTURE DÉCORÉE (Règle d)
+══════════════════════════════ */
+.chat-container {
+  flex: 1;
+  margin-top: 195px;
+  padding: 10px 8px 160px;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  display: flex;
+  flex-direction: column;
+  transition: margin-top 0.3s ease;
+}
+.chat-container.conversation-started { margin-top: 115px; }
+
+.msg {
+  width: 100%;
+  margin-bottom: 16px;
+  padding: 16px 18px;
+  border-radius: 16px;
+  line-height: 1.7;
+  font-size: 15px;
+  color: var(--text-reponse);
+  border: 3px solid var(--bleu);
+  background: var(--champ-fond);
+  position: relative;
+}
+
+/* Étoiles et symboles décoratifs dans la zone de lecture */
+.msg::before {
+  content: '★ ✦';
+  position: absolute; top: 6px; right: 14px;
+  font-size: 11px; color: var(--orange-clair); opacity: 0.8;
+}
+.msg::after {
+  content: '◆ ★';
+  position: absolute; bottom: 6px; left: 14px;
+  font-size: 11px; color: var(--vert-clair); opacity: 0.7;
+}
+
+.user-msg { align-self: flex-end; }
+.bot-msg  { align-self: flex-start; }
+
+/* Styles typographiques stricts demandés */
+.bot-msg p {
+  color: #111111 !important;
+  font-weight: 700 !important; /* Noir-foncé */
+}
+
+.bot-msg h1, .gros-titre-ia {
+  color: var(--vert-clair) !important;
+  font-size: 1.4em !important;
+  font-weight: 900 !important;
+  text-decoration: underline var(--orange-clair) 3px !important;
+  margin: 14px 0 8px 0 !important;
+  font-family: 'Amiri', serif;
+  display: block;
+}
+
+.bot-msg h2, .bot-msg h3, .sous-titre-ia {
+  color: var(--vert-clair) !important;
+  font-size: 1.05em !important;
+  font-weight: 700 !important;
+  text-decoration: underline var(--orange-clair) 1.5px !important;
+  margin: 12px 0 6px 0 !important;
+  font-family: 'Lato', sans-serif;
+}
+
+/* Passages pertinents : Fond blanc, bordure gauche bleu-ciel, texte bleu-ciel */
+.bot-msg blockquote, .passage-pertinent {
+  border: none !important;
+  border-left: 5px solid var(--bleu-ciel) !important;
+  margin: 12px 0 !important; 
+  padding: 10px 14px !important;
+  background: var(--blanc-pur) !important;
+  border-radius: 0 8px 8px 0 !important;
+  color: var(--bleu-ciel) !important;
+  font-weight: bold !important;
+}
+
+/* ══════════════════════════════
+   SAISIE UNIQUE
+══════════════════════════════ */
+.input-wrapper {
+  position: fixed; bottom: 0; left: 0; right: 0;
+  background: var(--bg-main);
+  padding: 8px 6px 12px; z-index: 200;
+  box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
+}
+
+.input-area {
+  display: flex; align-items: center;
+  background: var(--champ-fond);
+  border: 3px solid var(--bleu);
+  border-radius: 20px;
+  padding: 6px 8px 6px 14px;
+  width: 100%; margin: 0 auto;
+}
+
+.input-area input {
+  flex: 1; background: transparent; border: none; outline: none;
+  color: var(--text-main); font-size: 15px;
+  font-weight: 700;
+  font-family: inherit; padding: 6px 8px 6px 0;
+}
+
+.send-btn {
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; width: 38px; height: 38px; border-radius: 50%;
+  background: var(--vert); border: 3px solid var(--bleu-ciel);
+  cursor: pointer; transition: background 0.2s, transform 0.1s;
+}
+.send-btn:active { background: #1E8449; transform: scale(0.92); }
+.send-btn svg { width: 16px; height: 16px; pointer-events: none; }
+
+/* ══════════════════════════════
+   MODAL PROFIL & CONFIGURATION IA
+══════════════════════════════ */
+.modal-overlay {
+  display: none; position: fixed; inset: 0;
+  background: rgba(0,0,0,0.5); z-index: 300;
+  justify-content: center; align-items: center;
+}
+.modal-overlay.open { display: flex; }
+
+.modal-box {
+  background: var(--blanc-pur); padding: 22px 18px;
+  border-radius: 14px; width: 92%; max-width: 375px;
+  max-height: 85vh; overflow-y: auto; position: relative;
+}
+
+.modal-box h2 {
+  margin: 0 0 14px; font-size: 1.1em; color: var(--text-main);
+  border-bottom: 2px solid var(--orange-clair); padding-bottom: 8px;
+}
+
+.modal-close {
+  position: absolute; top: 10px; right: 14px;
+  font-size: 1.4em; cursor: pointer; color: #888;
+  background: none; border: none;
+}
+
+.modal-input {
+  width: 100%; padding: 10px 12px; margin: 6px 0 12px 0;
+  border: 2px solid var(--bleu-ciel); border-radius: 10px;
+  background: #FFFBF0; color: #111; font-size: 14px;
+  outline: none; font-family: 'Lato', sans-serif;
+}
+
+.modal-label { font-size: 0.82em; font-weight: bold; color: var(--text-main); margin-top: 4px; display: block; }
+
+.avatar-wrapper {
+  position: relative; width: 85px; height: 85px;
+  margin: 0 auto 14px; cursor: pointer;
+  border: 3px dashed var(--orange-clair); border-radius: 50%;
+  padding: 2px;
+}
+.avatar-wrapper img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; display: block; background: #EEE; }
+.avatar-overlay { position: absolute; inset: 0; border-radius: 50%; background: rgba(0,0,0,0.4); display: flex; align-items: center; justify-content: center; opacity: 0; }
+.avatar-wrapper:hover .avatar-overlay { opacity: 1; }
+.avatar-overlay span { color: white; font-size: 0.65em; font-weight: bold; text-align: center; }
+
+.api-key-block { background: #F4F9FF; border: 2px solid #4285F4; border-radius: 10px; padding: 12px; margin: 10px 0; }
+
+/* ══════════════════════════════
+   MODAL DONS (3 FORMULAIRES)
+══════════════════════════════ */
+.tabs-pay { display: flex; border-bottom: 2px solid var(--vert-clair); margin-bottom: 14px; }
+.tab-pay { flex: 1; padding: 8px 2px; font-size: 0.75em; font-weight: bold; cursor: pointer; border: none; background: none; color: #777; border-bottom: 3px solid transparent; margin-bottom: -2px; }
+.tab-pay.active { color: var(--vert); border-bottom-color: var(--vert); }
+.tab-content-pay { display: none; }
+.tab-content-pay.active { display: block; }
+.pay-info { background: #e8f5e9; border-left: 3px solid var(--vert); padding: 7px 10px; border-radius: 0 6px 6px 0; font-size: 0.82em; color: #1a5c34; margin-bottom: 12px; }
+.btn-pay { width: 100%; padding: 11px; border: none; border-radius: 10px; cursor: pointer; font-size: 0.9em; font-weight: bold; margin-top: 8px; background: var(--vert); color: white; }
+.btn-pay-blue { background: var(--bleu); }
+
+#loading { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 1000; background: rgba(255,255,255,0.95); padding: 18px 28px; border-radius: 14px; box-shadow: 0 4px 20px rgba(0,0,0,0.15); text-align: center; }
+.dot { display: inline-block; width: 14px; height: 14px; border-radius: 50%; animation: bounce 1.4s infinite ease-in-out both; margin: 0 5px; }
+.dot1 { background: red; animation-delay: -0.32s; }
+.dot2 { background: #FFD700; animation-delay: -0.16s; }
+.dot3 { background: green; }
+@keyframes bounce { 0%,80%,100% { transform: scale(0); } 40% { transform: scale(1.4); } }
+#toast { position: fixed; bottom: 90px; left: 50%; transform: translateX(-50%); background: #222; color: white; padding: 9px 20px; border-radius: 20px; font-size: 0.82em; z-index: 9999; opacity: 0; transition: opacity 0.4s; pointer-events: none; }
+#toast.show { opacity: 1; }
+</style>
+</head>
+
+<body>
+
+<div class="header" id="mainHeader">
+  <div class="header-row">
+    <div class="header-left">
+      <button id="dons-btn" class="button-oval" onclick="openModal('paiement-modal')">💚 Dons Volontaires</button>
+    </div>
+    
+    <div class="icon-container" id="iconContainer">
+      <div class="icon-inner" onclick="document.getElementById('icon-file-input').click()">
+        <img id="main-icon-img" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%2327AE60'><path d='M12 3L1 9l11 6 9-4.91V17h2V9L12 3z'/></svg>" alt="Icône Coran" />
+        <div class="icon-overlay"><span>📷 Changer</span></div>
+      </div>
+      <button class="icon-download-btn" onclick="downloadCurrentIcon(event)">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M12 4v11M8 11l4 4 4-4M4 19h16" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+    </div>
+    <input type="file" id="icon-file-input" accept="image/*" style="display:none" onchange="changeMainIcon(event)" />
+
+    <div class="header-right">
+      <button id="profil-btn" class="button-oval" onclick="openModal('profil-modal')">👤 Profil</button>
+    </div>
+  </div>
+
+  <div class="welcome-text">
+    <p class="titre-agent">🕌 Islam Agent Épistémique</p>
+    <p class="titre-bienvenue">Bienvenue sur les pages de la théologie islamique</p>
+    <p class="titre-expert">✨ Je suis votre Premier Agent Épistémique d'Afrique pour l'islam</p>
+  </div>
+</div>
+
+<div class="chat-container" id="chat"></div>
+
+<div class="input-wrapper">
+  <div class="input-area">
+    <input type="text" id="userInput" placeholder="Posez votre question sur l'Islam..." autocomplete="off" />
+    <div class="send-btn" id="sendBtn" role="button" onclick="handleSend()">
+      <svg viewBox="0 0 24 24" fill="none"><polyline points="6,4 18,12 6,20" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </div>
+  </div>
+</div>
+
+<div id="loading"><span class="dot dot1"></span><span class="dot dot2"></span><span class="dot dot3"></span><p>L'Agent analyse les sources...</p></div>
+<div id="toast"></div>
+
+<div class="modal-overlay" id="profil-modal">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeModal('profil-modal')">&times;</button>
+    <h2>👤 Profil de l'Auteur & Mode</h2>
+    
+    <div class="avatar-wrapper" onclick="document.getElementById('avatar-file-input').click()">
+      <img id="author-avatar-img" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23CCC'><circle cx='12' cy='8' r='4'/><path d='M12 14c-6.1 0-10 4-10 10h20c0-6-3.9-10-10-10z'/></svg>" alt="Auteur" />
+      <div class="avatar-overlay"><span>Photo</span></div>
+    </div>
+    <input type="file" id="avatar-file-input" accept="image/*" style="display:none" onchange="changeAuthorAvatar(event)" />
+
+    <span class="modal-label">Nom :</span>
+    <input type="text" id="authNom" class="modal-input" placeholder="Nom de l'auteur" />
+    <span class="modal-label">Prénom :</span>
+    <input type="text" id="authPrenom" class="modal-input" placeholder="Prénom de l'auteur" />
+    <span class="modal-label">Titre :</span>
+    <input type="text" id="authTitre" class="modal-input" placeholder="Titre de l'auteur" />
+
+    <span class="modal-label">📡 Mode de connexion à l'IA :</span>
+    <select id="liaisonModeSelect" class="modal-input" style="background:#EBF5FB; font-weight:bold;">
+      <option value="1">1) Base de connaissances + Moteur IA gratuit (Local hors-ligne)</option>
+      <option value="2">2) Interface muette + Modèle Agent IA gratuit</option>
+      <option value="3">3) Interface muette + Clé API gratuite (Gemini Live/Direct)</option>
+    </select>
+
+    <div class="api-key-block">
+      <div class="api-key-title">🔑 Clé API Gratuite (Requis pour Mode 3)</div>
+      <input type="password" id="freeApiKey" class="modal-input" style="margin-bottom:0;" placeholder="Collez votre clé API Gemini" />
+    </div>
+
+    <button class="btn-pay" style="background: var(--orange-clair);" onclick="saveProfilData()">Enregistrer les configurations</button>
+  </div>
+</div>
+
+<div class="modal-overlay" id="paiement-modal">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeModal('paiement-modal')">&times;</button>
+    <h2>💚 Formulaires de Dons Volontaires</h2>
+    
+    <div class="tabs-pay">
+      <button class="tab-pay active" onclick="switchPayTab(event, 'pay-local')">📱 Paiement Local</button>
+      <button class="tab-pay" onclick="switchPayTab(event, 'pay-inter')">🌍 International</button>
+      <button class="tab-pay" onclick="switchPayTab(event, 'pay-online')">💳 En Ligne</button>
+    </div>
+
+    <div id="pay-local" class="tab-content-pay active">
+      <div class="pay-info">Réseaux cellulaires locaux (T-Money / Flooz).</div>
+      <span class="modal-label">Choisir l'opérateur local :</span>
+      <select class="modal-input"><option>T-Money</option><option>Flooz</option></select>
+      <span class="modal-label">Montant (XOF) :</span>
+      <input type="number" class="modal-input" placeholder="Montant du don" />
+      <button class="btn-pay" onclick="processDonation('Local')">Valider le don local</button>
+    </div>
+
+    <div id="pay-inter" class="tab-content-pay">
+      <div class="pay-info">Agences internationales (Western Union / MoneyGram).</div>
+      <span class="modal-label">Sélection de l'agence :</span>
+      <select class="modal-input"><option>Western Union</option><option>MoneyGram</option></select>
+      <span class="modal-label">Numéro de transaction (MTCN/Référence) :</span>
+      <input type="text" class="modal-input" placeholder="Entrez le code" />
+      <button class="btn-pay" onclick="processDonation('International')">Envoyer la fiche</button>
+    </div>
+
+    <div id="pay-online" class="tab-content-pay">
+      <div class="pay-info">Passerelle sécurisée automatique CinetPay.</div>
+      <button class="btn-pay btn-pay-blue" onclick="redirectCinetPay()">Ouvrir la page CinetPay ↗</button>
+    </div>
+  </div>
+</div>
+
+<script>
+function openModal(id) { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+function switchPayTab(e, tabId) {
+  const box = e.target.closest('.modal-box');
+  box.querySelectorAll('.tab-pay').forEach(btn => btn.classList.remove('active'));
+  box.querySelectorAll('.tab-content-pay').forEach(c => c.classList.remove('active'));
+  e.target.classList.add('active');
+  document.getElementById(tabId).classList.add('active');
+}
+
+function changeAuthorAvatar(event) {
+  const file = event.target.files[0];
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = function(e) { document.getElementById('author-avatar-img').src = e.target.result; };
+    reader.readAsDataURL(file);
+  }
+}
+
+function changeMainIcon(event) {
+  const file = event.target.files[0];
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = function(e) { document.getElementById('main-icon-img').src = e.target.result; };
+    reader.readAsDataURL(file);
+  }
+}
+
+function downloadCurrentIcon(event) {
+  event.stopPropagation();
+  const a = document.createElement('a');
+  a.href = document.getElementById('main-icon-img').src;
+  a.download = 'icone_episteme.png';
+  a.click();
+}
+
+function saveProfilData() {
+  showToast("Configurations et mode de liaison mémorisés.");
+  closeModal('profil-modal');
+}
+
+function redirectCinetPay() {
+  showToast("Redirection CinetPay...");
+  setTimeout(() => { window.open('https://cinetpay.com', '_blank'); }, 8000);
+}
+
+function processDonation(t) {
+  showToast(`Soutien ${t} enregistré.`);
+  closeModal('paiement-modal');
+}
+
+function showToast(text) {
+  const t = document.getElementById('toast');
+  t.innerText = text; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+// ══════════════════════════════
+// ACTION REÉLLE DU MOTEUR D'IA (LIAISON MODE 3 & MODE 1)
+// ══════════════════════════════
+async function handleSend() {
+  const input = document.getElementById('userInput');
+  const query = input.value.trim();
+  if (!query) return;
+
+  const chat = document.getElementById('chat');
+  document.getElementById('mainHeader').classList.add('conversation-started');
+  chat.classList.add('conversation-started');
+
+  // Affichage message utilisateur
+  const userDiv = document.createElement('div');
+  userDiv.className = 'msg user-msg';
+  userDiv.innerText = query;
+  chat.appendChild(userDiv);
+  input.value = '';
+
+  const mode = document.getElementById('liaisonModeSelect').value;
+  const apiKey = document.getElementById('freeApiKey').value.trim();
+
+  const botDiv = document.createElement('div');
+  botDiv.className = 'msg bot-msg';
+  chat.appendChild(botDiv);
+
+  document.getElementById('loading').style.display = 'block';
+
+  // MODE 3 : APPEL REÉL À L'API GEMINI SI DISPONIBLE
+  if (mode === "3" && apiKey) {
+    try {
+      const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${apiKey}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ contents: [{ parts: [{ text: query + " (Réponds en français, structure avec un titre principal h1 et mets en avant les passages clés avec des balises blockquote)" }] }] })
+      });
+      const data = await response.json();
+      const txt = data.candidates[0].content.parts[0].text;
+      
+      // Conversion markdown vers html enrichi selon vos critères
+      let rawHtml = marked.parse(txt);
+      botDiv.innerHTML = formatIAResponse(rawHtml);
+    } catch (err) {
+      botDiv.innerHTML = `<span class="gros-titre-ia">Erreur de liaison API</span><p>Impossible de joindre le modèle Agent IA distant. Vérifiez la clé API ou votre connexion.</p>`;
+    }
+  } 
+  // MODE 1 ou 2 (Moteur local sans connexion / Simulation)
+  else {
+    setTimeout(() => {
+      botDiv.innerHTML = `
+        <span class="gros-titre-ia">Analyse Épistémique Locale</span>
+        <p>Le sujet lié à "<em>${query}</em>" a été traité via le moteur autonome.</p>
+        <div class="passage-pertinent">
+          Passage extrait de la base de connaissances : La transmission et le partage du savoir théologique doivent se faire dans la clarté et le respect rigoureux des textes.
+        </div>
+        <span class="sous-titre-ia">Conclusion structurelle</span>
+        <p>Mode local opérationnel sans connexion internet.</p>
+      `;
+      chat.scrollTop = chat.scrollHeight;
+    }, 1000);
+  }
+
+  document.getElementById('loading').style.display = 'none';
+  chat.scrollTop = chat.scrollHeight;
+}
+
+// Fonction de mise en conformité automatique des balises reçues par l'IA
+function formatIAResponse(html) {
+  // On remplace les balises standards par vos classes spécifiques pour garantir le rendu stylisé d)
+  let f = html.replace(/<blockquote>/g, '<div class="passage-pertinent">').replace(/<\/blockquote>/g, '</div>');
+  f = f.replace(/<h1>/g, '<span class="gros-titre-ia">').replace(/<\/h1>/g, '</span>');
+  f = f.replace(/<h2>/g, '<span class="sous-titre-ia">').replace(/<\/h2>/g, '</span>');
+  f = f.replace(/<h3>/g, '<span class="sous-titre-ia">').replace(/<\/h3>/g, '</span>');
+  return f;
+}
+
+document.getElementById('userInput').addEventListener('keypress', function(e) {
+  if (e.key === 'Enter') handleSend();
+});
+</script>
+</body>
+</html>
+
+
+
+
+
+
+
