@@ -562,6 +562,77 @@ function showToast(text) {
 
 
 
+
+ 
+<script>
+  // 1. Moteur IA gratuit pour base de connaissances (simulation locale)
+  const knowledgeBaseEngine = "HuggingFace - bert-base-multilingual-cased";
+
+  // 2. Fonction principale pour traiter la requête utilisateur
+  async function processQuery() {
+    const query = document.getElementById('userQuery').value.trim();
+    const apiKey = document.getElementById('apiKey').value.trim();
+    const responseArea = document.getElementById('responseArea');
+
+    if (!query) {
+      responseArea.innerText = "Veuillez saisir une question.";
+      return;
+    }
+
+    responseArea.innerText = "Analyse en cours...";
+
+    if (apiKey) {
+      try {
+        // Exemple d’appel API Google AI Studio Gemini (hypothétique)
+        // Remplacez l’URL et le format selon la doc officielle Google AI Studio
+        const response = await fetch("https://generativelanguage.googleapis.com/v1beta2/models/text-bison-001:generateText", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${apiKey}`
+          },
+          body: JSON.stringify({
+            prompt: {
+              text: query
+            },
+            temperature: 0.7,
+            maxOutputTokens: 512
+          })
+        });
+
+        if (!response.ok) {
+          throw new Error(`Erreur API : ${response.status} ${response.statusText}`);
+        }
+
+        const data = await response.json();
+        // Selon la structure de réponse, adapter l’accès au texte généré
+        const answer = data.candidates && data.candidates.length > 0 ? data.candidates[0].output : "Aucune réponse trouvée.";
+        responseArea.innerText = answer;
+
+      } catch (error) {
+        responseArea.innerText = "Erreur lors de la requête IA : " + error.message;
+      }
+    } else {
+      // Sans clé API, réponse simulée par le moteur IA gratuit Hugging Face
+      responseArea.innerText = `Réponse simulée par ${knowledgeBaseEngine} pour la question : "${query}"`;
+    }
+  }
+</script>
+</body>
+</html>
+ 
+
+ 
+
+
+
+
+
+
+
+
+  
+
     
 
   
