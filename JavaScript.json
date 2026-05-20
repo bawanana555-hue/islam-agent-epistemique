@@ -1,0 +1,26 @@
+function sendQuestionToGemini(question) {
+  fetch('https://api.gemini.com/v1/chat/completions', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer VOTRE_CLE_API_GEMINI'
+    },
+    body: JSON.stringify({
+      model: 'gemini-1.5-flash', // Nom du modèle, à confirmer selon la documentation ou votre console
+      messages: [{ role: 'user', content: question }],
+      max_tokens: 500
+    })
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.choices && data.choices.length > 0) {
+      console.log('Réponse Gemini:', data.choices[0].message.content);
+    } else {
+      console.log('Aucune réponse reçue.');
+    }
+  })
+  .catch(error => console.error('Erreur API Gemini:', error));
+}
+
+// Exemple d'appel
+sendQuestionToGemini('Quels sont les principes fondamentaux de la théologie islamique ?');
