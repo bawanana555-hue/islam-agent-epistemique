@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Islam Agent Épistémique</title>
+    <style>
+        :root {
+            --vert-clair: #8BC34A;
+            --bleu-ciel: #87CEEB;
+            --orange-clair: #FFCC80;
+            --jaune-fonce: #F57F17;
+            --beige-creme: #FFF8E1;
+            --noir-fonce: #212121;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+
+        body {
+            background-color: var(--beige-creme);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 10px;
+            overflow-x: hidden;
+        }
+
+        .header {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            margin: 10px 0 20px;
+        }
+
+        .logo-container {
+            width: 80px;
+            height: 80px;
+            border: 3px solid var(--vert-clair);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: white;
+            cursor: pointer;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .logo-container input[type="file"] {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        .logo-placeholder {
+            width: 60px;
+            height: 60px;
+            background-color: #f0f0f0;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #999;
+            font-size: 12px;
+        }
+
+        .top-buttons {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            padding: 0 10px;
+        }
+
+        .btn-oval {
+            padding: 5px 8px;
+            border-radius: 20px;
+            background-color: white;
+            cursor: pointer;
+            font-size: 11px;
+            font-weight: bold;
+            transition: all 0.3s;
+            width: 35%;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            min-width: 80px;
+        }
+
+        .btn-profile {
+            border: 2px solid white;
+            box-shadow:
+                0 0 0 2px var(--orange-clair),
+                0 0 0 4px var(--bleu-ciel);
+        }
+
+        .btn-dons {
+            border: 2px solid white;
+            box-shadow:
+                0 0 0 2px var(--vert-clair),
+                0 0 0 4px var(--jaune-fonce);
+            white-space: nowrap;
+        }
+
+        .welcome-messages {
+            width: 100%;
+            text-align: center;
+            margin-bottom: 20px;
+            max-width: 90%;
+        }
+
+        .welcome-messages h1 {
+            color: var(--bleu-ciel);
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+
+        .welcome-messages h2 {
+            color: var(--orange-clair);
+            font-size: 18px;
+            margin-bottom: 10px;
+        }
+
+        .welcome-messages h3 {
+            color: var(--vert-clair);
+            font-size: 16px;
+        }
+
+        .response-area {
+            width: 100%;
+            max-width: 90%;
+            flex: 1;
+            overflow-y: auto;
+            margin-bottom: 15px;
+            padding: 15px;
+            background-color: var(--beige-creme);
+            border: 1px solid var(--vert-clair);
+            border-radius: 8px;
+            min-height: 300px;
+        }
+
+        .response-area h4 {
+            color: var(--vert-clair);
+            font-size: 20px;
+            text-decoration: underline;
+            text-decoration-color: var(--orange-clair);
+            margin-bottom: 10px;
+        }
+
+        .response-area p {
+            color: var(--noir-fonce);
+            margin-bottom: 10px;
+            line-height: 1.5;
+        }
+
+        .highlight {
+            background-color: var(--bleu-ciel);
+            border-left: 4px solid var(--vert-clair);
+            padding: 10px;
+            margin: 10px 0;
+        }
+
+        .highlight p {
+            color: var(--orange-clair);
+        }
+
+        .input-area {
+            width: 100%;
+            max-width: 90%;
+            display: flex;
+            align-items: center;
+            background-color: var(--beige-creme);
+            border: 1px solid var(--vert-clair);
+            border-radius: 8px;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+
+        .input-area input {
+            flex: 1;
+            border: none;
+            background: transparent;
+            font-size: 16px;
+            outline: none;
+            padding: 8px;
+        }
+
+        .send-btn {
+            background-color: var(--vert-clair);
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .send-btn::after {
+            content: "→";
+            color: white;
+            font-size: 18px;
+        }
+
+        .loading-dots {
+            display: flex;
+            justify-content: center;
+            margin: 10px 0;
+        }
+
+        .dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin: 0 5px;
+            animation: bounce 1.4s infinite ease-in-out;
+        }
+
+        .dot:nth-child(1) { background-color: var(--vert-clair); animation-delay: -0.32s; }
+        .dot:nth-child(2) { background-color: var(--bleu-ciel); animation-delay: -0.16s; }
+        .dot:nth-child(3) { background-color: var(--orange-clair); animation-delay: 0s; }
+
+        @keyframes bounce {
+            0%, 80%, 100% { transform: scale(0); }
+            40% { transform: scale(1); }
+        }
+
+        .dons-message {
+            width: 100%;
+            max-width: 90%;
+            text-align: center;
+            margin-bottom: 10px;
+            font-size: 14px;
+            animation: blink 2s infinite;
+        }
+
+        .dons-message span {
+            display: inline-block;
+        }
+
+        .dons-message .orange { color: var(--orange-clair); }
+        .dons-message .vert { color: var(--vert-clair); }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 400px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+        }
+
+        .modal-body { margin-bottom: 15px; }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        .photo-upload {
+            width: 80px;
+            height: 80px;
+            border: 2px solid var(--vert-clair);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0 auto 15px;
+            background-color: white;
+            cursor: pointer;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .photo-upload input[type="file"] {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        .photo-placeholder {
+            color: #999;
+            font-size: 12px;
+            text-align: center;
+        }
+
+        .payment-options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .payment-btn {
+            padding: 10px;
+            border: 1px solid var(--vert-clair);
+            border-radius: 5px;
+            background-color: var(--beige-creme);
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.3s;
+        }
+
+        .payment-btn:hover {
+            background-color: var(--vert-clair);
+            color: white;
+        }
+
+        .beneficiary-details {
+            margin-top: 15px;
+            padding: 10px;
+            background-color: var(--beige-creme);
+            border-radius: 5px;
+            border: 1px solid var(--vert-clair);
+        }
+
+        .beneficiary-details p {
+            margin: 5px 0;
+            color: var(--noir-fonce);
+        }
+
+        .toggle-details-btn {
+            padding: 8px 12px;
+            background-color: var(--vert-clair);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        .symbols {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin: 15px 0;
+        }
+
+        .symbol {
+            font-size: 20px;
+            animation: spin 4s linear infinite;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .payment-form {
+            margin-top: 10px;
+            padding: 10px;
+            background-color: white;
+            border: 1px solid var(--vert-clair);
+            border-radius: 5px;
+        }
+
+        .payment-form input, .payment-form button {
+            width: 100%;
+            padding: 8px;
+            margin: 5px 0;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        .payment-form button {
+            background-color: var(--vert-clair);
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <!-- En-tête avec logo téléchargeable -->
+    <div class="header">
+        <div class="logo-container">
+            <input type="file" id="logoUpload" accept="image/*">
+            <div class="logo-placeholder">Logo</div>
+        </div>
+    </div>
+
+    <!-- Boutons en haut -->
+    <div class="top-buttons">
+        <button class="btn-oval btn-dons" id="donsBtn">Dons<br>volontaires</button>
+        <button class="btn-oval btn-profile" id="profileBtn">Profil</button>
+    </div>
+
+    <!-- Messages d'accueil -->
+    <div class="welcome-messages">
+        <h1>Islam Agent Épistémique</h1>
+        <h2>Bienvenue sur les pages de la théologie islamique</h2>
+        <h3>Je suis votre premier Agent Épistémique d'Afrique pour l'islam</h3>
+    </div>
+
+    <!-- Zone de lecture -->
+    <div class="response-area" id="responseArea">
+        <!-- Les réponses seront affichées ici dynamiquement -->
+    </div>
+
+    <!-- Message de dons clignotant -->
+    <div class="dons-message">
+        <span class="orange">Soutenez ce projet par un don volontaire !</span>
+        <span class="vert"> Chaque contribution compte.</span>
+    </div>
+
+    <!-- Champ de saisie -->
+    <div class="input-area">
+        <input type="text" id="userInput" placeholder="Posez votre question ici...">
+        <button class="send-btn" id="sendBtn"></button>
+    </div>
+
+    <!-- Animation de chargement -->
+    <div class="loading-dots" id="loadingDots" style="display: none;">
+        <div class="dot"></div>
+        <div class="dot"></div>
+        <div class="dot"></div>
+    </div>
+
+    <!-- Fenêtre modale pour le profil -->
+    <div class="modal" id="profileModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Profil de l'auteur</h3>
+                <button class="close-btn" id="closeProfile">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="photo-upload">
+                    <input type="file" id="photoUpload" accept="image/*">
+                    <div class="photo-placeholder">Photo</div>
+                </div>
+                <div class="form-group">
+                    <label for="nom">Nom :</label>
+                    <input type="text" id="nom" placeholder="Entrez votre nom">
+                </div>
+                <div class="form-group">
+                    <label for="prenom">Prénom :</label>
+                    <input type="text" id="prenom" placeholder="Entrez votre prénom">
+                </div>
+                <div class="form-group">
+                    <label for="titre">Titre :</label>
+                    <input type="text" id="titre" placeholder="Entrez votre titre">
+                </div>
+                <div class="form-group">
+                    <label for="apiKey">Clé API :</label>
+                    <input type="password" id="apiKey" placeholder="Collez votre clé API ici">
+                </div>
+                <div class="form-group">
+                    <label for="freeApiKey">Clé API gratuite (Gemini) :</label>
+                    <input type="text" id="freeApiKey" placeholder="Enregistrez votre clé API Google Gemini">
+                </div>
+                <button class="toggle-details-btn" id="toggleDetailsBtn">Masquer les détails</button>
+                <div class="beneficiary-details" id="beneficiaryDetails">
+                    <p><strong>Nom :</strong> Nana</p>
+                    <p><strong>Prénom :</strong> Bawa Bouraima</p>
+                    <p><strong>Téléphone :</strong> +(228) 99-54-97-11</p>
+                    <p><strong>Email :</strong> bawanana555@gmail.com</p>
+                    <p><strong>Localisation :</strong> Lomé, Togo</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Fenêtre modale pour les dons -->
+    <div class="modal" id="donsModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Dons volontaires</h3>
+                <button class="close-btn" id="closeDons">&times;</button>
+            </div>
+            <div class="modal-body">
+                <h4>Choisissez une méthode de paiement :</h4>
+                <div class="payment-options">
+                    <button class="payment-btn" data-payment="local">Payement local (Flooz / T-Money)</button>
+                    <div id="localPaymentForm" class="payment-form" style="display: none;">
+                        <p>Formulaire pour Flooz / T-Money</p>
+                        <input type="text" placeholder="Numéro de téléphone">
+                        <button>Valider</button>
+                    </div>
+                    <button class="payment-btn" data-payment="international">Payement international (Western Union / MoneyGram)</button>
+                    <div id="internationalPaymentForm" class="payment-form" style="display: none;">
+                        <p>Formulaire pour Western Union / MoneyGram</p>
+                        <input type="text" placeholder="Nom du bénéficiaire">
+                        <input type="text" placeholder="Numéro de référence">
+                        <button>Valider</button>
+                    </div>
+                    <button class="payment-btn" data-payment="cinetpay">Payement par CinetPay</button>
+                    <div id="cinetpayPaymentForm" class="payment-form" style="display: none;">
+                        <p>Redirection vers CinetPay...</p>
+                        <button id="redirectToCinetPay">Cliquez ici pour être redirigé</button>
+                    </div>
+                </div>
+                <div class="beneficiary-details">
+                    <p><strong>Bénéficiaire des dons :</strong></p>
+                    <p><strong>Nom :</strong> Nana</p>
+                    <p><strong>Prénom :</strong> Bawa Bouraima</p>
+                    <p><strong>Téléphone :</strong> +(228) 99-54-97-11</p>
+                    <p><strong>Email :</strong> bawanana555@gmail.com</p>
+                    <p><strong>Localisation :</strong> Lomé, Togo</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Lien vers le fichier script.js -->
+    <script src="script.js"></script>
+</body>
+</html>
