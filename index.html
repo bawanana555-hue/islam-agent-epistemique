@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Islam Agent Épistémique</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      background-color: #f5f5dc;
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+
+    #logo-btn {
+      display: block;
+      margin: 2vh auto;
+      width: 20vw;
+      height: 20vw;
+      border: 0.6vw solid #90ee90;
+      border-radius: 50%;
+      background: transparent;
+    }
+
+    .btn {
+      width: 22vw;
+      max-width: 160px;
+      height: 55px;
+      border-radius: 30px;
+      background: white;
+      font-size: 3.5vw;
+      cursor: pointer;
+      text-align: center;
+      overflow: hidden;
+    }
+    #don-btn {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      border: 3px double #90ee90;
+      color: #90ee90;
+    }
+    #profile-btn {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      border: 3px double orange;
+      color: orange;
+    }
+    #audio-btn {
+      position: absolute;
+      top: 85px;
+      right: 20px;
+      border: 3px double #90ee90;
+      color: #90ee90;
+    }
+
+    #welcome {
+      text-align: center;
+      margin-top: 15vh;
+    }
+    #welcome h1 { color: skyblue; font-size: 6vw; }
+    #welcome h2 { color: orange; font-size: 5vw; }
+    #welcome h3 { color: #90ee90; font-size: 4vw; }
+
+    #answer {
+      margin: 10px auto;
+      width: 90%;
+      border: 2px solid #90ee90;
+      border-radius: 15px;
+      background: #fff;
+      min-height: 220px;
+      padding: 15px;
+      font-size: 4vw;
+    }
+
+    #chat-box {
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+      background: #f5f5dc;
+      border-top: 2px solid #90ee90;
+      padding: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    #question {
+      flex: 1;
+      padding: 12px;
+      border: 2px solid #90ee90;
+      border-radius: 20px;
+      background: #f5f5dc;
+      font-size: 4vw;
+    }
+
+    #send-btn {
+      margin-left: 10px;
+      width: 45px;
+      height: 45px;
+      border-radius: 50%;
+      background: #90ee90;
+      color: white;
+      border: none;
+      font-size: 20px;
+      cursor: pointer;
+    }
+
+    .loader {
+      position: fixed;
+      left: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      display: none; /* caché par défaut */
+    }
+    .loader span {
+      display: inline-block;
+      width: 12px;
+      height: 12px;
+      margin: 0 3px;
+      border-radius: 50%;
+      animation: bounce 1s infinite;
+    }
+    .loader span:nth-child(1) { background: red; animation-delay: 0s; }
+    .loader span:nth-child(2) { background: orange; animation-delay: 0.2s; }
+    .loader span:nth-child(3) { background: green; animation-delay: 0.4s; }
+    @keyframes bounce {
+      0%, 80%, 100% { transform: scale(0); }
+      40% { transform: scale(1); }
+    }
+
+    #don-message {
+      text-align: center;
+      font-size: 3.5vw;
+      animation: blink 1.5s infinite;
+      margin-bottom: 5px;
+    }
+    @keyframes blink {
+      0% { color: orange; opacity: 1; }
+      50% { color: #90ee90; opacity: 0.5; }
+      100% { color: orange; opacity: 1; }
+    }
+  </style>
+</head>
+<body>
+  <button id="logo-btn"></button>
+
+  <button id="don-btn" class="btn">Dons<br>volontaires</button>
+  <button id="profile-btn" class="btn">Profil</button>
+  <button id="audio-btn" class="btn">Audio</button>
+
+  <div id="welcome">
+    <h1>Islam Agent Épistémique</h1>
+    <h2>Bienvenue sur les pages de la théologie islamique</h2>
+    <h3>Je suis votre premier Agent Épistémique d'Afrique pour l'islam</h3>
+  </div>
+
+  <div id="answer"></div>
+
+  <div id="don-message">Soutenez par vos dons volontaires</div>
+
+  <div id="chat-box">
+    <input id="question" type="text" placeholder="Posez votre question...">
+    <button id="send-btn">➤</button>
+  </div>
+
+  <div class="loader"><span></span><span></span><span></span></div>
+
+  <!-- Script intégré -->
+  <script>
+    async function ask() {
+      const q = document.getElementById("question").value;
+      document.getElementById("answer").innerText = "Chargement...";
+      document.getElementById("welcome").style.display = "none";
+
+      // Afficher loader
+      document.querySelector(".loader").style.display = "block";
+
+      try {
+        const res = await fetch(`http://localhost:8000/ask?query=${encodeURIComponent(q)}`);
+        const data = await res.json();
+        document.getElementById("answer").innerText = data.answer;
+      } catch (err) {
+        document.getElementById("answer").innerText = "Erreur de connexion au serveur.";
+      }
+
+      // Masquer loader après réponse
+      document.querySelector(".loader").style.display = "none";
+    }
+
+    document.getElementById("send-btn").addEventListener("click", ask);
+    document.getElementById("question").addEventListener("focus", () => {
+      document.getElementById("welcome").style.display = "none";
+    });
+
+    // Boutons activés
+    document.getElementById("profile-btn").addEventListener("click", () => {
+      alert("Fonction Profil à développer");
+    });
+    document.getElementById("audio-btn").addEventListener("click", () => {
+      alert("Fonction Audio à développer");
+    });
+    document.getElementById("don-btn").addEventListener("click", () => {
+      alert("Lien vers la page de dons volontaires");
+    });
+  </script>
+</body>
+</html>
