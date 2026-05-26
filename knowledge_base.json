@@ -788,7 +788,7 @@ function rechercherSavoirPertinent(questionUtilisateur) {
         .filter(mot => mot.length > 2);              // On ne garde que les mots de 3 lettres et +
 
     // Recherche de correspondances lexicales dans le titre ou le contenu
-    const resultats = BASE_DE_CONNAISSANCES.filter(document => {
+    const resultats = knowledge_base_islam.json.filter(document => {
         const texteSource = (document.title + " " + document.content).toLowerCase();
         return termesRecherche.some(terme => texteSource.includes(terme));
     });
@@ -809,7 +809,7 @@ function fusionnerPromptEtSavoir(questionUtilisateur, documentsTrouves) {
         ? documentsTrouves.map(doc => `SOURCE : ${doc.title}\nCONTENU : ${doc.content}`).join("\n\n---\n\n")
         : "AUCUNE SOURCE DE SAVOIR FOURNIE. Le réservoir de connaissances locales est vide pour cette requête.";
 
-    const promptUnifie = `Voici la Base de Connaissances locale à respecter de manière obligatoire :\n${separateur}\n${sectionContexte}\n${separateur}\n\nQuestion posée par l'utilisateur :\n"${questionUtilisateur}"`;
+    const promptUnifie = `Voici knowledge_base_islam.json ou la Base de Connaissances locale à respecter de manière obligatoire :\n${separateur}\n${sectionContexte}\n${separateur}\n\nQuestion posée par l'utilisateur :\n"${questionUtilisateur}"`;
     
     return promptUnifie;
 }
