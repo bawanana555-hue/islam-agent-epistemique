@@ -11,7 +11,7 @@
     "last_updated": "2026-05-20",
     "language": "fr",
     "author": "Bawa Nana - Islam Agent Épistémique",
-    "description": "Base de connaissances complète pour un agent conversationnel islamique. Contient 200 questions/réponses classées par catégories.",
+    "description": "knowledge_base_islam.json ou Base de connaissances complète pour un agent conversationnel islamique. Contient 200 questions/réponses classées par catégories.",
     "instructions": "Pour ajouter une question, respectez la structure : {id, question, response, references, tags}. Les catégories peuvent être étendues."
   },
   "categories": [
