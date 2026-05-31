@@ -3,7 +3,7 @@ import json
 import numpy as np
 from sentence_transformers import SentenceTransformer
 from sklearn.metrics.pairwise import cosine_similarity
-fastapi import FastAPI, Query
+from fastapi import FastAPI, Query
 from fastapi.middleware.cors import CORSMiddleware
 from google import genai
 
@@ -84,7 +84,7 @@ def retrieve(query: str, top_k: int = 3):
 async def generate_answer(query: str) -> str:
     # Vérification du sujet
     if is_forbidden_topic(query):
-        return "Je suis spécialisé dans les valeurs et sciences islamiques. Je ne peux pas répondre aux questions concernant les mathématiques, la physique ou l'informatique. Posez-moi plutôt des questions sur l'Islam, la théologie, la jurisprudence (Fiqh), le Coran ou la Sunna."
+        return "Je suis spécialisé dans les valeurs et sciences islamiques. Je ne peux pas répondre aux questions concernant les mathématiques, la physique ou l'informatique. Posez-moi plutôt une question sur l'Islam."
     
     # Vérification de la disponibilité du client Gemini
     if client is None:
