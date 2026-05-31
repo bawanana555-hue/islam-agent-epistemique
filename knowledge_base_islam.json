@@ -1,0 +1,94 @@
+{
+  "categories": [
+    {
+      "name": "Théologie Islamique Fondamentale",
+      "questions": [
+        {
+          "question": "Qu'est-ce que le Tawhid?",
+          "response": "Le Tawhid (التوحيد) est le principe fondamental de l'Islam signifiant l'unicité d'Allah. C'est la croyance qu'Allah est Un, unique et sans égal, sans associé. Le Tawhid englobe trois aspects: reconnaître qu'Allah est seul digne d'adoration, reconnaître que nul n'a le droit d'être adoré sauf Allah, et rejeter tout ce qui est adoré en dehors d'Allah.",
+          "tags": ["Théologie", "Croyance", "Allah"]
+        },
+        {
+          "question": "Quels sont les cinq piliers de l'Islam?",
+          "response": "Les cinq piliers de l'Islam sont: 1) La Chahada (Attestation de foi: Il n'y a de divinité qu'Allah et Muhammad est Son messager), 2) La Salat (Prière obligatoire cinq fois par jour), 3) la Zakat (Aumône obligatoire), 4) Le Sawm (Jeûne du Ramadan), 5) Le Hajj (Pèlerinage à la Mecque au moins une fois dans la vie si possible). Ces piliers sont les fondements de la pratique musulmane.",
+          "tags": ["Piliers", "Pratique", "Obligations"]
+        },
+        {
+          "question": "Qui était le Prophète Muhammad?",
+          "response": "Muhammad (صلى الله عليه وسلم) est le dernier prophète et messager d'Allah selon la croyance islamique. Né à La Mecque en 570 CE, il a reçu la révélation du Coran pendant 23 ans. Muhammad est considéré comme le sceau des prophètes, achevant la chaîne de prophétie qui a commencé avec Adam. Il a établi une communauté musulmane qui s'est propagée de la Péninsule Arabique à travers le monde.",
+          "tags": ["Prophète", "Muhammad", "Révélation"]
+        }
+      ]
+    },
+    {
+      "name": "Le Coran et la Sunna",
+      "questions": [
+        {
+          "question": "Qu'est-ce que le Coran?",
+          "response": "Le Coran (القرآن) est le texte sacré de l'Islam, considéré par les musulmans comme la parole d'Allah révélée au Prophète Muhammad par l'intermédiaire de l'ange Gabriel (Jibril) sur une période de 23 ans. Composé de 114 sourates et 6236 versets, le Coran traite de la foi, de la morale, de la loi et des enseignements spirituels. Les musulmans le considèrent comme intact et inimitable depuis sa révélation.",
+          "tags": ["Coran", "Révélation", "Écriture Sainte"]
+        },
+        {
+          "question": "Qu'est-ce que la Sunna?",
+          "response": "La Sunna (السنة) désigne les paroles, actions, approbations et caractéristiques du Prophète Muhammad. Elle constitue la deuxième source de la loi islamique après le Coran. La Sunna explique et applique les principes coraniques dans la pratique quotidienne. Elle est documentée dans les Hadith, qui sont des narrations rapportant les actes et paroles du Prophète.",
+          "tags": ["Sunna", "Hadith", "Tradition"]
+        },
+        {
+          "question": "Qu'est-ce qu'un Hadith?",
+          "response": "Un Hadith (الحديث) est une narration rapportant une parole, une action ou une caractéristique du Prophète Muhammad. Les hadiths sont transmis par une chaîne de narrateurs appelée Isnad. Ils servent à clarifier les versets coraniques et à fournir des enseignements pratiques. Les hadiths sont classés en différentes catégories selon leur authenticité: Sahih (authentique), Hasan (bon), Faible, etc. Les collections les plus réputées incluent Sahih al-Bukhari et Sahih Muslim.",
+          "tags": ["Hadith", "Tradition", "Authenticité"]
+        }
+      ]
+    },
+    {
+      "name": "Jurisprudence Islamique (Fiqh)",
+      "questions": [
+        {
+          "question": "Qu'est-ce que le Fiqh?",
+          "response": "Le Fiqh (الفقه) signifie littéralement 'compréhension'. C'est la science de la jurisprudence islamique qui traite de l'interprétation et l'application des principes de la Charia. Le Fiqh repose sur quatre sources principales: le Coran, la Sunna, l'Ijma (consensus des savants), et le Qiyas (raisonnement analogique). Différentes écoles de jurisprudence (Madhhab) ont émergé, notamment: Hanafi, Maliki, Shafi'i et Hanbali.",
+          "tags": ["Fiqh", "Jurisprudence", "Charia"]
+        },
+        {
+          "question": "Quels sont les principes des contrats en Islam?",
+          "response": "Les contrats en Islam (العقود) doivent respecter plusieurs principes: 1) L'intention (Niyyah) des deux parties, 2) Le consentement mutuel, 3) L'absence de contrainte, 4) L'interdiction du Riba (usure), 5) L'honnêteté et la transparence, 6) Le respect des termes convenus, 7) L'absence d'éléments contraires à la Charia. L'Islam encourage le commerce juste et honnête tout en interdisant les pratiques exploitatives et trompeuses.",
+          "tags": ["Contrats", "Commerce", "Éthique"]
+        },
+        {
+          "question": "Qu'est-ce que la Zakat?",
+          "response": "La Zakat (الزكاة) est l'obligation de donner une portion de sa richesse aux nécessiteux. C'est le troisième pilier de l'Islam. La Zakat est due sur différentes catégories de biens (or, argent, bétail, marchandises commerciales) au taux de 2,5% après une année lunaire complète de possession. L'objectif de la Zakat est de purifier la richesse, d'aider les pauvres, et d'établir la solidarité sociale. Il existe huit catégories de bénéficiaires de la Zakat énumérées dans le Coran.",
+          "tags": ["Zakat", "Charité", "Obligation"]
+        }
+      ]
+    },
+    {
+      "name": "Éthique et Morale Islamique",
+      "questions": [
+        {
+          "question": "Quels sont les caractères louables en Islam (Akhlaq)?",
+          "response": "Les Akhlaq (الأخلاق) ou bonnes mœurs incluent: l'honnêteté (Sidq), la fidélité (Amanah), la justice (Adl), la pitié et la compassion (Rahma), la modestie (Haya), la générosité (Karam), le courage (Shajaa), la sagesse (Hikma), la patience (Sabr), et l'humilité (Tawadu). Le Prophète Muhammad a dit: 'J'ai été envoyé pour parfaire les bonnes mœurs.' L'Islam considère l'éthique comme fondamentale au développement spirituel et à la vie en société.",
+          "tags": ["Éthique", "Morale", "Caractère"]
+        },
+        {
+          "question": "Qu'enseigne l'Islam sur le respect des parents?",
+          "response": "L'Islam place le respect et l'obéissance aux parents au plus haut niveau d'importance après l'adoration d'Allah. Le Coran dit: 'Adorez Allah et ne Lui associez rien, traitez bien vos parents.' Les obligations envers les parents incluent: les traiter avec respect et douceur, prendre soin d'eux particulièrement à la vieillesse, leur obéir dans ce qui est licite, faire des invocations pour eux, et les soutenir émotionnellement et matériellement. Être dur ou impatient envers les parents est considéré comme un grave péché.",
+          "tags": ["Parents", "Respect", "Famille"]
+        }
+      ]
+    },
+    {
+      "name": "Croyances Islamiques (Aquida)",
+      "questions": [
+        {
+          "question": "Qu'est-ce que la Aquida (Croyance Islamique)?",
+          "response": "L'Aquida (العقيدة) est l'ensemble des croyances fondamentales de l'Islam. Elle inclut: la croyance en Allah et Ses attributs, la croyance aux anges (Malaika), aux livres révélés, aux prophètes et messagers, au Jour du Jugement Dernier, au destin (Qadar), au Paradis et à l'Enfer. L'Aquida est la base de tous les actes religieux en Islam. Une solide compréhension de l'Aquida protège le cœur et l'esprit du musulman.",
+          "tags": ["Croyance", "Aquida", "Fondamentaux"]
+        },
+        {
+          "question": "Qu'est-ce que la prédestination (Qadar) en Islam?",
+          "response": "Le Qadar (القدر) ou prédestination est la croyance qu'Allah connaît tous les événements passés, présents et futurs. Cependant, l'Islam n'enseigne pas un fatalisme rigide. Le musulman possède le libre arbitre pour faire ses choix et en porte la responsabilité. Allah a écrit tout ce qui se passera, mais le musulman doit faire des efforts et prendre des initiatives. C'est un équilibre entre la divine prédestination et la responsabilité humaine.",
+          "tags": ["Qadar", "Destin", "Libre Arbitre"]
+        }
+      ]
+    }
+  ]
+}

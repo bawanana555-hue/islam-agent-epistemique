@@ -3,13 +3,20 @@ import json
 import numpy as np
 from sentence_transformers import SentenceTransformer
 from sklearn.metrics.pairwise import cosine_similarity
-from fastapi import FastAPI, Query
+fastapi import FastAPI, Query
 from fastapi.middleware.cors import CORSMiddleware
 from google import genai
 
 JSON_FILE = "knowledge_base_islam.json"
 # Hugging Face nécessite d'écrire les fichiers dans le dossier temporaire /tmp
 EMBEDDINGS_FILE = "/tmp/embeddings_cache.npy"
+
+# TOPICS INTERDITS (Non-islamiques)
+FORBIDDEN_TOPICS = [
+    "mathématiques", "maths", "algèbre", "géométrie", "calcul",
+    "physique", "chimie", "biologie", "informatique",
+    "programmation", "code", "python", "javascript"
+]
 
 # 1. Chargement de la base de connaissances
 try:
@@ -36,32 +43,56 @@ else:
         embeddings = []
 
 # 3. Initialisation Gemini
-# REMPLACEZ "TA_CLE_API_GEMINI" PAR VOTRE CLÉ DANS LES GUILLEMETS
-client = genai.Client(api_key="TA_CLE_API_GEMINI")
+# ⚠️ REMPLACEZ "YOUR_GEMINI_API_KEY" PAR VOTRE CLÉ RÉELLE
+# Retrouvez-la sur: https://aistudio.google.com/app/apikeys
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "YOUR_GEMINI_API_KEY")
+
+if GEMINI_API_KEY == "YOUR_GEMINI_API_KEY":
+    print("⚠️  ALERTE: Clé API Gemini non configurée!")
+    print("   Définissez la variable d'environnement GEMINI_API_KEY")
+    client = None
+else:
+    client = genai.Client(api_key=GEMINI_API_KEY)
 
 # 4. Configuration de FastAPI
-app = FastAPI(title="RAG Cloud Server")
+app = FastAPI(title="RAG Cloud Server - Islam Agent")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+def is_forbidden_topic(query: str) -> bool:
+    """Vérifie si la question contient des sujets interdits"""
+    query_lower = query.lower()
+    for topic in FORBIDDEN_TOPICS:
+        if topic in query_lower:
+            return True
+    return False
 
 def retrieve(query: str, top_k: int = 3):
     if len(embeddings) == 0:
         return []
     query_vec = embedder.encode([query])
     scores = cosine_similarity(query_vec, embeddings)
-    top_indices = np.argsort(scores)[::-1][:top_k]
+    top_indices = np.argsort(scores[0])[::-1][:top_k]
     return [documents[i] for i in top_indices]
 
 async def generate_answer(query: str) -> str:
+    # Vérification du sujet
+    if is_forbidden_topic(query):
+        return "Je suis spécialisé dans les valeurs et sciences islamiques. Je ne peux pas répondre aux questions concernant les mathématiques, la physique ou l'informatique. Posez-moi plutôt des questions sur l'Islam, la théologie, la jurisprudence (Fiqh), le Coran ou la Sunna."
+    
+    # Vérification de la disponibilité du client Gemini
+    if client is None:
+        return "Erreur: La clé API Gemini n'est pas configurée. Veuillez définir la variable d'environnement GEMINI_API_KEY."
+    
     context_docs = retrieve(query)
-    context = "\n".join(context_docs) if context_docs else "Aucun contexte trouvé."
-    prompt = f"Question: {query}\n\nContext:\n{context}\n\nRéponse:"
+    context = "\n".join(context_docs) if context_docs else "Aucun contexte trouvé dans la base de connaissances."
+    prompt = f"Tu es un expert en sciences islamiques. Réponds en français.\n\nQuestion: {query}\n\nContext (Base de Connaissances Islamique):\n{context}\n\nRéponse complète et informative:"
     
     try:
         response = client.models.generate_content(
@@ -75,7 +106,12 @@ async def generate_answer(query: str) -> str:
 # Route d'accueil pour tester rapidement si le serveur est en ligne
 @app.get("/")
 def home():
-    return {"status": "Le serveur RAG fonctionne parfaitement"}
+    status = "fonctionnel" if client is not None else "⚠️ API non configurée"
+    return {
+        "status": f"Le serveur RAG Islam fonctionne ({status})",
+        "version": "1.0.1",
+        "specialization": "Sciences et Valeurs Islamiques"
+    }
 
 @app.get("/ask")
 async def ask(query: str = Query(..., min_length=1)):

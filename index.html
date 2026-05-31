@@ -3,23 +3,45 @@
 <head>
   <meta charset="UTF-8">
   <title>Islam Agent Épistémique</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <style>
-    body {
-      background-color: #f5f5dc;
-      font-family: Arial, sans-serif;
+    * {
+      box-sizing: border-box;
+    }
+
+    html, body {
       margin: 0;
       padding: 0;
+      height: 100%;
+      width: 100%;
+    }
+
+    body {
+      background-color: #f5f5dc;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
     }
 
     #logo-btn {
       display: block;
       margin: 2vh auto;
       width: 20vw;
+      max-width: 120px;
       height: 20vw;
-      border: 0.6vw solid #90ee90;
+      max-height: 120px;
+      border: 0.6vw solid #ff6b35;
       border-radius: 50%;
-      background: transparent;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      cursor: pointer;
+      transition: transform 0.3s ease;
+    }
+
+    #logo-btn:hover {
+      transform: scale(1.05);
     }
 
     .btn {
@@ -32,87 +54,162 @@
       cursor: pointer;
       text-align: center;
       overflow: hidden;
+      transition: all 0.3s ease;
+      font-weight: bold;
     }
+
+    .btn:active {
+      transform: scale(0.95);
+    }
+
     #don-btn {
       position: absolute;
       top: 20px;
       left: 20px;
-      border: 3px double #90ee90;
-      color: #90ee90;
+      border: 3px double #ff6b35;
+      color: #ff6b35;
+      z-index: 50;
     }
+
     #profile-btn {
       position: absolute;
       top: 20px;
       right: 20px;
-      border: 3px double orange;
-      color: orange;
+      border: 3px double #667eea;
+      color: #667eea;
+      z-index: 50;
     }
+
     #audio-btn {
       position: absolute;
       top: 85px;
       right: 20px;
-      border: 3px double #90ee90;
-      color: #90ee90;
+      border: 3px double #764ba2;
+      color: #764ba2;
+      z-index: 50;
     }
 
     #welcome {
       text-align: center;
-      margin-top: 15vh;
+      margin-top: 5vh;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      overflow-y: auto;
+      padding: 20px;
     }
-    #welcome h1 { color: skyblue; font-size: 6vw; }
-    #welcome h2 { color: orange; font-size: 5vw; }
-    #welcome h3 { color: #90ee90; font-size: 4vw; }
+
+    #welcome h1 {
+      color: #667eea;
+      font-size: 6vw;
+      margin: 10px 0;
+    }
+
+    #welcome h2 {
+      color: #ff6b35;
+      font-size: 5vw;
+      margin: 10px 0;
+    }
+
+    #welcome h3 {
+      color: #764ba2;
+      font-size: 4vw;
+      margin: 10px 0;
+    }
 
     #answer {
       margin: 10px auto;
       width: 90%;
-      border: 2px solid #90ee90;
+      border: 3px solid #ff6b35;
       border-radius: 15px;
       background: #fff;
-      min-height: 220px;
+      min-height: 180px;
+      max-height: 50vh;
       padding: 15px;
       font-size: 4vw;
+      overflow-y: auto;
+      flex: 1;
+      display: none;
+      z-index: 10;
+    }
+
+    #answer.active {
+      display: block;
     }
 
     #chat-box {
       position: fixed;
       bottom: 0;
+      left: 0;
+      right: 0;
       width: 100%;
       background: #f5f5dc;
-      border-top: 2px solid #90ee90;
+      border-top: 3px solid #ff6b35;
       padding: 10px;
       display: flex;
       align-items: center;
       justify-content: center;
+      gap: 10px;
+      z-index: 200;
+      box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
     }
+
     #question {
       flex: 1;
-      padding: 12px;
-      border: 2px solid #90ee90;
-      border-radius: 20px;
-      background: #f5f5dc;
+      padding: 12px 15px;
+      border: 3px solid #ff6b35;
+      border-radius: 25px;
+      background: white;
       font-size: 4vw;
+      min-height: 45px;
+      z-index: 210;
+      outline: none;
+      transition: border-color 0.3s ease;
+    }
+
+    #question:focus {
+      border-color: #667eea;
+      box-shadow: 0 0 10px rgba(102, 126, 234, 0.5);
+    }
+
+    #question::placeholder {
+      color: #999;
+      font-weight: 600;
     }
 
     #send-btn {
-      margin-left: 10px;
-      width: 45px;
-      height: 45px;
+      width: 50px;
+      height: 50px;
+      min-width: 50px;
       border-radius: 50%;
-      background: #90ee90;
+      background: linear-gradient(135deg, #ff6b35 0%, #ff8c42 100%);
       color: white;
       border: none;
-      font-size: 20px;
+      font-size: 24px;
       cursor: pointer;
+      transition: all 0.3s ease;
+      z-index: 210;
+      font-weight: bold;
+    }
+
+    #send-btn:active {
+      transform: scale(0.95);
+    }
+
+    #send-btn:hover {
+      box-shadow: 0 4px 12px rgba(255, 107, 53, 0.4);
     }
 
     .loader {
       position: fixed;
-      left: 10px;
+      left: 20px;
       top: 50%;
       transform: translateY(-50%);
-      display: none; /* caché par défaut */
+      display: none;
+      z-index: 5;
     }
+
     .loader span {
       display: inline-block;
       width: 12px;
@@ -121,12 +218,29 @@
       border-radius: 50%;
       animation: bounce 1s infinite;
     }
-    .loader span:nth-child(1) { background: red; animation-delay: 0s; }
-    .loader span:nth-child(2) { background: orange; animation-delay: 0.2s; }
-    .loader span:nth-child(3) { background: green; animation-delay: 0.4s; }
+
+    .loader span:nth-child(1) {
+      background: #ff6b35;
+      animation-delay: 0s;
+    }
+
+    .loader span:nth-child(2) {
+      background: #667eea;
+      animation-delay: 0.2s;
+    }
+
+    .loader span:nth-child(3) {
+      background: #764ba2;
+      animation-delay: 0.4s;
+    }
+
     @keyframes bounce {
-      0%, 80%, 100% { transform: scale(0); }
-      40% { transform: scale(1); }
+      0%, 80%, 100% {
+        transform: scale(0);
+      }
+      40% {
+        transform: scale(1);
+      }
     }
 
     #don-message {
@@ -134,74 +248,140 @@
       font-size: 3.5vw;
       animation: blink 1.5s infinite;
       margin-bottom: 5px;
+      display: none;
     }
+
+    #don-message.show {
+      display: block;
+    }
+
     @keyframes blink {
-      0% { color: orange; opacity: 1; }
-      50% { color: #90ee90; opacity: 0.5; }
-      100% { color: orange; opacity: 1; }
+      0% {
+        color: #ff6b35;
+        opacity: 1;
+      }
+      50% {
+        color: #667eea;
+        opacity: 0.5;
+      }
+      100% {
+        color: #ff6b35;
+        opacity: 1;
+      }
+    }
+
+    /* Mobile responsive */
+    @media (max-height: 600px) {
+      #welcome {
+        margin-top: 2vh;
+      }
+      #welcome h1 {
+        font-size: 4vw;
+      }
+      #welcome h2 {
+        font-size: 3vw;
+      }
+      #welcome h3 {
+        font-size: 2.5vw;
+      }
+    }
+
+    @media (max-width: 480px) {
+      #chat-box {
+        padding: 8px;
+      }
+      #question {
+        font-size: 16px;
+      }
+      #send-btn {
+        width: 45px;
+        height: 45px;
+        font-size: 20px;
+      }
     }
   </style>
 </head>
 <body>
-  <button id="logo-btn"></button>
+  <button id="logo-btn" title="Logo de l'application"></button>
 
-  <button id="don-btn" class="btn">Dons<br>volontaires</button>
-  <button id="profile-btn" class="btn">Profil</button>
-  <button id="audio-btn" class="btn">Audio</button>
+  <button id="don-btn" class="btn" title="Dons volontaires">Dons<br>volontaires</button>
+  <button id="profile-btn" class="btn" title="Profil utilisateur">Profil</button>
+  <button id="audio-btn" class="btn" title="Mode Audio">Audio</button>
 
   <div id="welcome">
-    <h1>Islam Agent Épistémique</h1>
+    <h1>🕌 Islam Agent Épistémique</h1>
     <h2>Bienvenue sur les pages de la théologie islamique</h2>
     <h3>Je suis votre premier Agent Épistémique d'Afrique pour l'islam</h3>
   </div>
 
   <div id="answer"></div>
 
-  <div id="don-message">Soutenez par vos dons volontaires</div>
+  <div id="don-message">🙏 Soutenez par vos dons volontaires</div>
 
   <div id="chat-box">
-    <input id="question" type="text" placeholder="Posez votre question...">
-    <button id="send-btn">➤</button>
+    <input id="question" type="text" placeholder="✏️ Posez votre question..." autocomplete="off">
+    <button id="send-btn" title="Envoyer">➤</button>
   </div>
 
   <div class="loader"><span></span><span></span><span></span></div>
 
   <!-- Script intégré -->
   <script>
-    async function ask() {
-      const q = document.getElementById("question").value;
-      document.getElementById("answer").innerText = "Chargement...";
-      document.getElementById("welcome").style.display = "none";
+    const API_URL = "http://localhost:8000/ask";
 
-      // Afficher loader
+    async function ask() {
+      const q = document.getElementById("question").value.trim();
+
+      if (!q) {
+        alert("Veuillez poser une question.");
+        return;
+      }
+
+      document.getElementById("welcome").style.display = "none";
+      document.getElementById("answer").classList.add("active");
+      document.getElementById("answer").innerText = "⏳ Chargement de la réponse...";
       document.querySelector(".loader").style.display = "block";
 
       try {
-        const res = await fetch(`http://localhost:8000/ask?query=${encodeURIComponent(q)}`);
+        const res = await fetch(`${API_URL}?query=${encodeURIComponent(q)}`);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const data = await res.json();
         document.getElementById("answer").innerText = data.answer;
       } catch (err) {
-        document.getElementById("answer").innerText = "Erreur de connexion au serveur.";
+        document.getElementById("answer").innerText = `❌ Erreur: ${err.message}\n\nVérifiez que le serveur est lancé: uvicorn main:app --reload`;
       }
 
-      // Masquer loader après réponse
       document.querySelector(".loader").style.display = "none";
+      document.getElementById("question").value = "";
     }
 
+    // Événements
     document.getElementById("send-btn").addEventListener("click", ask);
-    document.getElementById("question").addEventListener("focus", () => {
-      document.getElementById("welcome").style.display = "none";
+    document.getElementById("question").addEventListener("keypress", (e) => {
+      if (e.key === "Enter") ask();
     });
 
-    // Boutons activés
+    document.getElementById("question").addEventListener("focus", () => {
+      document.getElementById("welcome").style.display = "none";
+      document.getElementById("don-message").classList.remove("show");
+    });
+
+    document.getElementById("question").addEventListener("blur", () => {
+      if (document.getElementById("answer").classList.contains("active") === false) {
+        document.getElementById("welcome").style.display = "flex";
+        document.getElementById("don-message").classList.add("show");
+      }
+    });
+
+    // Boutons
     document.getElementById("profile-btn").addEventListener("click", () => {
-      alert("Fonction Profil à développer");
+      alert("🔜 Fonction Profil en développement");
     });
     document.getElementById("audio-btn").addEventListener("click", () => {
-      alert("Fonction Audio à développer");
+      alert("🔜 Fonction Audio en développement");
     });
     document.getElementById("don-btn").addEventListener("click", () => {
-      alert("Lien vers la page de dons volontaires");
+      alert("🔜 Lien vers la page de dons volontaires (en développement)");
     });
   </script>
 </body>
