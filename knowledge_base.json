@@ -2,60 +2,7 @@
 // PACK LOGIQUE : RAG FUSION ENGYNE (SANS CONFLIT AVEC VOTRE INDEX.HTML)
 // Compatible : Vanilla JS / ES6 / Projets GitHub Pages
 // Moteur ciblé : gemini-1.5-flash
-// Clé requise : Optionnelle (système de simulation locale intégré en cas d'absence)
-// =========================================================================
-
-{
-  "metadata": {
-    "version": "2.0",
-    "last_updated": "2026-05-20",
-    "language": "fr",
-    "author": "Bawa Nana - Islam Agent Épistémique",
-    "description": "knowledge_base_islam.json ou Base de connaissances complète pour un agent conversationnel islamique. Contient 200 questions/réponses classées par catégories.",
-    "instructions": "Pour ajouter une question, respectez la structure : {id, question, response, references, tags}. Les catégories peuvent être étendues."
-  },
-  "categories": [
-    {
-      "name": "Fondamentaux de l'Islam",
-      "description": "Définitions, piliers, et concepts de base de l'islam.",
-      "questions": [
-        {
-          "id": 1,
-          "question": "Qu'est-ce que l'islam ?",
-          "response": "L'islam est une religion monothéiste révélée par Allah (Dieu) au prophète Mohammed (ﷺ) au VIIe siècle en Arabie. Le terme 'islam' signifie 'soumission' à la volonté d'Allah. Il repose sur le Coran (parole divine) et la Sunnah (enseignements du prophète). C'est la deuxième religion la plus pratiquée au monde, avec plus de 1,8 milliard de fidèles.",
-          "references": ["Coran, Sourate Al-Fatiha (1:1-7)", "Hadith Sahih Bukhari 1:1"],
-          "tags": ["définition", "foi", "monothéisme", "soumission"]
-        },
-        {
-          "id": 2,
-          "question": "Quels sont les 5 piliers de l'islam ?",
-          "response": "Les 5 piliers de l'islam sont : 1) **La Chahada** (profession de foi) : 'Ashhadu an lā ilāha illā llāh, wa ashhadu anna muḥammadan rasūlu llāh' (Je témoigne qu'il n'y a de divinité qu'Allah et que Mohammed est Son messager). 2) **La Salat** (prière) : 5 prières quotidiennes (Fajr, Dhuhr, Asr, Maghrib, Isha). 3) **La Zakat** (aumône légale) : 2,5% des économies annuelles pour les nécessiteux. 4) **Le jeûne du Ramadan** : Jeûner de l'aube au coucher du soleil pendant le mois de Ramadan. 5) **Le Hajj** (pèlerinage) : Effectuer le pèlerinage à La Mecque au moins une fois dans sa vie, si on en a les moyens physiques et financiers.",
-          "references": ["Coran, Sourate Al-Baqara (2:43)", "Hadith Sahih Muslim 16:1"],
-          "tags": ["piliers", "obligations", "pratique", "Chahada", "Salat", "Zakat", "Ramadan", "Hajj"]
-        },
-        {
-          "id": 3,
-          "question": "Qu'est-ce que la Chahada ?",
-          "response": "La Chahada (ou Shahada) est la profession de foi islamique, déclarée en arabe comme suit : 'Ashhadu an lā ilāha illā llāh, wa ashhadu anna muḥammadan rasūlu llāh' (Je témoigne qu'il n'y a de divinité qu'Allah et que Mohammed est Son messager). C'est le premier des 5 piliers de l'islam et la condition essentielle pour entrer dans la religion. Elle doit être prononcée avec conviction et compréhension de son sens.",
-          "references": ["Coran, Sourate Al-Ikhlas (112:1-4)", "Hadith Sahih Bukhari 1:18"],
-          "tags": ["Chahada", "foi", "profession", "Shahada"]
-        },
-        {
-          "id": 4,
-          "question": "Pourquoi l'islam est-il appelé 'soumission' ?",
-          "response": "Le terme 'islam' vient de la racine arabe 's-l-m', qui signifie 'soumission' ou 'paix'. En islam, cela signifie se soumettre totalement à la volonté d'Allah, en acceptant Ses commandements sans réserve. Cette soumission apporte la paix intérieure (salam) et l'harmonie avec la création d'Allah.",
-          "references": ["Coran, Sourate Al-Baqara (2:208)", "Tafsir Al-Qurtubi"],
-          "tags": ["étymologie", "soumission", "paix", "salam"]
-        },
-        {
-          "id": 5,
-          "question": "Qui est Allah en islam ?",
-          "response": "Allah est le Dieu unique en islam, Créateur et Maître de l'univers. Il est Un (Tawhid), Éternel, Omnipotent, Omniscient, et Miséricordieux. Contrairement aux conceptions anthropomorphiques, Allah n'a ni forme ni limite. Il est transcendant (au-dessus de Sa création) et immanent (proche de Ses serviteurs). Le Coran dit : 'Rien ne Lui ressemble' (Sourate Ash-Shura 42:11). Ses attributs sont parfaits et sans défaut.",
-          "references": ["Coran, Sourate Al-Ikhlas (112:1-4)", "Coran, Sourate Ash-Shura (42:11)", "Hadith Sahih Bukhari 8:400"],
-          "tags": ["Allah", "unicité", "Tawhid", "attributs", "Dieu"]
-        },
-        {
-          "id": 6,
+// Clé requise : Optionnelle (système de simulation locale intégré en cas 
           "question": "Qu'est-ce que le Coran ?",
           "response": "Le Coran est le livre sacré de l'islam, considéré comme la parole **littérale et inchangée** d'Allah, révélée au prophète Mohammed (ﷺ) sur une période de 23 ans (610-632) par l'intermédiaire de l'ange Gabriel (Jibril). Il est divisé en **114 sourates** (chapitres) et **6 236 versets** (ayat). Le Coran est préservé intact depuis sa révélation, sans altération ni modification. Il est la source principale de la législation islamique.",
           "references": ["Coran, Sourate Al-Hijr (15:9)", "Hadith Sahih Bukhari 6:521"],
