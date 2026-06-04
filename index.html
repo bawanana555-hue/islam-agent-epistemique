@@ -43,7 +43,69 @@ body {
   height: 100dvh;
   overflow: hidden;
 }
+<div id="rag-chat" style="max-width:700px;margin:20px auto;font-family:Arial,sans-serif;">
+  <div id="rag-messages" style="height:420px;overflow:auto;border:1px solid #ccc;padding:12px;border-radius:10px;background:#fff;"></div>
 
+  <form id="rag-form" style="display:flex;gap:8px;margin-top:10px;">
+    <input
+      id="rag-input"
+      type="text"
+      placeholder="Pose ta question..."
+      style="flex:1;padding:12px;border:1px solid #ccc;border-radius:8px;"
+      autocomplete="off"
+    />
+    <button type="submit" style="padding:12px 16px;border:none;border-radius:8px;cursor:pointer;">
+      Envoyer
+    </button>
+  </form>
+</div>
+
+<script>
+  const form = document.getElementById("rag-form");
+  const input = document.getElementById("rag-input");
+  const messages = document.getElementById("rag-messages");
+
+  function addMessage(role, text) {
+    const div = document.createElement("div");
+    div.style.margin = "10px 0";
+    div.style.padding = "10px 12px";
+    div.style.borderRadius = "8px";
+    div.style.whiteSpace = "pre-wrap";
+    div.style.background = role === "user" ? "#e8f0ff" : "#f5f5f5";
+    div.innerHTML = `<strong>${role === "user" ? "Toi" : "IA"}:</strong> ${text}`;
+    messages.appendChild(div);
+    messages.scrollTop = messages.scrollHeight;
+  }
+
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const question = input.value.trim();
+    if (!question) return;
+
+    addMessage("user", question);
+    input.value = "";
+
+    addMessage("assistant", "Chargement...");
+
+    const loader = messages.lastElementChild;
+
+    try {
+      const res = await fetch("/api/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ question })
+      });
+
+      const data = await res.json();
+
+      loader.remove();
+      addMessage("assistant", data.answer || "Pas de réponse.");
+    } catch (err) {
+      loader.remove();
+      addMessage("assistant", "Erreur serveur.");
+    }
+  });
+</script>
 /* ══════════════════════════════
    HEADER
 ══════════════════════════════ */
