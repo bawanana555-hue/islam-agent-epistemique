@@ -619,6 +619,247 @@ body {
    Gemini 1.5 Flash ↔ knowledge_base_islam.json
    ========================================== */
 
+import express from "express";
+import path from "path";
+import { createServer as createViteServer } from "vite";
+import { GoogleGenAI } from "@google/genai";
+import fs from "fs";
+import dotenv from "dotenv";
+
+dotenv.config();
+
+const app = express();
+const PORT = 3000;
+
+app.use(express.json());
+
+// Initialisation sécurisée du client d'API Gemini
+let aiClient: any = null;
+
+function getGenAI() {
+if (!aiClient) {
+const key = process.env.GEMINI_API_KEY;
+if (!key) {
+throw new Error("Clé d'API GEMINI_API_KEY manquante dans vos secrets de configuration.");
+}
+aiClient = new GoogleGenAI({
+apiKey: key,
+httpOptions: {
+headers: {
+'User-Agent': 'aistudio-build',
+}
+}
+});
+}
+return aiClient;
+}
+
+// Structure d'un document de connaissances
+interface Document {
+id: string;
+category: string;
+title: string;
+content: string;
+source: string;
+tags: string[];
+}
+
+let knowledgeBase: Document[] = [];
+
+// Chargement de la base de données locale
+function loadKB() {
+try {
+const kbPath = path.join(process.cwd(), "knowledge_base_islam.json");
+if (fs.existsSync(kbPath)) {
+const fileContent = fs.readFileSync(kbPath, "utf-8");
+knowledgeBase = JSON.parse(fileContent);
+} else {
+knowledgeBase = [];
+}
+} catch (error) {
+knowledgeBase = [];
+}
+}
+
+loadKB();
+
+// Moteur de recherche et de notation de pertinence (RAG / LangChain)
+function retrieveRelevantDocuments(query: string, k = 2) {
+const normalize = (str: string) =>
+str.toLowerCase()
+.normalize("NFD")
+.replace(/[\u0300-\u036f]/g, "")
+.replace(/[.,/#!$%^&*;:{}=-_`~()?]/g, " ");
+
+const queryNormalized = normalize(query);
+const queryTerms = queryNormalized.split(/\s+/).filter(word => word.length >= 2);
+
+if (queryTerms.length === 0) {
+return [];
+}
+
+const scoredDocs = knowledgeBase.map((doc) => {
+let score = 0;
+const titleNorm = normalize(doc.title);
+const contentNorm = normalize(doc.content);
+const sourceNorm = normalize(doc.source);
+
+code
+
+if (contentNorm.includes(queryNormalized)) score += 18; if (titleNorm.includes(queryNormalized)) score += 25; queryTerms.forEach((term) => { if (titleNorm.includes(term)) { score += titleNorm.split(/\s+/).includes(term) ? 10 : 5; } if (sourceNorm.includes(term)) { score += 4; } doc.tags.forEach((tag) => { const tagNorm = normalize(tag); if (tagNorm === term) score += 12; else if (tagNorm.includes(term)) score += 6; }); const matches = contentNorm.split(/\s+/).filter(w => w === term).length; score += matches * 2.5; }); return { doc, score };
+
+});
+
+const sorted = scoredDocs
+.filter(item => item.score > 0)
+.sort((a, b) => b.score - a.score);
+
+if (sorted.length === 0 && knowledgeBase.length > 0) {
+return [
+{ doc: knowledgeBase[0], score: 0.5 },
+{ doc: knowledgeBase[1] || knowledgeBase[0], score: 0.3 }
+].slice(0, k);
+}
+
+return sorted.slice(0, k);
+}
+
+// Point de terminaison API pour interroger la base
+app.post("/api/ask", async (req, res) => {
+const startTime = Date.now();
+const { query, k = 2 } = req.body;
+
+if (!query) {
+return res.status(400).json({ error: "Le paramètre de requête est obligatoire." });
+}
+
+try {
+loadKB();
+const retrieved = retrieveRelevantDocuments(query, k);
+
+code
+
+let contextText = ""; if (retrieved.length > 0) { contextText = retrieved .map((item, idx) => `[DOCUMENT INDEXÉ #${idx + 1}]\nCatégorie: ${item.doc.category}\nTitre: ${item.doc.title}\nSource: ${item.doc.source}\nContenu: ${item.doc.content}`) .join("\n\n"); } else { contextText = "Aucun document indexé correspondant."; } const systemInstruction = `Tu es "ImanAI", un assistant pédagogique d'exception.
+
+Tu es doté d'une liaison avec l'API "Mode de Connexion IA Gratuit" via gemini-1.5-flash.
+
+Voici le contexte extrait directement de la base locale (knowledge_base_islam.json):
+${contextText}
+
+CONSIGNES:
+
+Réponds en français de manière claire et bienveillante en utilisant de beaux paragraphes Markdown.
+
+Indique précisément les sources issues de la base documentaire locale si elles s'y prêtent.
+
+Ajoute ce texte exact à la fin de ta réponse : "Recherche sémantique LangChain terminée — réponse fluide calculée en direct par gemini-1.5-flash sous protocole gratuit."`;
+
+const response = await getGenAI().models.generateContent({
+model: "gemini-1.5-flash",
+contents: query,
+config: {
+systemInstruction,
+temperature: 0.3,
+topP: 0.9,
+}
+});
+
+const elapsedMs = Date.now() - startTime;
+
+res.json({
+answer: response.text,
+sources: retrieved.map(item => ({
+id: item.doc.id,
+category: item.doc.category,
+title: item.doc.title,
+source: item.doc.source,
+score: Math.round(item.score * 10) / 10
+})),
+stats: {
+timeMs: elapsedMs,
+model: "gemini-1.5-flash",
+connectionMode: "IA Gratuit (Liaison Serveur-Proxy)"
+}
+});
+
+} catch (error: any) {
+res.status(500).json({
+error: "Erreur serveur ou clé d'API invalide.",
+details: error.message
+});
+}
+});
+
+// Récupération de l'ensemble de la base
+app.get("/api/knowledge-base", (req, res) => {
+loadKB();
+res.json(knowledgeBase);
+});
+
+// Ajout dynamique d'un document
+app.post("/api/knowledge-base", (req, res) => {
+const { category, title, content, source, tags } = req.body;
+loadKB();
+
+const newDoc = {
+id: doc_${Date.now()},
+category,
+title,
+content,
+source,
+tags: Array.isArray(tags) ? tags : (tags || "").split(",").map((t: string) => t.trim())
+};
+
+knowledgeBase.push(newDoc);
+const kbPath = path.join(process.cwd(), "knowledge_base_islam.json");
+fs.writeFileSync(kbPath, JSON.stringify(knowledgeBase, null, 2), "utf-8");
+res.status(201).json({ success: true, doc: newDoc });
+});
+
+async function startServer() {
+if (process.env.NODE_ENV !== "production") {
+const vite = await createViteServer({
+server: { middlewareMode: true },
+appType: "spa",
+});
+app.use(vite.middlewares);
+} else {
+const distPath = path.join(process.cwd(), 'dist');
+app.use(express.static(distPath));
+app.get('*', (req, res) => {
+res.sendFile(path.join(distPath, 'index.html'));
+});
+}
+app.listen(PORT, "0.0.0.0");
+}
+
+startServer();
+
+[FIN DU CODE SERVEUR]
+
+PARTIE 2 : LE CODE D'INTÉGRATION CLIENT (App.tsx)
+
+Voici comment votre code frontend communique avec le serveur pour lui soumettre des requêtes et récupérer les résultats sémantiques.
+
+[DEBUT DU CODE D'INTEGRATION CLIENT]
+
+// Exemple de fonction d'interrogation réseau à placer dans les événements de clic sur votre interface :
+async function interrogerImanAI(votreQuestion: string) {
+try {
+const response = await fetch("/api/ask", {
+method: "POST",
+headers: { "Content-Type": "application/json" },
+body: JSON.stringify({ query: votreQuestion })
+});
+
+code
+
+const data = await response.json(); if (data.error) { console.error("Problème API :", data.error); return; } // "data.answer" contient la réponse textuelle de Gemini 1.5 Flash console.log("Réponse de l'IA :", data.answer); // "data.sources" contient les passages de votre base de connaissances utilisés pour nourrir l'IA console.log("Sources locales utilisées :", data.sources); // "data.stats" contient le temps de traitement en millisecondes et le modèle utilisé console.log("Statistiques :", data.stats);
+
+} catch (err) {
+console.error("Impossible de joindre le serveur RAG :", err);
+}
+}
 
 /* ==========================================
    FONCTIONS UTILITAIRES
