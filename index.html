@@ -325,6 +325,114 @@ body {
 /* ══════════════════════════════
    MODALS
 ══════════════════════════════ */
+  <div class="modal-overlay" id="profil-modal">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeModal('profil-modal')">&times;</button>
+    <h2 style="color: var(--orange-clair); border-bottom-color: var(--orange-clair);">👤 Profil de l'Auteur</h2>
+    
+    <div class="avatar-wrapper" onclick="document.getElementById('avatar-file-input').click()">
+      <img id="author-avatar-img" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23CCC'><circle cx='12' cy='8' r='4'/><path d='M12 14c-6.1 0-10 4-10 10h20c0-6-3.9-10-10-10z'/></svg>" alt="Auteur" />
+      <div class="avatar-overlay"><span>Télécharger<br>Photo</span></div>
+    </div>
+    <input type="file" id="avatar-file-input" accept="image/*" style="display:none" onchange="changeAuthorAvatar(event)" />
+
+    <span class="modal-label">Nom :</span>
+    <input type="text" id="authNom" class="modal-input" placeholder="Entrez le nom de l'auteur" />
+    
+    <span class="modal-label">Prénom :</span>
+    <input type="text" id="authPrenom" class="modal-input" placeholder="Entrez le prénom de l'auteur" />
+    
+    <span class="modal-label">Titre de l'auteur :</span>
+    <input type="text" id="authTitre" class="modal-input" placeholder="Ex: Expert en Théologie" />
+
+    <span class="modal-label">⚙️ Configuration du Mode IA :</span>
+    <select id="liaisonModeSelect" class="modal-input" style="background:#F0FDF4; font-weight:bold;" onchange="updateConnexionModeBadge()">
+      <option value="1">1) Base de connaissances ⸗ Moteur IA gratuit</option>
+      <option value="2">2) Interface muette ⸗ Modèle Agent IA gratuit</option>
+      <option value="3">3) Interface muette ⸗ Clé API gratuite</option>
+    </select>
+
+    <div class="api-key-block">
+      <div class="api-key-title">🔑 Clé API Gratuite</div>
+      <input type="password" id="freeApiKey" class="modal-input" style="margin-bottom:0;" placeholder="Collez votre clé API gratuite ici" />
+    </div>
+
+    <button class="btn-pay" style="background: var(--orange-clair);" onclick="saveProfilData()">Enregistrer le profil</button>
+  </div>
+</div>
+
+<div class="modal-overlay" id="paiement-modal">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeModal('paiement-modal')">&times;</button>
+    <h2 style="color: var(--vert-clair); border-bottom-color: var(--vert-clair);">💚 Dons Volontaires</h2>
+    
+    <div class="tabs-pay">
+      <button class="tab-pay active" onclick="switchPayTab(event, 'pay-local')">📱 Local</button>
+      <button class="tab-pay" onclick="switchPayTab(event, 'pay-inter')">🌍 International</button>
+      <button class="tab-pay" onclick="switchPayTab(event, 'pay-online')">💳 En Ligne</button>
+    </div>
+
+    <div id="pay-local" class="tab-content-pay active">
+      <div class="pay-info">Soutien instantané via réseaux mobiles locaux.</div>
+      <span class="modal-label">Opérateur :</span>
+      <select class="modal-input" id="opLocal">
+        <option value="tmoney">T-Money</option>
+        <option value="flooz">Flooz</option>
+      </select>
+      <span class="modal-label">Montant (XOF) :</span>
+      <input type="number" class="modal-input" placeholder="Ex: 5000" />
+      <button class="btn-pay" onclick="processDonation('Local')">Confirmer le transfert</button>
+    </div>
+
+    <div id="pay-inter" class="tab-content-pay">
+      <div class="pay-info">Fonds internationaux via agences sécurisées.</div>
+      <span class="modal-label">Méthode :</span>
+      <select class="modal-input" id="opInter">
+        <option value="wu">Western Union</option>
+        <option value="mg">MoneyGram</option>
+      </select>
+      <span class="modal-label">Code de référence / MTCN :</span>
+      <input type="text" class="modal-input" placeholder="Entrez le code de transaction" />
+      <button class="btn-pay" onclick="processDonation('International')">Soumettre les détails</button>
+    </div>
+
+    <div id="pay-online" class="tab-content-pay">
+      <div class="pay-info">Redirection vers le portail sécurisé CinetPay.</div>
+      <span class="modal-label">Montant d'appui :</span>
+      <input type="number" class="modal-input" placeholder="Montant en devises" />
+      <button class="btn-pay btn-pay-blue" onclick="redirectCinetPay()">Aller sur CinetPay ↗</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="audio-modal">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeModal('audio-modal')">&times;</button>
+    <h2>🎵 Lecture Coranique Audio-Visuelle</h2>
+    <div class="audio-selects">
+      <select class="audio-select" id="sourate-select"></select>
+      <select class="audio-select" id="verset-select"></select>
+    </div>
+    <div class="quran-reader">
+      <div class="qr-title">Zone d'Écoute Épistème</div>
+      <div class="arabic-text">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّhِيمِ</div>
+      <div class="translation-block">
+        <div class="lang-label">Traduction validée</div>
+        <div class="tr-text">Au nom d'Allah, le Tout Miséricordieux, le Très Miséricordieux.</div>
+      </div>
+    </div>
+    <button class="btn-pay" style="background:var(--bleu);" onclick="closeModal('audio-modal')">Fermer le Lecteur</button>
+  </div>
+</div>
+
+<script>
+// Gestion Générique des Modales
+function openModal(id) {
+  document.getElementById(id).classList.add('open');
+}
+function closeModal(id) {
+  document.getElementById(id).classList.remove('open');
+}
 .modal-overlay {
   display: none; position: fixed; inset: 0;
   background: rgba(0,0,0,0.5); z-index: 300;
