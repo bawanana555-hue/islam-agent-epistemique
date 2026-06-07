@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>Islam Agent Épistémique</title>
+<link rel="manifest" href="manifest.json" />
+<meta name="theme-color" content="#F6EDCC" />
+<meta name="mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="default" />
+<meta name="apple-mobile-web-app-title" content="Islam Agent" />
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+<style>
+/* (Conserve tout ton CSS existant, il est parfait) */
+@import url('https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Lato:wght@300;400;700;900&display=swap');
+
+:root {
+  --bg-main:         #F6EDCC;
+  --text-main:       #111111;
+  --orange-clair:    #FFB366;
+  --orange-fonce:    #D97B00;
+  --bleu:            #3498DB;
+  --bleu-ciel:       #3498DB;
+  --vert:            #27AE60;
+  --vert-clair:      #2ECC71;
+  --champ-fond:      #F6EDCC;
+  --text-saisie:     #111111;
+  --text-expert:     #2ECC71;
+  --text-reponse:    #111111;
+  --blanc-pur:       #FFFFFF;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--bg-main);
+  font-family: 'Lato', 'Georgia', serif;
+  color: var(--text-main);
+  display: flex;
+  flex-direction: column;
+  height: 100dvh;
+  overflow: hidden;
+}
+
+/* (Conserve tout le reste de ton CSS) */
+</style>
+</head>
+
+<body>
+
+<div class="header" id="mainHeader">
+  <div class="header-row">
+    <div class="header-left">
+      <button id="dons-btn" class="button-oval" onclick="openModal('paiement-modal')">💚 Dons Volontaires</button>
+      <button id="audio-btn" class="button-oval" onclick="openModal('audio-modal')">🎵 Audio Coran</button>
+    </div>
+
+    <div class="icon-container" id="iconContainer">
+      <div class="icon-inner" onclick="document.getElementById('icon-file-input').click()" title="Changer l'icône">
+        <img id="main-icon-img" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%2327AE60'><path d='M12 3L1 9l11 6 9-4.91V17h2V9L12 3z'/></svg>" alt="Icône Coran" />
+        <div class="icon-overlay"><span>📷 Changer<br>l'icône</span></div>
+      </div>
+      <button class="icon-download-btn" title="Télécharger l'icône" onclick="downloadCurrentIcon(event)">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 4v11M8 11l4 4 4-4M4 19h16" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+    </div>
+    <input type="file" id="icon-file-input" accept="image/*" style="display:none" onchange="changeMainIcon(event)" />
+
+    <div class="header-right">
+      <button id="profil-btn" class="button-oval" onclick="openModal('profil-modal')">👤 Profil</button>
+    </div>
+  </div>
+
+  <div class="welcome-text">
+    <p class="titre-agent"> Islam Agent Épistémique</p>
+    <p class="titre-bienvenue">Bienvenue sur les pages de la théologie islamique</p>
+    <p class="titre-expert">✨ Je suis votre Premier Agent Épistémique d'Afrique pour l'islam</p>
+  </div>
+</div>
+
+<div class="chat-container" id="chat"></div>
+
+<div class="input-wrapper">
+  <div id="dons-message">Soutenez-nous avec un don volontaire !</div>
+  <div class="input-area">
+    <input type="text" id="userInput" placeholder="Posez votre question sur l'Islam..." autocomplete="off" />
+    <div class="send-btn" id="sendBtn" role="button" aria-label="Envoyer" onclick="handleSend()">
+      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <polyline points="6,4 18,12 6,20" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+  </div>
+</div>
+
+<div id="loading">
+  <span class="dot dot1"></span>
+  <span class="dot dot2"></span>
+  <span class="dot dot3"></span>
+  <p>L'Agent réfléchit...</p>
+</div>
+<div id="toast"></div>
+
+<!-- Modales (inchangées) -->
+<div class="modal-overlay" id="profil-modal">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeModal('profil-modal')">&times;</button>
+    <h2 style="color: var(--orange-clair); border-bottom-color: var(--orange-clair);">👤 Profil de l'Auteur</h2>
+
+    <div class="avatar-wrapper" onclick="document.getElementById('avatar-file-input').click()">
+      <img id="author-avatar-img" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23CCC'><circle cx='12' cy='8' r='4'/><path d='M12 14c-6.1 0-10 4-10 10h20c0-6-3.9-10-10-10z'/></svg>" alt="Auteur" />
+      <div class="avatar-overlay"><span>Télécharger<br>Photo</span></div>
+    </div>
+    <input type="file" id="avatar-file-input" accept="image/*" style="display:none" onchange="changeAuthorAvatar(event)" />
+
+    <span class="modal-label">Nom :</span>
+    <input type="text" id="authNom" class="modal-input" placeholder="Entrez le nom de l'auteur" />
+
+    <span class="modal-label">Prénom :</span>
+    <input type="text" id="authPrenom" class="modal-input" placeholder="Entrez le prénom de l'auteur" />
+
+    <span class="modal-label">Titre de l'auteur :</span>
+    <input type="text" id="authTitre" class="modal-input" placeholder="Ex: Expert en Théologie" />
+
+    <span class="modal-label">⚙️ Configuration du Mode IA :</span>
+    <select id="liaisonModeSelect" class="modal-input" style="background:#F0FDF4; font-weight:bold;" onchange="updateConnexionModeBadge()">
+      <option value="local">Base de connaissances + Moteur IA gratuit</option>
+      <option value="mute">Interface muette + Modèle Agent IA gratuit</option>
+      <option value="api">Interface muette + Clé API gratuite</option>
+    </select>
+
+    <div class="api-key-block">
+      <div class="api-key-title">🔑 Clé API Gratuite (Gemini 1.5 Flash)</div>
+      <input type="password" id="freeApiKey" class="modal-input" style="margin-bottom:0;" placeholder="Collez votre clé API ici" />
+    </div>
+
+    <button class="btn-pay" style="background: var(--orange-clair);" onclick="saveProfilData()">Enregistrer le profil</button>
+  </div>
+</div>
+
+<div class="modal-overlay" id="paiement-modal">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeModal('paiement-modal')">&times;</button>
+    <h2 style="color: var(--vert-clair); border-bottom-color: var(--vert-clair);">💚 Dons Volontaires</h2>
+
+    <div class="tabs-pay">
+      <button class="tab-pay active" onclick="switchPayTab(event, 'pay-local')">📱 Local</button>
+      <button class="tab-pay" onclick="switchPayTab(event, 'pay-inter')">🌍 International</button>
+      <button class="tab-pay" onclick="switchPayTab(event, 'pay-online')">💳 En Ligne</button>
+    </div>
+
+    <div id="pay-local" class="tab-content-pay active">
+      <div class="pay-info">Soutien instantané via réseaux mobiles locaux.</div>
+      <span class="modal-label">Opérateur :</span>
+      <select class="modal-input" id="opLocal">
+        <option value="tmoney">T-Money</option>
+        <option value="flooz">Flooz</option>
+      </select>
+      <span class="modal-label">Montant (XOF) :</span>
+      <input type="number" class="modal-input" placeholder="Ex: 5000" />
+      <button class="btn-pay" onclick="processDonation('Local')">Confirmer le transfert</button>
+    </div>
+
+    <div id="pay-inter" class="tab-content-pay">
+      <div class="pay-info">Fonds internationaux via agences sécurisées.</div>
+      <span class="modal-label">Méthode :</span>
+      <select class="modal-input" id="opInter">
+        <option value="wu">Western Union</option>
+        <option value="mg">MoneyGram</option>
+      </select>
+      <span class="modal-label">Code de référence / MTCN :</span>
+      <input type="text" class="modal-input" placeholder="Entrez le code de transaction" />
+      <button class="btn-pay" onclick="processDonation('International')">Soumettre les détails</button>
+    </div>
+
+    <div id="pay-online" class="tab-content-pay">
+      <div class="pay-info">Redirection vers le portail sécurisé CinetPay.</div>
+      <span class="modal-label">Montant d'appui :</span>
+      <input type="number" class="modal-input" placeholder="Montant en devises" />
+      <button class="btn-pay btn-pay-blue" onclick="redirectCinetPay()">Aller sur CinetPay ↗</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="audio-modal">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeModal('audio-modal')">&times;</button>
+    <h2>🎵 Lecture Coranique Audio-Visuelle</h2>
+    <div class="audio-selects">
+      <select class="audio-select" id="sourate-select"></select>
+      <select class="audio-select" id="verset-select"></select>
+    </div>
+    <div class="quran-reader">
+      <div class="qr-title">Zone d'Écoute Épistémè</div>
+      <div class="arabic-text">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّhِيمِ</div>
+      <div class="translation-block">
+        <div class="lang-label">Traduction validée</div>
+        <div class="tr-text">Au nom d'Allah, le Tout Miséricordieux, le Très Miséricordieux.</div>
+      </div>
+    </div>
+    <button class="btn-pay" style="background:var(--bleu);" onclick="closeModal('audio-modal')">Fermer le Lecteur</button>
+  </div>
+</div>
+
+<script>
+// =============================================
+// GESTION DES MODALES (inchangé)
+function openModal(id) {
+  document.getElementById(id).classList.add('open');
+}
+function closeModal(id) {
+  document.getElementById(id).classList.remove('open');
+}
+function switchPayTab(e, tabId) {
+  const box = e.target.closest('.modal-box');
+  box.querySelectorAll('.tab-pay').forEach(btn => btn.classList.remove('active'));
+  box.querySelectorAll('.tab-content-pay').forEach(content => content.classList.remove('active'));
+  e.target.classList.add('active');
+  document.getElementById(tabId).classList.add('active');
+}
+
+// =============================================
+// GESTION DE L'AVATAR ET DE L'ICÔNE (inchangé)
+function changeAuthorAvatar(event) {
+  const file = event.target.files[0];
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      document.getElementById('author-avatar-img').src = e.target.result;
+      showToast("Photo de l'auteur mise à jour !");
+    };
+    reader.readAsDataURL(file);
+  }
+}
+function changeMainIcon(event) {
+  const file = event.target.files[0];
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      document.getElementById('main-icon-img').src = e.target.result;
+      showToast("Icône principale modifiée.");
+    };
+    reader.readAsDataURL(file);
+  }
+}
+function downloadCurrentIcon(event) {
+  event.stopPropagation();
+  const src = document.getElementById('main-icon-img').src;
+  const a = document.createElement('a');
+  a.href = src;
+  a.download = 'icone_agent.png';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+}
+
+// =============================================
+// GESTION DU PROFIL ET DE LA CLÉ API
+let knowledgeBase = []; // Stockera ta base de connaissances
+
+// Charger le profil et la clé API depuis localStorage
+function loadProfile() {
+  const savedProfile = JSON.parse(localStorage.getItem('iae_profile'));
+  if (savedProfile) {
+    document.getElementById('authNom').value = savedProfile.nom || "";
+    document.getElementById('authPrenom').value = savedProfile.prenom || "";
+    document.getElementById('authTitre').value = savedProfile.titre || "";
+    document.getElementById('freeApiKey').value = savedProfile.apiKey || "";
+    document.getElementById('liaisonModeSelect').value = savedProfile.mode || "local";
+    if (savedProfile.avatar) document.getElementById('author-avatar-img').src = savedProfile.avatar;
+  }
+}
+
+// Sauvegarder le profil et la clé API
+function saveProfilData() {
+  const profile = {
+    nom: document.getElementById('authNom').value,
+    prenom: document.getElementById('authPrenom').value,
+    titre: document.getElementById('authTitre').value,
+    apiKey: document.getElementById('freeApiKey').value,
+    mode: document.getElementById('liaisonModeSelect').value,
+    avatar: document.getElementById('author-avatar-img').src
+  };
+  localStorage.setItem('iae_profile', JSON.stringify(profile));
+  showToast("✅ Profil et clé API enregistrés !");
+  closeModal('profil-modal');
+}
+
+// =============================================
+// CHARGEMENT DE LA BASE DE CONNAISSANCES
+async function loadKnowledgeBase() {
+  try {
+    const response = await fetch('knowledge_base_islam.json');
+    if (!response.ok) {
+      throw new Error(`Fichier introuvable (erreur ${response.status})`);
+    }
+    knowledgeBase = await response.json();
+    showToast("✅ Base de connaissances chargée !");
+    console.log("Base de connaissances chargée:", knowledgeBase);
+  } catch (error) {
+    console.error("Erreur lors du chargement de knowledge_base_islam.json:", error);
+    showToast("⚠️ Impossible de charger knowledge_base_islam.json. Vérifiez le fichier.");
+    // Si le fichier n'existe pas, on utilise une base vide
+    knowledgeBase = [];
+  }
+}
+
+// =============================================
+// GESTION DES MESSAGES ET DE L'HISTORIQUE
+let conversationHistory = [];
+
+function addMsg(text, side) {
+  const div = document.createElement('div');
+  div.className = `msg ${side}-msg`;
+  div.innerHTML = side === 'bot' ? marked.parse(text) : text;
+  const chat = document.getElementById('chat');
+  chat.appendChild(div);
+  chat.scrollTop = chat.scrollHeight;
+  return div;
+}
+
+// =============================================
+// ENVOI DES QUESTIONS À GEMINI 1.5 FLASH
+async function handleSend() {
+  const input = document.getElementById('userInput');
+  const query = input.value.trim();
+  if (!query) return;
+
+  // Masquer le message d'accueil
+  document.getElementById('mainHeader').classList.add('conversation-started');
+  document.querySelector('.chat-container').classList.add('conversation-started');
+
+  // Ajouter le message de l'utilisateur
+  addMsg(query, 'user');
+  input.value = '';
+
+  // Afficher le chargement
+  document.getElementById('loading').style.display = 'block';
+
+  // Récupérer le profil et la clé API
+  const profile = JSON.parse(localStorage.getItem('iae_profile'));
+  const apiKey = profile?.apiKey;
+  const mode = profile?.mode || "local";
+
+  if (!apiKey && mode !== "mute") {
+    document.getElementById('loading').style.display = 'none';
+    showToast("⚠️ Veuillez enregistrer votre clé API dans le profil.");
+    return;
+  }
+
+  try {
+    // Construire le prompt en fonction du mode
+    let prompt;
+    if (mode === "local") {
+      // Mode 1: Utilise la base de connaissances + Gemini
+      if (knowledgeBase.length === 0) {
+        throw new Error("La base de connaissances est vide.");
+      }
+      prompt = `
+        Tu es l'Islam Agent Épistémique, un expert en théologie islamique.
+        Utilise UNIQUEMENT les informations de cette base de connaissances pour répondre.
+        Si la réponse n'est pas dans la base, dis : "Je n'ai pas trouvé de réponse dans ma base de connaissances."
+
+        Base de connaissances :
+        ${JSON.stringify(knowledgeBase)}
+
+        Question : ${query}
+      `;
+    } else if (mode === "api") {
+      // Mode 3: Utilise uniquement Gemini (sans base de connaissances)
+      prompt = `
+        Tu es l'Islam Agent Épistémique, un expert en théologie islamique.
+        Réponds à la question suivante de manière précise et respectueuse :
+        ${query}
+      `;
+    } else {
+      // Mode 2: Interface muette (simule une réponse)
+      prompt = query; // Pas utilisé, mais on simule une réponse
+    }
+
+    // Appeler Gemini 1.5 Flash
+    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        contents: [
+          { role: "user", parts: [{ text: prompt }] }
+        ]
+      })
+    });
+
+    const data = await response.json();
+
+    // Gérer les erreurs de l'API
+    if (data.error) {
+      document.getElementById('loading').style.display = 'none';
+      addMsg(`❌ Erreur Google : ${data.error.message}`, 'bot');
+      return;
+    }
+
+    // Extraire la réponse
+    const resultText = data.candidates[0].content.parts[0].text;
+
+    // Ajouter à l'historique
+    conversationHistory.push({ role: "user", parts: [{ text: query }] });
+    conversationHistory.push({ role: "model", parts: [{ text: resultText }] });
+
+    // Sauvegarder l'historique dans localStorage
+    localStorage.setItem('iae_conversation', JSON.stringify(conversationHistory));
+
+    // Afficher la réponse
+    document.getElementById('loading').style.display = 'none';
+    addMsg(resultText, 'bot');
+
+  } catch (error) {
+    document.getElementById('loading').style.display = 'none';
+    console.error("Erreur:", error);
+    addMsg(`❌ Erreur : ${error.message}. Vérifiez votre connexion ou votre clé API.`, 'bot');
+  }
+}
+
+// =============================================
+// AUTRES FONCTIONS (inchangées)
+function processDonation(type) {
+  showToast(`Formulaire de don ${type} validé. Merci pour votre soutien !`);
+  closeModal('paiement-modal');
+}
+function redirectCinetPay() {
+  showToast("Redirection vers le site de paiement CinetPay...");
+  setTimeout(() => {
+    window.open('https://cinetpay.com', '_blank');
+  }, 1000);
+}
+function showToast(text) {
+  const toast = document.getElementById('toast');
+  toast.innerText = text;
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), 3000);
+}
+
+// =============================================
+// CHARGEMENT INITIAL
+window.onload = function() {
+  loadProfile(); // Charger le profil
+  loadKnowledgeBase(); // Charger la base de connaissances
+
+  // Charger l'historique de conversation
+  const savedConversation = localStorage.getItem('iae_conversation');
+  if (savedConversation) {
+    conversationHistory = JSON.parse(savedConversation);
+    // Optionnel: Afficher l'historique au démarrage
+    // conversationHistory.forEach(msg => addMsg(msg.parts[0].text, msg.role === 'user' ? 'user' : 'bot'));
+  }
+
+  // Écouteur pour la touche Entrée
+  document.getElementById('userInput').addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') handleSend();
+  });
+};
+
+// Mise à jour du badge de connexion (optionnel)
+function updateConnexionModeBadge() {
+  const mode = document.getElementById('liaisonModeSelect').value;
+  showToast(`Mode IA changé : ${mode}`);
+}
+</script>
+</body>
+</html>
