@@ -101,6 +101,12 @@ async def chat_endpoint(message: UserMessage):
         
     except Exception as e:
         return {"reply": f"Une erreur technique est survenue : {str(e)}"}
-
+# À mettre tout à la fin de votre fichier main.py
+if __name__ == "__main__":
+    import uvicorn
+    import os
+    # Koyeb donne un port automatiquement via la variable PORT, sinon on prend 8000
+    port = int(os.environ.get("PORT", 8000))
+    uvicorn.run(app, host="0.0.0.0", port=port)
 # Pour lancer le serveur localement, tapez dans votre terminal :
 # uvicorn main:app --reload
