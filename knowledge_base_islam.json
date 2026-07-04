@@ -849,14 +849,14 @@ async function traiterRequeteUtilisateur(questionText) {
         };
     }
 
-    // D. Si la clé est présente, on fait l'appel réseau vers Google Gemini 1.5-Flash
+    // D. Si la clé est présente, on fait l'appel réseau vers Google Gemini 3.5-Flash
     const promptFusionne = fusionnerPromptEtSavoir(questionText, matchedDocs);
     const instructionSysteme = 
         "Tu es un expert local. Réponds à l'utilisateur de manière amicale en français. " +
         "Règle cruciale : Tu dois te baser UNIQUEMENT sur la base de connaissances fournie. Si l'information " +
         "n'y figure pas, réponds exactement : 'Je suis navré, mon savoir ne me permet pas de répondre à cette question'";
 
-    const urlAPI = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${cleApiGemini}`;
+    const urlAPI = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent?key=${cleApiGemini}`;
 
     try {
         const response = await fetch(urlAPI, {
