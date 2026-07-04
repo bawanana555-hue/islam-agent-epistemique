@@ -1078,7 +1078,7 @@
                 addMessage(`📚 Base locale : ${getTotalQuestions()} questions.`, 'bot');
                 addMessage('📌 Mode actif : Hors-Ligne. Changez dans Profil.', 'bot');
                 try {
-                    const testMCP = await callQuranMCP('test');
+                    const testMCP = await callnQuranMCP('test');
                     if (testMCP) {
                         addMessage('✅ Serveur MCP détecté. Sources coraniques enrichies disponibles.', 'bot');
                     } else {
