@@ -872,7 +872,7 @@ async function traiterRequeteUtilisateur(questionText) {
         
         if (data.candidates && data.candidates[0].content.parts[0].text) {
             return {
-                source: "Moteur Réel Google Gemini 1.5-Flash",
+                source: "Moteur Réel Google Gemini 3.5-Flash",
                 text: data.candidates[0].content.parts[0].text,
                 promptFusionne: promptFusionne
             };
