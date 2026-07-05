@@ -736,7 +736,7 @@
                 Symboles : ★, ✦, ❀, ✿, ✧.
                 ${context ? 'Contexte :\n' + context : ''}`;
                 const fullPrompt = systemPrompt + '\n\nQUESTION : ' + query;
-                const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-pro-preview:generateContent?key=${apiKey}`;
+                const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent?key=${apiKey}`;
                 const payload = {
                     contents: [{ parts: [{ text: fullPrompt }] }],
                     generationConfig: { temperature: 0.6, maxOutputTokens: 2048, topP: 0.95 }
