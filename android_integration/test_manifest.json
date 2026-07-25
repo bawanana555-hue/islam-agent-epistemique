@@ -1,0 +1,9 @@
+{
+  "pack_id": "sample_pack_001",
+  "files": [
+    {
+      "url": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
+      "path": "sample_1.mp3"
+    }
+  ]
+}
