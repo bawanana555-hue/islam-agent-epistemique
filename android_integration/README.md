@@ -1,16 +1,17 @@
-# Android integration helper - README
+# Android integration helper - README (updated)
 
 This folder contains sample Kotlin code and resources to integrate the mini‑application (WebView) with native Android code.
 
 What is included
 
-- src/main/java/com/bawanana/androidintegration/MainActivity.kt
+- src/main/java/com/bawanana555hue/islamagent/integration/MainActivity.kt
   - Example Activity that configures WebView, injects a JS bridge and calls the native downloader.
+  - When a file is downloaded, the Activity now converts the local file path to a content:// URI using FileProvider and sends a `loadAudioUri` command to the Web page. This lets the page set audio.src to the content URI and play without transferring large blobs over the bridge.
 
-- src/main/java/com/bawanana/androidintegration/WebAppInterface.kt
+- src/main/java/com/bawanana555hue/islamagent/integration/WebAppInterface.kt
   - The addJavascriptInterface bridge (AndroidApp.postMessage(jsonString)).
 
-- src/main/java/com/bawanana/androidintegration/NativeDownloader.kt
+- src/main/java/com/bawanana555hue/islamagent/integration/NativeDownloader.kt
   - Simple downloader (OkHttp) that fetches a manifest and downloads listed files with SHA-256 verification.
 
 - src/main/res/xml/provider_paths.xml
@@ -29,7 +30,7 @@ How to use (high level)
 
 <provider
     android:name="androidx.core.content.FileProvider"
-    android:authorities="${applicationId}.fileprovider"
+    android:authorities="com.bawanana555hue.islamagent.fileprovider"
     android:exported="false"
     android:grantUriPermissions="true">
     <meta-data android:name="android.support.FILE_PROVIDER_PATHS" android:resource="@xml/provider_paths" />
@@ -45,6 +46,12 @@ val bridgeScript = context.assets.open("webview_bridge.js").bufferedReader().use
 webView.evaluateJavascript(bridgeScript, null)
 
 6) When the web page calls sendToNative({ type:'event', name:'requestDownloadPack', data:{ manifestUrl: 'https://...' } }), the native bridge will start the download and will send progress/events back to the page through window.onNativeMessage.
+
+7) When each file is downloaded, the Activity will now send a command to the Web page like:
+
+{ "type": "command", "action": "loadAudioUri", "data": { "audioUri": "content://com.bawanana555hue.islamagent.fileprovider/files/sample_pack_001/sample_1.mp3" } }
+
+The Web page should handle this message and set audio.src = msg.data.audioUri; audio.load();
 
 Notes & limitations
 - This code is a reference implementation. Adapt package names and error handling to your project needs.
