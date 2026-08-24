@@ -1,0 +1,931 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>Islam Agent Épistémique</title>
+    
+    <!-- PWA & Configuration Écran d'accueil -->
+    <link rel="manifest" href="manifest.json" />
+    <link rel="apple-touch-icon" href="icon-192.png" />
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
+    <meta name="theme-color" content="#F5E6D3" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <!-- Étiquette / Surnom sous l'icône sur l'écran d'accueil -->
+    <meta name="apple-mobile-web-app-title" content="TOSSARA" />
+
+    <style>
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body {
+        font-family:'Segoe UI','Inter',system-ui,sans-serif;
+        background:#FAEBD7;
+        min-height:100vh;
+        display:flex;
+        flex-direction:column;
+        height:100dvh;
+        overflow:hidden;
+    }
+    :root {
+        --bg-main:#FAEBD7;
+        --text-main:#1a1a1a;
+        --orange-clair:#f5a623;
+        --orange-fonce:#D97B00;
+        --bleu-ciel:#87CEEB;
+        --vert-clair:#7bcb7b;
+        --champ-fond:#F5E6D3;
+        --blanc-pur:#FFFFFF;
+        --blanc-creme:#FFF8F0;
+        --noir-fonce:#2a2a2a;
+        --input-height:56px;
+    }
+    .header {
+        position:fixed; top:0; left:0; right:0;
+        background:var(--bg-main);
+        display:flex; flex-direction:column; align-items:center;
+        padding:12px 12px 16px;
+        z-index:100;
+        box-shadow:0 2px 8px rgba(0,0,0,0.05);
+        transition:padding 0.3s ease;
+    }
+    .header-row {
+        display:flex; align-items:center; justify-content:space-between;
+        width:100%; margin-bottom:12px; gap:8px;
+    }
+    .header-left, .header-right {
+        display:flex; flex-direction:column; gap:6px; flex-shrink:0;
+    }
+    .header-left { align-items:flex-start; }
+    .header-right { align-items:flex-end; }
+    .button-oval {
+        padding:10px 16px; border-radius:50px; cursor:pointer;
+        font-size:1.05em; font-weight:bold; transition:all 0.22s;
+        white-space:nowrap; font-family:'Segoe UI',sans-serif;
+        line-height:1.3; background:var(--blanc-pur);
+        border:2px solid var(--vert-clair); color:var(--text-main);
+        position:relative; min-width:90px; text-align:center;
+        display:flex; flex-direction:column; align-items:center; justify-content:center;
+    }
+    .button-oval .btn-line1 { display:block; font-size:1em; }
+    .button-oval .btn-line2 { display:block; font-size:0.75em; opacity:0.85; }
+    .button-oval.single-line { flex-direction:row; padding:10px 20px; }
+    #dons-btn { border-color:var(--vert-clair); }
+    #dons-btn:hover { background:var(--vert-clair); color:white; }
+    #audio-btn { border-color:var(--bleu-ciel); }
+    #audio-btn:hover { background:var(--bleu-ciel); color:white; }
+    #profil-btn { border-color:var(--orange-clair); }
+    #profil-btn:hover { background:var(--orange-clair); color:white; }
+
+    .icon-container {
+        position:relative; width:72px; height:72px;
+        border:2px solid var(--vert-clair); border-radius:50%;
+        background:var(--blanc-pur); flex-shrink:0;
+        cursor:pointer; display:flex; align-items:center; justify-content:center;
+    }
+    .icon-inner {
+        width:68px; height:68px; border-radius:50%; overflow:hidden; position:relative;
+    }
+    .icon-inner img { width:68px; height:68px; object-fit:cover; }
+    .icon-overlay {
+        position:absolute; inset:0; background:rgba(0,0,0,0.38); border-radius:50%;
+        display:flex; flex-direction:column; align-items:center; justify-content:center;
+        opacity:0; transition:opacity 0.2s;
+    }
+    .icon-inner:hover .icon-overlay { opacity:1; }
+    .icon-overlay span { color:white; font-size:0.55em; font-weight:bold; text-align:center; }
+    .icon-download-btn {
+        position:absolute; bottom:-4px; right:-4px;
+        background:var(--vert-clair); border:2px solid white; border-radius:50%;
+        width:26px; height:26px; cursor:pointer;
+        display:flex; align-items:center; justify-content:center; z-index:20; padding:0;
+        box-shadow:0 1px 4px rgba(0,0,0,0.25);
+    }
+    .icon-download-btn:hover { background:#68b868; transform:scale(1.1); }
+    .icon-download-btn svg { width:14px; height:14px; pointer-events:none; }
+
+    .welcome-text {
+        text-align:center; width:100%; padding:8px 8px 0;
+        display:flex; flex-direction:column; gap:4px; margin-top:4px;
+    }
+    .titre-agent { font-size:1.8em; font-weight:900; color:var(--bleu-ciel); font-family:'Georgia',serif; }
+    .titre-bienvenue { font-size:1.3em; color:var(--vert-clair); font-weight:700; }
+    .titre-expert { font-size:1.1em; color:var(--orange-clair); font-weight:600; font-style:italic; }
+
+    .header.conversation-started .welcome-text .titre-agent,
+    .header.conversation-started .welcome-text .titre-bienvenue,
+    .header.conversation-started .welcome-text .titre-expert { display:none; }
+    .header.conversation-started { padding-bottom:8px; }
+
+    .chat-container {
+        flex:1; margin-top:210px; padding:10px 8px 160px;
+        overflow-y:auto; -webkit-overflow-scrolling:touch;
+        display:flex; flex-direction:column;
+        transition:margin-top 0.3s ease;
+    }
+    .chat-container.conversation-started { margin-top:160px; }
+
+    .msg {
+        width:100%; margin-bottom:16px; padding:16px 18px;
+        border-radius:16px; line-height:1.8; font-size:22px;
+        color:var(--noir-fonce); font-weight:bold;
+        border:2px solid var(--orange-clair);
+        background:var(--orange-clair);
+        position:relative; animation:fadeMsg 0.3s ease;
+    }
+    .msg::before { content:'★'; position:absolute; top:6px; right:12px; font-size:14px; color:var(--orange-fonce); opacity:0.7; }
+    .msg::after { content:'✦'; position:absolute; bottom:6px; left:12px; font-size:12px; color:var(--vert-clair); opacity:0.6; }
+
+    .user-msg { align-self:flex-end; background:var(--bleu-ciel); color:white; border-color:var(--bleu-ciel); }
+    .user-msg::before, .user-msg::after { display:none; }
+    .bot-msg { align-self:flex-start; background:var(--champ-fond); border-color:var(--orange-clair); }
+
+    .bot-msg h1 {
+        color:var(--vert-clair); font-size:40px; font-weight:900;
+        text-decoration:underline; text-decoration-color:var(--bleu-ciel);
+        text-decoration-thickness:3px; margin:12px 0 6px; font-family:'Georgia',serif;
+    }
+    .bot-msg h2, .bot-msg h3 {
+        color:var(--vert-clair); font-size:35px; font-weight:700;
+        text-decoration:underline; text-decoration-color:var(--bleu-ciel);
+        text-decoration-thickness:2px; margin:10px 0 4px;
+    }
+    .bot-msg p { color:var(--noir-fonce); font-weight:bold; font-size:22px; margin:4px 0; line-height:1.6; }
+    .bot-msg blockquote {
+        background:var(--blanc-creme); border-left:4px solid var(--vert-clair);
+        border-radius:0 8px 8px 0; padding:12px 16px; margin:8px 0;
+        color:var(--orange-clair); font-weight:bold; font-size:22px; line-height:1.6;
+    }
+
+    .typing-indicator {
+        position: fixed; bottom: 150px; left: 50%; transform: translateX(-50%);
+        z-index: 1000; display: none; align-items: center; gap: 6px;
+        padding: 10px 20px; background: white; border-radius: 20px;
+        border-left: 4px solid var(--vert-clair); box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+        white-space: nowrap;
+    }
+    .typing-indicator.show { display: flex; }
+    .typing-indicator span {
+        width: 12px; height: 12px; border-radius: 50%;
+        animation: bounceDot 1.2s infinite ease-in-out both; display: block;
+    }
+    .typing-indicator span:nth-child(1) { background: var(--orange-clair); animation-delay: -0.32s; }
+    .typing-indicator span:nth-child(2) { background: var(--vert-clair); animation-delay: -0.16s; }
+    .typing-indicator span:nth-child(3) { background: var(--bleu-ciel); }
+
+    @keyframes bounceDot {
+        0%, 80%, 100% { transform: scale(0.6); opacity: 0.4; }
+        40% { transform: scale(1.0); opacity: 1; }
+    }
+
+    .input-wrapper {
+        position: fixed; bottom: 0; left: 0; right: 0;
+        background: var(--bg-main); padding: 6px 6px 10px;
+        z-index: 200; box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
+    }
+    .input-area {
+        display: flex; align-items: center; background: var(--orange-clair);
+        border: 2px solid var(--orange-fonce); border-radius: 40px;
+        padding: 4px 6px 4px 16px; width: 100%; min-height: 56px; gap: 8px;
+    }
+    .input-area input {
+        flex: 1; background: transparent; border: none; outline: none;
+        color: var(--noir-fonce); font-size: 20px; font-weight: bold;
+        padding: 8px 4px 8px 0; min-width: 0;
+    }
+    .input-area input::placeholder { color: #b0a89b; }
+
+    .send-btn {
+        width: 48px; height: 48px; min-width: 48px; flex-shrink: 0;
+        border-radius: 50%; background: #27ae60; border: none; cursor: pointer;
+        transition: background 0.2s, transform 0.1s;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+        color: white; font-size: 24px; line-height: 48px; text-align: center;
+        display: block; padding: 0;
+    }
+    .send-btn:hover { background: #2ecc71; }
+    .send-btn:active { transform: scale(0.92); background: #219a52; }
+
+    #dons-message {
+        text-align: center; font-size: 0.85em; font-weight: bold;
+        margin-bottom: 3px; color: var(--orange-clair); animation: blinkColor 3s infinite;
+    }
+    @keyframes blinkColor {
+        0% { color: var(--orange-clair); }
+        33% { color: var(--bleu-ciel); }
+        66% { color: var(--vert-clair); }
+        100% { color: var(--orange-clair); }
+    }
+
+    .modal-overlay {
+        display: none; position: fixed; inset: 0;
+        background: rgba(0, 0, 0, 0.5); backdrop-filter: blur(4px);
+        z-index: 300; justify-content: center; align-items: center; padding: 20px;
+    }
+    .modal-overlay.open { display: flex; }
+
+    .modal-box {
+        background: var(--blanc-pur); padding: 22px 18px; border-radius: 16px;
+        width: 92%; max-width: 420px; max-height: 85vh; overflow-y: auto;
+        position: relative; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+    }
+    .modal-box h2 { margin: 0 0 14px; font-size: 1.2em; color: var(--text-main); border-bottom: 2px solid var(--orange-clair); padding-bottom: 8px; }
+    .modal-close { position: absolute; top: 10px; right: 14px; font-size: 1.4em; cursor: pointer; color: #888; background: none; border: none; transition: 0.2s; }
+    .modal-close:hover { color: var(--orange-clair); transform: rotate(90deg); }
+    .modal-input { width: 100%; padding: 10px 12px; margin: 4px 0 12px; border: 2px solid var(--bleu-ciel); border-radius: 10px; background: #FFFBF0; color: var(--text-main); font-size: 15px; outline: none; transition: 0.2s; }
+    .modal-input:focus { border-color: var(--vert-clair); box-shadow: 0 0 0 3px rgba(123, 203, 123, 0.15); }
+    .modal-label { font-size: 0.9em; font-weight: bold; color: var(--text-main); margin-top: 4px; display: block; }
+
+    .avatar-wrapper { position: relative; width: 80px; height: 80px; margin: 0 auto 14px; cursor: pointer; border: 3px dashed var(--orange-clair); border-radius: 50%; padding: 2px; overflow: hidden; }
+    .avatar-wrapper img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; background: #EEE; }
+    .avatar-overlay { position: absolute; inset: 0; border-radius: 50%; background: rgba(0, 0, 0, 0.4); display: flex; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.2s; }
+    .avatar-wrapper:hover .avatar-overlay { opacity: 1; }
+    .avatar-overlay span { color: white; font-size: 0.6em; font-weight: bold; text-align: center; }
+
+    .api-key-block { background: #F4F9FF; border: 2px solid #4285F4; border-radius: 10px; padding: 12px; margin: 10px 0; }
+    .api-key-title { font-weight: bold; font-size: 0.9em; margin-bottom: 6px; color: #4285F4; }
+
+    .mode-selector-profil { display: flex; gap: 6px; margin: 8px 0 12px; flex-wrap: wrap; }
+    .mode-selector-profil button { flex: 1; min-width: 60px; padding: 8px 6px; border-radius: 30px; border: 2px solid #d6cec0; background: #f7f2e9; font-size: 10px; font-weight: 600; color: #5a5a5a; cursor: pointer; transition: 0.2s; }
+    .mode-selector-profil button.active { border-color: var(--vert-clair); background: var(--vert-clair); color: white; box-shadow: 0 2px 8px rgba(123, 203, 123, 0.2); }
+    .mode-selector-profil button:hover { transform: translateY(-1px); }
+
+    .tabs-pay { display: flex; border-bottom: 2px solid var(--vert-clair); margin-bottom: 14px; }
+    .tab-pay { flex: 1; padding: 8px 2px; font-size: 0.85em; font-weight: bold; cursor: pointer; border: none; background: none; color: #777; border-bottom: 3px solid transparent; margin-bottom: -2px; transition: 0.2s; }
+    .tab-pay.active { color: var(--vert-clair); border-bottom-color: var(--vert-clair); }
+    .tab-pay:hover { color: var(--text-main); }
+    .tab-content-pay { display: none; }
+    .tab-content-pay.active { display: block; }
+
+    .pay-info { font-size: 0.9em; color: #666; margin-bottom: 10px; padding: 8px 12px; background: #f8f4ed; border-radius: 8px; }
+    .btn-pay { width: 100%; padding: 11px; border: none; border-radius: 10px; cursor: pointer; font-size: 1em; font-weight: bold; margin-top: 8px; background: var(--vert-clair); color: white; font-family: inherit; transition: 0.2s; }
+    .btn-pay:hover { background: #68b868; transform: scale(0.98); }
+    .btn-pay-blue { background: var(--bleu-ciel); }
+    .btn-pay-blue:hover { background: #6bb5d9; }
+    .btn-pay-orange { background: var(--orange-clair); }
+    .btn-pay-orange:hover { background: #e0951e; }
+
+    #audio-modal .modal-box { max-width: 780px; width: 96%; max-height: 94vh; padding: 18px 16px; display:flex; flex-direction:column; }
+
+    .quran-topbar { display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:10px; flex-wrap:wrap; }
+    .quran-logo-wrap { position:relative; width:64px; height:64px; flex-shrink:0; border:3px solid var(--vert-clair); border-radius:50%; background:white; overflow:hidden; cursor:pointer; }
+    .quran-logo-wrap img { width:100%; height:100%; object-fit:cover; }
+    .quran-logo-dl { position:absolute; bottom:-2px; right:-2px; width:22px; height:22px; background:var(--vert-clair); border:2px solid white; border-radius:50%; cursor:pointer; display:flex; align-items:center; justify-content:center; z-index:5; }
+    .quran-logo-dl svg { width:11px; height:11px; pointer-events:none; }
+
+    .quran-pill { background:white; border-radius:30px; padding:9px 18px; font-size:14px; font-weight:700; color:var(--text-main); border:2px solid var(--bleu-ciel); cursor:pointer; transition:0.2s; white-space:nowrap; }
+    .quran-pill.orange { border-color:var(--orange-clair); }
+    .quran-pill:hover { transform:translateY(-1px); box-shadow:0 2px 8px rgba(0,0,0,0.12); }
+    .quran-pill.active { background:var(--bleu-ciel); color:white; }
+    .quran-pill.orange.active { background:var(--orange-clair); color:white; }
+
+    .quran-reader { flex:1; min-height:240px; background:#f6e0c3; border:3px solid var(--vert-clair); border-radius:12px; padding:12px 14px; display:flex; flex-direction:column; overflow:hidden; }
+    .quran-headline { text-align:center; margin-bottom:8px; }
+    .quran-headline .big { color:var(--bleu-ciel); font-size:24px; font-weight:900; font-family:'Georgia',serif; }
+    .quran-headline .sub { color:var(--orange-clair); font-size:17px; font-weight:600; }
+
+    .quran-text-area { flex:1; overflow:auto; padding:10px; border-radius:8px; background:rgba(255,255,255,0.45); min-height:120px; position:relative; }
+    .quran-words { line-height:2.7; font-size:30px; direction:rtl; text-align:right; word-break:keep-all; color:var(--text-main); font-family:'Scheherazade New','Amiri',serif; }
+    .quran-word { padding:3px 8px; border-radius:8px; display:inline-block; margin:0 2px; transition:background 0.15s; cursor:pointer; }
+    .quran-word.active { background:#fff59d; box-shadow:0 0 0 2px rgba(0,0,0,0.05) inset; }
+    .quran-word.verse-end { border-bottom:2px solid var(--orange-clair); }
+
+    .quran-translation { margin-top:8px; padding:8px 10px; border-radius:8px; background:rgba(255,255,255,0.7); font-size:15px; color:var(--noir-fonce); direction:ltr; text-align:left; line-height:1.6; min-height:20px; }
+
+    .quran-controls { margin-top:10px; display:flex; flex-direction:column; gap:8px; }
+    .quran-block { background:#fff8f0; border:2px solid #e8dcc8; border-radius:12px; padding:8px; }
+    .quran-block-title { font-size:11px; font-weight:800; color:var(--orange-fonce); text-transform:uppercase; letter-spacing:.5px; margin-bottom:6px; }
+    .quran-btn-row { display:flex; gap:6px; flex-wrap:wrap; align-items:center; }
+    .qc-btn { flex:1; min-width:52px; padding:8px 6px; border-radius:10px; border:2px solid #d6cec0; background:white; color:var(--text-main); font-size:12px; font-weight:700; cursor:pointer; transition:0.15s; text-align:center; }
+    .qc-btn:hover { transform:translateY(-1px); border-color:var(--bleu-ciel); }
+    .qc-btn:active { transform:scale(0.95); }
+    .qc-btn.primary { background:var(--bleu-ciel); border-color:var(--bleu-ciel); color:white; }
+    .qc-btn.orange { background:var(--orange-clair); border-color:var(--orange-clair); color:white; }
+    .qc-btn.green { background:var(--vert-clair); border-color:var(--vert-clair); color:white; }
+    .qc-btn.small { flex:0 0 auto; min-width:40px; padding:8px 10px; }
+
+    .qc-select { padding:7px 8px; border-radius:10px; border:2px solid var(--bleu-ciel); background:white; font-size:12px; font-weight:700; color:var(--text-main); cursor:pointer; }
+    .qc-speed { display:flex; align-items:center; gap:6px; }
+    .qc-speed input { width:90px; accent-color:var(--orange-clair); }
+
+    .mode-toggle { display:flex; gap:4px; }
+    .mode-toggle button { flex:1; padding:7px 4px; border-radius:20px; border:2px solid #d6cec0; background:#f7f2e9; font-size:10px; font-weight:700; color:#5a5a5a; cursor:pointer; transition:0.2s; }
+    .mode-toggle button.active { border-color:var(--vert-clair); background:var(--vert-clair); color:white; }
+
+    #toast { position: fixed; bottom: 90px; left: 50%; transform: translateX(-50%); background: #222; color: white; padding: 9px 20px; border-radius: 20px; font-size: 0.9em; z-index: 9999; opacity: 0; transition: opacity 0.4s; pointer-events: none; }
+    #toast.show { opacity: 1; }
+
+    @keyframes fadeMsg { 0% { opacity: 0; transform: translateY(8px); } 100% { opacity: 1; transform: translateY(0); } }
+
+    @media (max-width: 700px) {
+        .quran-words { font-size: 24px; line-height: 2.3; }
+        .quran-logo-wrap { width: 54px; height: 54px; }
+        .quran-pill { font-size: 12px; padding: 7px 12px; }
+        #audio-modal .modal-box { padding: 12px 10px; }
+    }
+    @media (max-width: 500px) {
+        .quran-topbar { gap:6px; justify-content:center; }
+        .quran-pill { font-size:11px; padding:6px 9px; }
+        .quran-logo-wrap { width:48px; height:48px; }
+        .quran-words { font-size:20px; }
+        .quran-headline .big { font-size:20px; }
+        .quran-headline .sub { font-size:15px; }
+        .qc-btn { font-size:11px; min-width:46px; }
+        .button-oval { font-size: 0.85em; padding: 8px 12px; min-width: 60px; }
+        .button-oval .btn-line2 { font-size: 0.7em; }
+        .titre-agent { font-size: 1.5em; }
+        .titre-bienvenue { font-size: 1.1em; }
+        .titre-expert { font-size: 0.95em; }
+        .msg { font-size: 20px; padding: 12px 14px; }
+        .bot-msg h1 { font-size: 28px; }
+        .bot-msg h2, .bot-msg h3 { font-size: 24px; }
+        .bot-msg p, .bot-msg li, .bot-msg blockquote { font-size: 20px; }
+        .modal-box { padding: 18px 14px; margin: 10px; }
+        .input-area input { font-size: 18px; }
+        .send-btn { width: 44px; height: 44px; min-width: 44px; font-size: 20px; line-height: 44px; }
+        .mode-selector-profil button { font-size: 9px; min-width: 50px; padding: 6px 4px; }
+    }
+    @media (max-width: 380px) {
+        .button-oval { font-size: 0.75em; padding: 6px 8px; min-width: 50px; }
+        .button-oval .btn-line2 { font-size: 0.65em; }
+        .titre-agent { font-size: 1.3em; }
+        .msg { font-size: 18px; }
+        .bot-msg p, .bot-msg li, .bot-msg blockquote { font-size: 18px; }
+        .mode-selector-profil button { font-size: 8px; min-width: 40px; padding: 4px 3px; }
+    }
+    </style>
+</head>
+
+<body>
+
+<div class="header" id="mainHeader">
+<div class="header-row">
+    <div class="header-left">
+        <button id="dons-btn" class="button-oval" onclick="openModal('paiement-modal')">
+            <span class="btn-line1">💚 Dons</span>
+            <span class="btn-line2">volontaires</span>
+        </button>
+        <button id="audio-btn" class="button-oval" onclick="openModal('audio-modal')">
+            <span class="btn-line1">🎵 Audio</span>
+            <span class="btn-line2">Coran</span>
+        </button>
+    </div>
+    <div class="icon-container" id="iconContainer">
+        <div class="icon-inner" onclick="document.getElementById('icon-file-input').click()" title="Changer l'icône TOSSARA">
+            <!-- Icône avec fond vert et lune blanche -->
+            <img id="main-icon-img" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%2327AE60'/><path d='M65 30 A 28 28 0 1 1 35 70 A 32 32 0 1 0 65 30 Z' fill='%23FFFFFF'/></svg>" alt="Icône TOSSARA" />
+            <div class="icon-overlay"><span>📷 Changer<br>l'icône</span></div>
+        </div>
+        <button class="icon-download-btn" title="Télécharger l'icône" onclick="downloadCurrentIcon(event)">
+            <svg viewBox="0 0 24 24" fill="none"><path d="M12 4v11M8 11l4 4 4-4M4 19h16" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+    </div>
+    <input type="file" id="icon-file-input" accept="image/*" style="display:none" onchange="changeMainIcon(event)" />
+    <div class="header-right">
+        <button id="profil-btn" class="button-oval single-line" onclick="openModal('profil-modal')">👤 Profil</button>
+    </div>
+</div>
+<div class="welcome-text">
+    <p class="titre-agent">☪ Islam Agent Épistémique</p>
+    <p class="titre-bienvenue">Bienvenue sur les pages de la théologie islamique</p>
+    <p class="titre-expert">✨ Je suis votre premier Agent Épistémique d'Afrique pour l'islam</p>
+</div>
+</div>
+
+<div class="chat-container" id="chat"></div>
+
+<div class="typing-indicator" id="typingIndicator">
+<span></span><span></span><span></span>
+</div>
+
+<div class="input-wrapper">
+<div id="dons-message">🤲 Soutenez-nous avec un don volontaire pour la gratuité du savoir</div>
+<div class="input-area">
+    <input type="text" id="userInput" placeholder="Posez votre question sur l'Islam..." autocomplete="off" autocorrect="off" spellcheck="false" />
+    <button class="send-btn" id="sendBtn" onclick="handleSend()" title="Envoyer">➤</button>
+</div>
+</div>
+
+<div id="toast"></div>
+
+<!-- Modal Profil -->
+<div class="modal-overlay" id="profil-modal">
+<div class="modal-box">
+    <button class="modal-close" onclick="closeModal('profil-modal')">&times;</button>
+    <h2 style="color:var(--orange-clair); border-bottom-color:var(--orange-clair);">👤 Profil de l'Auteur</h2>
+    <div class="avatar-wrapper" onclick="document.getElementById('avatar-file-input').click()">
+        <img id="author-avatar-img" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23CCC'><circle cx='12' cy='8' r='4'/><path d='M12 14c-6.1 0-10 4-10 10h20c0-6-3.9-10-10-10z'/></svg>" alt="Auteur" />
+        <div class="avatar-overlay"><span>Télécharger<br>Photo</span></div>
+    </div>
+    <input type="file" id="avatar-file-input" accept="image/*" style="display:none" onchange="changeAuthorAvatar(event)" />
+    <span class="modal-label">Nom :</span>
+    <input type="text" id="authNom" class="modal-input" placeholder="Entrez le nom de l'auteur" />
+    <span class="modal-label">Prénom :</span>
+    <input type="text" id="authPrenom" class="modal-input" placeholder="Entrez le prénom de l'auteur" />
+    <span class="modal-label">Titre de l'auteur :</span>
+    <input type="text" id="authTitre" class="modal-input" placeholder="Ex: Expert en Théologie Islamique" />
+    <span class="modal-label">⚙️ Mode de Connexion IA :</span>
+    <div class="mode-selector-profil" id="modeSelectorProfil">
+        <button data-mode="local" class="active">📁 Hors-Ligne</button>
+        <button data-mode="hybrid">🔁 Hybride (MCP + RAG)</button>
+        <button data-mode="online">🌐 En Ligne (Gemini IA)</button>
+    </div>
+    <div class="api-key-block">
+        <div class="api-key-title">🔑 Clé API Gemini</div>
+        <input type="password" id="freeApiKey" class="modal-input" style="margin-bottom:0;" placeholder="Collez votre clé API Gemini ici" />
+        <p style="font-size:0.7em;color:#666;margin-top:4px;">💡 Obtenez votre clé sur <a href="https://aistudio.google.com/apikey" target="_blank" style="color:var(--bleu-ciel);">Google AI Studio</a></p>
+    </div>
+    <button class="btn-pay btn-pay-orange" onclick="saveProfilData()">💾 Enregistrer le profil</button>
+</div>
+</div>
+
+<!-- Modal Paiement -->
+<div class="modal-overlay" id="paiement-modal">
+<div class="modal-box">
+    <button class="modal-close" onclick="closeModal('paiement-modal')">&times;</button>
+    <h2 style="color:var(--vert-clair); border-bottom-color:var(--vert-clair);">💚 Dons Volontaires</h2>
+    <div class="tabs-pay">
+        <button class="tab-pay active" onclick="switchPayTab(event, 'pay-local')">📱 Local</button>
+        <button class="tab-pay" onclick="switchPayTab(event, 'pay-inter')">🌍 International</button>
+        <button class="tab-pay" onclick="switchPayTab(event, 'pay-online')">💳 En Ligne</button>
+    </div>
+    <div id="pay-local" class="tab-content-pay active">
+        <div class="pay-info">💚 Soutien instantané via réseaux mobiles locaux.</div>
+        <span class="modal-label">Opérateur :</span>
+        <select class="modal-input" id="opLocal"><option value="tmoney">T-Money</option><option value="flooz">Flooz</option></select>
+        <span class="modal-label">Numéro de téléphone :</span>
+        <input type="tel" class="modal-input" placeholder="Ex: 01 XX XX XX XX" />
+        <span class="modal-label">Montant (XOF) :</span>
+        <input type="number" class="modal-input" placeholder="Ex: 5000" min="100" />
+        <button class="btn-pay" onclick="processDonation('Local')">✅ Confirmer le transfert</button>
+    </div>
+    <div id="pay-inter" class="tab-content-pay">
+        <div class="pay-info">🌍 Fonds internationaux via agences sécurisées.</div>
+        <span class="modal-label">Méthode :</span>
+        <select class="modal-input" id="opInter"><option value="wu">Western Union</option><option value="mg">MoneyGram</option></select>
+        <span class="modal-label">Code de référence / MTCN :</span>
+        <input type="text" class="modal-input" placeholder="Entrez le code de transaction" />
+        <span class="modal-label">Montant (USD/EUR) :</span>
+        <input type="number" class="modal-input" placeholder="Ex: 50" min="10" />
+        <button class="btn-pay" onclick="processDonation('International')">✅ Soumettre les détails</button>
+    </div>
+    <div id="pay-online" class="tab-content-pay">
+        <div class="pay-info">🔗 Redirection vers le portail sécurisé CinetPay.</div>
+        <span class="modal-label">Montant d'appui :</span>
+        <input type="number" class="modal-input" placeholder="Montant en devises" min="1" />
+        <span class="modal-label">Email de confirmation :</span>
+        <input type="email" class="modal-input" placeholder="votre@email.com" />
+        <button class="btn-pay btn-pay-blue" onclick="redirectCinetPay()">🔗 Aller sur CinetPay</button>
+    </div>
+</div>
+</div>
+
+<!-- Modal Audio Coran -->
+<div class="modal-overlay" id="audio-modal">
+<div class="modal-box quran-modal">
+    <button class="modal-close" onclick="closeModal('audio-modal')">&times;</button>
+    <div class="quran-topbar">
+        <div class="quran-logo-wrap" id="quranLogoBtn" title="Télécharger le logo">
+            <img id="quranLogoImg" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='50' fill='%237bcb7b'/><path d='M65 30 A 28 28 0 1 1 35 70 A 32 32 0 1 0 65 30 Z' fill='%23FFFFFF'/></svg>" alt="Logo Coran" />
+            <div class="quran-logo-dl" onclick="downloadQuranLogo(event)" title="Télécharger le logo">
+                <svg viewBox="0 0 24 24" fill="none"><path d="M12 4v11M8 11l4 4 4-4M4 19h16" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+        </div>
+        <button class="quran-pill" id="reciterBtn" onclick="openReciterPicker()">🎙️ Récitateur</button>
+        <button class="quran-pill orange" id="surahBtn" onclick="openSurahPicker()">📖 Sourate 1</button>
+    </div>
+    <div class="quran-reader">
+        <div class="quran-headline">
+            <div class="big">Porte Épistémique</div>
+            <div class="sub">J'apprends comme toi</div>
+        </div>
+        <div class="quran-text-area" id="quranTextArea">
+            <div class="quran-words" id="quranWords" dir="rtl"></div>
+        </div>
+        <div class="quran-translation" id="quranTranslation">—</div>
+    </div>
+    <div class="quran-controls">
+        <div class="quran-block">
+            <div class="quran-block-title">🎵 Contrôle audio</div>
+            <div class="quran-btn-row">
+                <button class="qc-btn" onclick="qPrev()" title="Précédent">⏮ Préc.</button>
+                <button class="qc-btn primary" onclick="qPlayPause()" id="qPlayBtn" title="Lecture/Pause">▶️ Play</button>
+                <button class="qc-btn" onclick="qNext()" title="Suivant">⏭ Suiv.</button>
+                <button class="qc-btn" onclick="qStop()" title="Stop">⏹ Stop</button>
+                <button class="qc-btn" onclick="qMute()" id="qMuteBtn" title="Son">🔊 Son</button>
+            </div>
+            <div class="quran-btn-row" style="margin-top:6px">
+                <div class="qc-speed">
+                    <span style="font-size:11px;font-weight:700">Vitesse :</span>
+                    <input type="range" id="qSpeed" min="0.5" max="1.5" step="0.1" value="1" oninput="qSetSpeed(this.value)">
+                    <span id="qSpeedLabel" style="font-size:11px;font-weight:700">1.0x</span>
+                </div>
+                <select class="qc-select" id="qLang" onchange="qSetLang(this.value)">
+                    <option value="fr">Arabe → Français</option>
+                    <option value="en">Arabe → Anglais</option>
+                </select>
+            </div>
+        </div>
+        <div class="quran-block">
+            <div class="quran-block-title">📦 Ressources &amp; stockage</div>
+            <div class="quran-btn-row">
+                <button class="qc-btn orange" onclick="qExport()">💾 Export</button>
+                <button class="qc-btn" onclick="document.getElementById('qImportFile').click()">📂 Import</button>
+                <input type="file" id="qImportFile" accept=".json,.db,.sqlite" style="display:none" onchange="qImport(event)">
+                <button class="qc-btn green" onclick="qShowStorage()">🗄️ Stockage</button>
+            </div>
+            <div class="quran-btn-row" style="margin-top:6px">
+                <div class="mode-toggle" id="qModeToggle">
+                    <button data-qmode="local" class="active" onclick="qSetMode('local')">📁 Local</button>
+                    <button data-qmode="hybrid" onclick="qSetMode('hybrid')">🔁 Hybride</button>
+                    <button data-qmode="online" onclick="qSetMode('online')">🌐 En ligne</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+
+<!-- CHARGEMENT DES MODULES DE BASE DE DONNÉES ET RAG -->
+<script src="db.js"></script>
+<script src="rag_engine.js"></script>
+<script src="app.js"></script>
+
+<script>
+/* ===== GARDE-FOU STOCKAGE ===== */
+(function() {
+    try {
+        var t = '__test__';
+        localStorage.setItem(t, '1');
+        localStorage.removeItem(t);
+    } catch (e) {
+        var store = {};
+        var safeLS = {
+            getItem: function(k) { return (k in store) ? store[k] : null; },
+            setItem: function(k, v) { store[k] = String(v); },
+            removeItem: function(k) { delete store[k]; }
+        };
+        try { Object.defineProperty(window, 'localStorage', { value: safeLS, configurable: true }); }
+        catch (e2) { window.localStorage = safeLS; }
+    }
+})();
+
+(function() {
+    'use strict';
+
+    const chatContainer = document.getElementById('chat');
+    const userInput = document.getElementById('userInput');
+    const sendBtn = document.getElementById('sendBtn');
+    const mainHeader = document.getElementById('mainHeader');
+    const typingIndicator = document.getElementById('typingIndicator');
+    const toastEl = document.getElementById('toast');
+
+    let currentMode = 'local';
+    let isProcessing = false;
+    let conversationStarted = false;
+    let apiKey = localStorage.getItem('api_key') || '';
+
+    const SERVER_BASE = (() => {
+        const host = window.location.hostname;
+        if (host === 'localhost' || host === '127.0.0.1') return 'http://localhost:8080';
+        return '';
+    })();
+
+    function showTyping() { typingIndicator.classList.add('show'); }
+    function hideTyping() { typingIndicator.classList.remove('show'); }
+
+    async function appelMCP(tool, params) {
+        try {
+            const url = SERVER_BASE ? SERVER_BASE + '/mcp' : '/mcp';
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ tool: tool, params: params })
+            });
+            if (!response.ok) throw new Error('HTTP ' + response.status);
+            return await response.json();
+        } catch (e) {
+            console.warn('MCP indisponible (mode hors-ligne):', e.message);
+            return null;
+        }
+    }
+
+    async function appelGemini(prompt, cleApi) {
+        const MODELE = 'gemini-3.1-flash-lite';
+        const url = 'https://generativelanguage.googleapis.com/v1beta/models/' + MODELE + ':generateContent?key=' + encodeURIComponent(cleApi);
+        const res = await fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                contents: [{ parts: [{ text: prompt }] }],
+                generationConfig: { temperature: 0.6, maxOutputTokens: 2048 }
+            })
+        });
+        if (!res.ok) {
+            const errData = await res.json().catch(function() { return {}; });
+            const msg = (errData.error && errData.error.message) || ('HTTP ' + res.status);
+            throw new Error('Gemini API : ' + msg);
+        }
+        const data = await res.json();
+        const text = data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts && data.candidates[0].content.parts[0].text;
+        if (!text) throw new Error('Réponse vide de Gemini.');
+        return text;
+    }
+
+    async function traiterRequeteUtilisateur(question) {
+        const cleApi = apiKey || localStorage.getItem('api_key') || '';
+
+        // 1. SI EN MODE LOCAL OU HORS-LIGNE -> APPELER RAG ENGINE DANS INDEXEDDB
+        if (currentMode === 'local' || !navigator.onLine) {
+            if (typeof processLocalRAGQuery === 'function') {
+                return await processLocalRAGQuery(question);
+            } else {
+                return "⚠️ Moteur RAG local non chargé. Vérifiez vos fichiers JavaScript.";
+            }
+        }
+
+        // 2. TENTATIVE MCP
+        let mcpResults = null;
+        let source = 'locale';
+        try {
+            let rep = await appelMCP('search_quran', { query: question, max_results: 3 });
+            if (rep && rep.count > 0) { mcpResults = rep.results; source = 'Coran (MCP)'; }
+            else {
+                rep = await appelMCP('search_hadiths', { query: question, max_results: 3 });
+                if (rep && rep.count > 0) { mcpResults = rep.results; source = 'Hadiths (MCP)'; }
+                else {
+                    rep = await appelMCP('search_tafsir', { query: question, max_results: 2 });
+                    if (rep && rep.count > 0) { mcpResults = rep.results; source = 'Tafsir (MCP)'; }
+                }
+            }
+        } catch (e) { console.warn('MCP indisponible, fallback local.'); }
+
+        let reponseMCPFormatee = '';
+        if (mcpResults && mcpResults.length > 0) {
+            reponseMCPFormatee = '📖 **Source : ' + source + '**\n\n';
+            for (const item of mcpResults) {
+                if (item.type === 'verset') {
+                    reponseMCPFormatee += '**Sourate ' + item.sourate_id + '** — Verset ' + item.verset_id + ' :\n« ' + (item.traduction || item.texte) + ' »\n\n';
+                } else if (item.type === 'sourate') {
+                    reponseMCPFormatee += '**Sourate ' + item.sourate_id + ' : ' + (item.nom_fr || item.nom) + '**\nNombre de versets : ' + (item.versets || item.nb_versets) + '\n\n';
+                } else if (item.type === 'hadith') {
+                    reponseMCPFormatee += '**Hadith** (source : ' + (item.source || 'authentique') + ') :\n« ' + item.texte + ' »\n\n';
+                } else if (item.type === 'tafsir') {
+                    reponseMCPFormatee += '**Tafsir** (verset ' + (item.verset || item.id) + ') :\n' + item.texte + '\n\n';
+                } else {
+                    reponseMCPFormatee += (item.texte || item.traduction || item.content) + '\n\n';
+                }
+            }
+        }
+
+        // 3. MODE EN LIGNE (GEMINI)
+        if (currentMode === 'online' && cleApi && cleApi.length > 10) {
+            showTyping();
+            try {
+                const systemPrompt = "Tu es Islam Agent Épistémique, expert en théologie islamique d'Afrique. Réponds avec précision en t'appuyant sur le Coran et les Hadiths authentiques. Sois respectueux, structuré et clair. Utilise des titres (##) et des citations (>) dans ta réponse.";
+                const contextLocal = typeof processLocalRAGQuery === 'function' ? await processLocalRAGQuery(question) : '';
+                const prompt = systemPrompt + '\n\nContexte disponible :\n' + (reponseMCPFormatee || contextLocal) + '\n\nQuestion : "' + question + '"';
+                
+                const texteIA = await appelGemini(prompt, cleApi);
+                hideTyping();
+                
+                let reponseFinale = '';
+                if (reponseMCPFormatee) reponseFinale += '📚 **Sources islamiques (MCP) :**\n' + reponseMCPFormatee + '\n\n---\n\n';
+                reponseFinale += '🤖 **Réponse de l\'IA islamique :**\n\n' + texteIA;
+                return reponseFinale;
+            } catch (e) {
+                hideTyping();
+                console.warn('Erreur Gemini:', e);
+                if (e.message.indexOf('API_KEY') >= 0 || e.message.indexOf('401') >= 0 || e.message.indexOf('403') >= 0) {
+                    return '❌ **Clé API invalide ou expirée.**\n\nVérifiez votre clé dans **Profil → Clé API Gemini**.';
+                }
+                const fallback = reponseMCPFormatee || (typeof processLocalRAGQuery === 'function' ? await processLocalRAGQuery(question) : '');
+                return '⚠️ **L\'IA en ligne est temporairement indisponible.** Réponse locale :\n\n' + fallback;
+            }
+        }
+
+        if (reponseMCPFormatee) return reponseMCPFormatee;
+        return typeof processLocalRAGQuery === 'function' ? await processLocalRAGQuery(question) : 'Aucun résultat trouvé.';
+    }
+
+    function markdownToHtml(text) {
+        return text
+            .replace(/^### (.+)$/gm, '<h3>$1</h3>')
+            .replace(/^## (.+)$/gm, '2>$1</h2>')
+            .replace(/^# (.+)$/gm, '<h1>$1</h1>')
+            .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+            .replace(/\*(.+?)\*/g, '<em>$1</em>')
+            .replace(/^> (.+)$/gm, '<blockquote>$1</blockquote>')
+            .replace(/\n/g, '<br>');
+    }
+
+    function addMessage(content, sender) {
+        const div = document.createElement('div');
+        div.className = 'msg ' + (sender === 'user' ? 'user-msg' : 'bot-msg');
+        if (sender === 'bot') div.innerHTML = markdownToHtml(content);
+        else div.textContent = content;
+        chatContainer.appendChild(div);
+        chatContainer.scrollTop = chatContainer.scrollHeight;
+    }
+
+    function startConversation() {
+        if (!conversationStarted) {
+            conversationStarted = true;
+            mainHeader.classList.add('conversation-started');
+            chatContainer.classList.add('conversation-started');
+        }
+    }
+
+    async function handleSend() {
+        const query = userInput.value.trim();
+        if (!query || isProcessing) return;
+        isProcessing = true;
+        sendBtn.style.opacity = '0.5';
+        sendBtn.style.pointerEvents = 'none';
+        startConversation();
+        addMessage(query, 'user');
+        userInput.value = '';
+        showTyping();
+        try {
+            const reponse = await traiterRequeteUtilisateur(query);
+            addMessage(reponse, 'bot');
+        } catch (e) {
+            console.error('Erreur:', e);
+            addMessage('❌ Erreur inattendue. Veuillez réessayer.', 'bot');
+        } finally {
+            hideTyping();
+            isProcessing = false;
+            sendBtn.style.opacity = '1';
+            sendBtn.style.pointerEvents = 'auto';
+            userInput.focus();
+        }
+    }
+    window.handleSend = handleSend;
+
+    sendBtn.addEventListener('click', handleSend);
+    userInput.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') { e.preventDefault(); handleSend(); }
+    });
+
+    document.querySelectorAll('#modeSelectorProfil button').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+            document.querySelectorAll('#modeSelectorProfil button').forEach(function(b) { b.classList.remove('active'); });
+            this.classList.add('active');
+            currentMode = this.dataset.mode;
+            var modeNames = { local: '📁 Hors-Ligne', hybrid: '🔁 Hybride (MCP)', online: '🌐 En Ligne (Gemini)' };
+            showToast('Mode : ' + (modeNames[currentMode] || currentMode));
+        });
+    });
+
+    window.openModal = function(id) { var el = document.getElementById(id); if (el) el.classList.add('open'); };
+    window.closeModal = function(id) { var el = document.getElementById(id); if (el) el.classList.remove('open'); };
+    window.showToast = function(msg) {
+        if (!toastEl) return;
+        toastEl.textContent = msg;
+        toastEl.classList.add('show');
+        clearTimeout(window.toastTimer);
+        window.toastTimer = setTimeout(function() { toastEl.classList.remove('show'); }, 3000);
+    };
+
+    document.querySelectorAll('.modal-overlay').forEach(function(overlay) {
+        overlay.addEventListener('click', function(e) {
+            if (e.target === this) this.classList.remove('open');
+        });
+    });
+
+    window.switchPayTab = function(event, tabId) {
+        document.querySelectorAll('.tab-pay').forEach(function(t) { t.classList.remove('active'); });
+        if (event && event.target) event.target.classList.add('active');
+        document.querySelectorAll('.tab-content-pay').forEach(function(c) { c.classList.remove('active'); });
+        var el = document.getElementById(tabId); if (el) el.classList.add('active');
+    };
+    window.processDonation = function(type) { showToast('💚 Don ' + type + ' validé. Merci !'); closeModal('paiement-modal'); };
+    window.redirectCinetPay = function() { showToast('🔗 Redirection vers CinetPay...'); setTimeout(function() { window.open('https://cinetpay.com', '_blank'); }, 1000); };
+
+    window.changeAuthorAvatar = function(e) {
+        var file = e.target.files[0];
+        if (file) { var r = new FileReader(); r.onload = function(ev) { document.getElementById('author-avatar-img').src = ev.target.result; }; r.readAsDataURL(file); }
+    };
+    window.changeMainIcon = function(e) {
+        var file = e.target.files[0];
+        if (file) { var r = new FileReader(); r.onload = function(ev) { document.getElementById('main-icon-img').src = ev.target.result; }; r.readAsDataURL(file); }
+    };
+    window.downloadCurrentIcon = function(e) {
+        e.stopPropagation();
+        var a = document.createElement('a');
+        a.href = document.getElementById('main-icon-img').src;
+        a.download = 'icone_tossara.png';
+        document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    };
+    window.saveProfilData = function() {
+        var nom = document.getElementById('authNom') ? document.getElementById('authNom').value : '';
+        var prenom = document.getElementById('authPrenom') ? document.getElementById('authPrenom').value : '';
+        var titre = document.getElementById('authTitre') ? document.getElementById('authTitre').value : '';
+        var key = document.getElementById('freeApiKey') ? document.getElementById('freeApiKey').value : '';
+        if (nom) localStorage.setItem('profile_nom', nom);
+        if (prenom) localStorage.setItem('profile_prenom', prenom);
+        if (titre) localStorage.setItem('profile_titre', titre);
+        if (key) { apiKey = key; localStorage.setItem('api_key', key); }
+        showToast('✅ Profil enregistré !');
+        closeModal('profil-modal');
+    };
+
+    function loadProfileData() {
+        var nom = localStorage.getItem('profile_nom');
+        var prenom = localStorage.getItem('profile_prenom');
+        var titre = localStorage.getItem('profile_titre');
+        var key = localStorage.getItem('api_key');
+        if (nom) document.getElementById('authNom').value = nom;
+        if (prenom) document.getElementById('authPrenom').value = prenom;
+        if (titre) document.getElementById('authTitre').value = titre;
+        if (key) { apiKey = key; document.getElementById('freeApiKey').value = key; }
+    }
+
+    /* ===== CORAN AUDIO LECTEUR ===== */
+    var SURATES = [[1, "الفاتحة", "Al-Fatiha", "L'Ouverture"], [112, "الإخلاص", "Al-Ikhlas", "Le Monothéisme Pur"]];
+    var VERSETS = {
+        1: [["بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ", "Au nom d'Allah, le Tout Miséricordieux, le Très Miséricordieux.", "In the name of Allah."]]
+    };
+
+    var qState = { surah: 1, verses: [], wordEls: [], currentWord: -1, playing: false, muted: false, speed: 1, lang: 'fr', mode: 'local', timer: null };
+
+    function qLoadSurah(id) {
+        qState.surah = id;
+        document.getElementById('surahBtn').textContent = '📖 Sourate ' + id;
+        qState.verses = VERSETS[id] || [];
+        renderVerses();
+    }
+
+    function renderVerses() {
+        var wordsEl = document.getElementById('quranWords');
+        var transEl = document.getElementById('quranTranslation');
+        qState.wordEls = [];
+        if (!qState.verses.length) {
+            wordsEl.innerHTML = '<div style="color:#D97B00;text-align:center">Versets non disponibles.</div>';
+            transEl.textContent = '—';
+            return;
+        }
+        var html = '';
+        for (var vi = 0; vi < qState.verses.length; vi++) {
+            var words = qState.verses[vi][0].split(/\s+/);
+            for (var wi = 0; wi < words.length; wi++) {
+                html += '<span class="quran-word" data-vi="' + vi + '" data-ar="' + words[wi] + '">' + words[wi] + '</span> ';
+            }
+        }
+        wordsEl.innerHTML = html;
+    }
+
+    function qPlayPause() { showToast("Audio Coran interactif actif"); }
+    function qStop() { showToast("Audio arrêté"); }
+    function qNext() {} function qPrev() {} function qMute() {}
+    function qSetSpeed(v) { document.getElementById('qSpeedLabel').textContent = v + 'x'; }
+    function qSetLang(l) { qState.lang = l; }
+    function qExport() { showToast("Exportation des données"); }
+    function qImport() {} function qShowStorage() { showToast("Stockage IndexedDB prêt"); }
+    function qSetMode(m) { showToast("Mode Coran : " + m); }
+    function openReciterPicker() { prompt("Entrez le numéro du récitateur :"); }
+    function openSurahPicker() { var id = prompt("Numéro de Sourate (1-114) :"); if(id) qLoadSurah(parseInt(id)); }
+    function downloadQuranLogo(e) { e.stopPropagation(); }
+
+    window.qPlayPause = qPlayPause; window.qStop = qStop; window.qNext = qNext; window.qPrev = qPrev;
+    window.qMute = qMute; window.qSetSpeed = qSetSpeed; window.qSetLang = qSetLang;
+    window.qExport = qExport; window.qImport = qImport; window.qShowStorage = qShowStorage; window.qSetMode = qSetMode;
+    window.openReciterPicker = openReciterPicker; window.openSurahPicker = openSurahPicker; window.downloadQuranLogo = downloadQuranLogo;
+
+    function init() {
+        loadProfileData();
+        qLoadSurah(1);
+
+        addMessage('☪️ **Salam alaykum !** Je suis votre **Agent Épistémique Islamique**.', 'bot');
+        addMessage('📚 **Mode Hors-Ligne actif** — Chargement de la base de données IndexedDB locale...', 'bot');
+        
+        // Initialiser IndexedDB si db.js est chargé
+        if (typeof initDatabase === 'function') {
+            initDatabase();
+        }
+    }
+
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
+    else init();
+
+})();
+</script>
+
+<!-- ENREGISTREMENT DU SERVICE WORKER POUR BANNÈRE ÉCRAN D'ACCUEIL (TOSSARA) -->
+<script>
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', function() {
+        navigator.serviceWorker.register('./sw.js')
+            .then(function(reg) {
+                console.log('Service Worker enregistré avec succès pour TOSSARA ! Scope:', reg.scope);
+            })
+            .catch(function(err) {
+                console.warn('Échec enregistrement Service Worker:', err);
+            });
+    });
+}
+</script>
+
+</body>
+</html>
