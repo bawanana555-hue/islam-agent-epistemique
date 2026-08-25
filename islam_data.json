@@ -1,0 +1,828 @@
+[
+  {
+    "id": 1,
+    "titre": "Les cinq piliers de l'Islam",
+    "categorie": "Fondamentaux",
+    "contenu": "Les piliers de l'Islam sont au nombre de cinq : 1) La profession de foi (Chahada), 2) La prière (Salat), 3) L'aumône légale (Zakat), 4) Le jeûne du mois de Ramadan (Sawm), et 5) Le pèlerinage à La Mecque (Hajj) pour celui qui en a les moyens.",
+    "mots_cles": ["piliers", "chahada", "salat", "zakat", "ramadan", "hajj", "fondements"]
+  },
+  {
+    "id": 2,
+    "titre": "La prière quotidienne (Salat)",
+    "categorie": "Pratique religieuse",
+    "contenu": "La prière est le deuxième pilier de l'Islam. Elle s'effectue 5 fois par jour : Fajr (aube), Dhuhr (midi), Asr (après-midi), Maghrib (coucher du soleil) et Isha (nuit). L'ablution (Wudu) est une condition obligatoire avant la prière.",
+    "mots_cles": ["prière", "salat", "fajr", "dhuhr", "asr", "maghrib", "isha", "ablution", "wudu"]
+  },
+  {
+    "id": 3,
+    "titre": "Le Tawhid (L'unicité de Dieu)",
+    "categorie": "Théologie",
+    "contenu": "Le Tawhid est le concept fondamental de la théologie islamique. Il affirme l'unicité absolue d'Allah : Il est Unique, sans associé, sans égal, et n'a pas été engendré.",
+    "mots_cles": ["tawhid", "unicité", "dieu", "allah", "foi", "akida"]
+  },
+  {
+    "id": 4,
+    "titre": "L'Hégire et le calendrier islamique",
+    "categorie": "Histoire",
+    "contenu": "L'Hégire correspond à l'émigration du Prophète Mahomet et de ses compagnons de La Mecque vers Médine en l'an 622. Cet événement marque le début du calendrier hégirien (lunaire).",
+    "mots_cles": ["hégire", "médine", "mecque", "calendrier", "histoire", "émigration"]
+  },
+  {
+    "id": 5,
+    "titre": "Sourate 1 : L'Ouverture (Al-Fatihah - الفاتحة)",
+    "categorie": "Coran (Mecquoise)",
+    "contenu": "La sourate Al-Fatihah (L'Ouverture / الفاتحة) est la 1ère sourate du Coran. C'est une sourate mecquoise composée de 7 versets.",
+    "mots_cles": ["fatihah", "fatiha", "ouverture", "sourate 1", "mecquoise", "1"]
+  },
+  {
+    "id": 6,
+    "titre": "Sourate 2 : La Vache (Al-Baqarah - البقرة)",
+    "categorie": "Coran (Médinoise)",
+    "contenu": "La sourate Al-Baqarah (La Vache / البقرة) est la 2ème sourate du Coran. C'est une sourate médinoise composée de 286 versets.",
+    "mots_cles": ["baqarah", "vache", "sourate 2", "médinoise", "2"]
+  },
+  {
+    "id": 7,
+    "titre": "Sourate 3 : La Famille d'Imran (Ali 'Imran - آل عمران)",
+    "categorie": "Coran (Médinoise)",
+    "contenu": "La sourate Ali 'Imran (La Famille d'Imran / آل عمران) est la 3ème sourate du Coran. C'est une sourate médinoise composée de 200 versets.",
+    "mots_cles": ["ali imran", "imran", "sourate 3", "médinoise", "3"]
+  },
+  {
+    "id": 8,
+    "titre": "Sourate 4 : Les Femmes (An-Nisa - النساء)",
+    "categorie": "Coran (Médinoise)",
+    "contenu": "La sourate An-Nisa (Les Femmes / النساء) est la 4ème sourate du Coran. C'est une sourate médinoise composée de 176 versets.",
+    "mots_cles": ["nisa", "femmes", "sourate 4", "médinoise", "4"]
+  },
+  {
+    "id": 9,
+    "titre": "Sourate 5 : La Table Servie (Al-Ma'idah - المائدة)",
+    "categorie": "Coran (Médinoise)",
+    "contenu": "La sourate Al-Ma'idah (La Table Servie / المائدة) est la 5ème sourate du Coran. C'est une sourate médinoise composée de 120 versets.",
+    "mots_cles": ["maidah", "table servie", "sourate 5", "médinoise", "5"]
+  },
+  {
+    "id": 10,
+    "titre": "Sourate 6 : Les Bestiaux (Al-An'am - الأنعام)",
+    "categorie": "Coran (Mecquoise)",
+    "contenu": "La sourate Al-An'am (Les Bestiaux / الأنعام) est la 6ème sourate du Coran. C'est une sourate mecquoise composée de 165 versets.",
+    "mots_cles": ["anam", "bestiaux", "sourate 6", "mecquoise", "6"]
+  },
+  {
+    "id": 11,
+    "titre": "Sourate 7 : Les Murailles (Al-A'raf - الأعراف)",
+    "categorie": "Coran (Mecquoise)",
+    "contenu": "La sourate Al-A'raf (Les Murailles / الأعراف) est la 7ème sourate du Coran. C'est une sourate mecquoise composée de 206 versets.",
+    "mots_cles": ["araf", "murailles", "sourate 7", "mecquoise", "7"]
+  },
+  {
+    "id": 12,
+    "titre": "Sourate 8 : Le Butin (Al-Anfal - الأنفال)",
+    "categorie": "Coran (Médinoise)",
+    "contenu": "La sourate Al-Anfal (Le Butin / الأنفال) est la 8ème sourate du Coran. C'est une sourate médinoise composée de 75 versets.",
+    "mots_cles": ["anfal", "butin", "sourate 8", "médinoise", "8"]
+  },
+  {
+    "id": 13,
+    "titre": "Sourate 9 : Le Désaveu (At-Tawbah - التوبة)",
+    "categorie": "Coran (Médinoise)",
+    "contenu": "La sourate At-Tawbah (Le Désaveu / التوبة) est la 9ème sourate du Coran. C'est une sourate médinoise composée de 129 versets.",
+    "mots_cles": ["tawbah", "désaveu", "repentir", "sourate 9", "médinoise", "9"]
+  },
+  {
+    "id": 14,
+    "titre": "Sourate 10 : Jonas (Yunus - يونس)",
+    "categorie": "Coran (Mecquoise)",
+    "contenu": "La sourate Yunus (Jonas / يونس) est la 10ème sourate du Coran. C'est une sourate mecquoise composée de 109 versets.",
+    "mots_cles": ["yunus", "jonas", "sourate 10", "mecquoise", "10"]
+  },
+  {
+    "id": 15,
+    "titre": "Sourate 11 : Houd (Hud - هود)",
+    "categorie": "Coran (Mecquoise)",
+    "contenu": "La sourate Hud (Houd / هود) est la 11ème sourate du Coran. C'est une sourate mecquoise composée de 123 versets.",
+    "mots_cles": ["hud", "houd", "sourate 11", "mecquoise", "11"]
+  },
+  {
+    "id": 16,
+    "titre": "Sourate 12 : Joseph (Yusuf - يوسف)",
+    "categorie": "Coran (Mecquoise)",
+    "contenu": "La sourate Yusuf (Joseph / يوسف) est la 12ème sourate du Coran. C'est une sourate mecquoise composée de 111 versets.",
+    "mots_cles": ["yusuf", "joseph", "sourate 12", "mecquoise", "12"]
+  },
+  {
+    "id": 17,
+    "titre": "Sourate 13 : Le Tonnerre (Ar-Ra'd - الرعد)",
+    "categorie": "Coran (Médinoise)",
+    "contenu": "La sourate Ar-Ra'd (Le Tonnerre / الرعد) est la 13ème sourate du Coran. C'est une sourate médinoise composée de 43 versets.",
+    "mots_cles": ["rad", "tonnerre", "sourate 13", "médinoise", "13"]
+  },
+  {
+    "id": 18,
+    "titre": "Sourate 14 : Abraham (Ibrahim - ابراهيم)",
+    "categorie": "Coran (Mecquoise)",
+    "contenu": "La sourate Ibrahim (Abraham / ابراهيم) est la 14ème sourate du Coran. C'est une sourate mecquoise composée de 52 versets.",
+    "mots_cles": ["ibrahim", "abraham", "sourate 14", "mecquoise", "14"]
+  },
+  {
+    "id": 19,
+    "titre": "Sourate 15 : Le Rocher (Al-Hijr - الحجر)",
+    "categorie": "Coran (Mecquoise)",
+    "contenu": "La sourate Al-Hijr (Le Rocher / الحجر) est la 15ème sourate du Coran. C'est une sourate mecquoise composée de 99 versets.",
+    "mots_cles": ["hijr", "rocher", "sourate 15", "mecquoise", "15"]
+  },
+  {
+    "id": 20,
+    "titre": "Sourate 16 : Les Abeilles (An-Nahl - النحل)",
+    "categorie": "Coran (Mecquoise)",
+    "contenu": "La sourate An-Nahl (Les Abeilles / النحل) est la 16ème sourate du Coran. C'est une sourate mecquoise composée de 128 versets.",
+    "mots_cles": ["nahl", "abeilles", "sourate 16", "mecquoise", "16"]
+  },
+  {
+    "id": 21,
+    "titre": "Sourate 17 : Le Voyage Nocturne (Al-Isra - الإسراء)",
+    "categorie": "Coran (Mecquoise)",
+    "contenu": "La sourate Al-Isra (Le Voyage Nocturne / الإسراء) est la 17ème sourate du Coran. C'est une sourate mecquoise composée de 111 versets.",
+    "mots_cles": ["isra", "voyage nocturne", "sourate 17", "mecquoise", "17"]
+  },
+  {
+    "id": 22,
+    "titre": "Sourate 18 : La Caverne (Al-Kahf - الكهف)",
+    "categorie": "Coran (Mecquoise)",
+    "contenu": "La sourate Al-Kahf (La Caverne / الكهف) est la 18ème sourate du Coran. C'est une sourate mecquoise composée de 110 versets.",
+    "mots_cles": ["kahf", "caverne", "sourate 18", "mecquoise", "18"]
+  },
+  {
+    "id": 23,
+    "titre": "Sourate 19 : Marie (Maryam - مريم)",
+    "categorie": "Coran (Mecquoise)",
+    "contenu": "La sourate Maryam (Marie / مريم) est la 19ème sourate du Coran. C'est une sourate mecquoise composée de 98 versets.",
+    "mots_cles": ["maryam", "marie", "sourate 19", "mecquoise", "19"]
+  },
+  {
+    "id": 24,
+    "titre": "Sourate 20 : Ta-Ha (Taha - طه)",
+    "categorie": "Coran (Mecquoise)",
+    "contenu": "La sourate Taha (Ta-Ha / طه) est la 20ème sourate du Coran. C'est une sourate mecquoise composée de 135 versets.",
+    "mots_cles": ["taha", "sourate 20", "mecquoise", "20"]
+  },
+  {
+    "id": 25,
+    "titre": "Sourate 21 : Les Prophètes (Al-Anbya - الأنبياء)",
+    "categorie": "Coran (Mecquoise)",
+    "contenu": "La sourate Al-Anbya (Les Prophètes / الأنبياء) est la 21ème sourate du Coran. C'est une sourate mecquoise composée de 112 versets.",
+    "mots_cles": ["anbya", "prophètes", "sourate 21", "mecquoise", "21"]
+  },
+  {
+    "id": 26,
+    "titre": "Sourate 22 : Le Pèlerinage (Al-Hajj - الحج)",
+    "categorie": "Coran (Médinoise)",
+    "contenu": "La sourate Al-Hajj (Le Pèlerinage / الحج) est la 22ème sourate du Coran. C'est une sourate médinoise composée de 78 versets.",
+    "mots_cles": ["hajj", "pèlerinage", "sourate 22", "médinoise", "22"]
+  },
+  {
+    "id": 27,
+    "titre": "Sourate 23 : Les Croyants (Al-Mu'minun - المؤمنون)",
+    "categorie": "Coran (Mecquoise)",
+    "contenu": "La sourate Al-Mu'minun (Les Croyants / المؤمنون) est la 23ème sourate du Coran. C'est une sourate mecquoise composée de 118 versets.",
+    "mots_cles": ["muminun", "croyants", "sourate 23", "mecquoise", "23"]
+  },
+  {
+    "id": 28,
+    "titre": "Sourate 24 : La Lumière (An-Nur - النور)",
+    "categorie": "Coran (Médinoise)",
+    "contenu": "La sourate An-Nur (La Lumière / النور) est la 24ème sourate du Coran. C'est une sourate médinoise composée de 64 versets.",
+    "mots_cles": ["nur", "lumière", "sourate 24", "médinoise", "24"]
+  },
+  {
+    "id": 29,
+    "titre": "Sourate 25 : Le Discernement (Al-Furqan - الفرقان)",
+    "categorie": "Coran (Mecquoise)",
+    "contenu": "La sourate Al-Furqan (Le Discernement / الفرقان) est la 25ème sourate du Coran. C'est une sourate mecquoise composée de 77 versets.",
+    "mots_cles": ["furqan", "discernement", "sourate 25", "mecquoise", "25"]
+  },
+  {
+    "id": 30,
+    "titre": "Sourate 26 : Les Poètes (Ash-Shu'ara - الشعراء)",
+    "categorie": "Coran (Mecquoise)",
+    "contenu": "La sourate Ash-Shu'ara (Les Poètes / الشعراء) est la 26ème sourate du Coran. C'est une sourate mecquoise composée de 227 versets.",
+    "mots_cles": ["shuara", "poètes", "sourate 26", "mecquoise", "26"]
+  },
+  {
+    "id": 31,
+    "titre": "Sourate 27 : Les Fourmis (An-Naml - النمل)",
+    "categorie": "Coran (Mecquoise)",
+    "contenu": "La sourate An-Naml (Les Fourmis / النمل) est la 27ème sourate du Coran. C'est une sourate mecquoise composée de 93 versets.",
+    "mots_cles": ["naml", "fourmis", "sourate 27", "mecquoise", "27"]
+  },
+  {
+    "id": 32,
+    "titre": "Sourate 28 : Le Récit (Al-Qasas - القصص)",
+    "categorie": "Coran (Mecquoise)",
+    "contenu": "La sourate Al-Qasas (Le Récit / القصص) est la 28ème sourate du Coran. C'est une sourate mecquoise composée de 88 versets.",
+    "mots_cles": ["qasas", "récit", "sourate 28", "mecquoise", "28"]
+  },
+  {
+    "id": 33,
+    "titre": "Sourate 29 : L'Araignée (Al-'Ankabut - العنكبوت)",
+    "categorie": "Coran (Mecquoise)",
+    "contenu": "La sourate Al-'Ankabut (L'Araignée / العنكبوت) est la 29ème sourate du Coran. C'est une sourate mecquoise composée de 69 versets.",
+    "mots_cles": ["ankabut", "araignée", "sourate 29", "mecquoise", "29"]
+  },
+  {
+    "id": 34,
+    "titre": "Sourate 30 : Les Romains (Ar-Rum - الروم)",
+    "categorie": "Coran (Mecquoise)",
+    "contenu": "La sourate Ar-Rum (Les Romains / الروم) est la 30ème sourate du Coran. C'est une sourate mecquoise composée de 60 versets.",
+    "mots_cles": ["rum", "romains", "sourate 30", "mecquoise", "30"]
+  },
+  {
+    "id": 35,
+    "titre": "Sourate 31 : Lokman (Luqman - لقمان)",
+    "categorie": "Coran (Mecquoise)",
+    "contenu": "La sourate Luqman (Lokman / لقمان) est la 31ème sourate du Coran. C'est une sourate mecquoise composée de 34 versets.",
+    "mots_cles": ["luqman", "lokman", "sourate 31", "mecquoise", "31"]
+  },
+  {
+    "id": 36,
+    "titre": "Sourate 32 : La Prosternation (As-Sajdah - السجدة)",
+    "categorie": "Coran (Mecquoise)",
+    "contenu": "La sourate As-Sajdah (La Prosternation / السجدة) est la 32ème sourate du Coran. C'est une sourate mecquoise composée de 30 versets.",
+    "mots_cles": ["sajdah", "prosternation", "sourate 32", "mecquoise", "32"]
+  },
+  {
+    "id": 37,
+    "titre": "Sourate 33 : Les Coalisés (Al-Ahzab - الأحزاب)",
+    "categorie": "Coran (Médinoise)",
+    "contenu": "La sourate Al-Ahzab (Les Coalisés / الأحزاب) est la 33ème sourate du Coran. C'est une sourate médinoise composée de 73 versets.",
+    "mots_cles": ["ahzab", "coalisés", "sourate 33", "médinoise", "33"]
+  },
+  {
+    "id": 38,
+    "titre": "Sourate 34 : Saba (Saba - سبإ)",
+    "categorie": "Coran (Mecquoise)",
+    "contenu": "La sourate Saba (Saba / سبإ) est la 34ème sourate du Coran. C'est une sourate mecquoise composée de 54 versets.",
+    "mots_cles": ["saba", "sourate 34", "mecquoise", "34"]
+  },
+  {
+    "id": 39,
+    "titre": "Sourate 35 : Le Créateur (Fatir - فاطر)",
+    "categorie": "Coran (Mecquoise)",
+    "contenu": "La sourate Fatir (Le Créateur / فاطر) est la 35ème sourate du Coran. C'est une sourate mecquoise composée de 45 versets.",
+    "mots_cles": ["fatir", "créateur", "sourate 35", "mecquoise", "35"]
+  },
+  {
+    "id": 40,
+    "titre": "Sourate 36 : Ya-Sin (Ya-Sin - يس)",
+    "categorie": "Coran (Mecquoise)",
+    "contenu": "La sourate Ya-Sin (Ya-Sin / يس) est la 36ème sourate du Coran. C'est une sourate mecquoise composée de 83 versets.",
+    "mots_cles": ["yasin", "ya-sin", "sourate 36", "mecquoise", "36"]
+  },
+  {
+    "id": 41,
+    "titre": "Sourate 37 : Les Rangés (As-Saffat - الصافات)",
+    "categorie": "Coran (Mecquoise)",
+    "contenu": "La sourate As-Saffat (Les Rangés / الصافات) est la 37ème sourate du Coran. C'est une sourate mecquoise composée de 182 versets.",
+    "mots_cles": ["saffat", "rangés", "sourate 37", "mecquoise", "37"]
+  },
+  {
+    "id": 42,
+    "titre": "Sourate 38 : Sad (Sad - ص)",
+    "categorie": "Coran (Mecquoise)",
+    "contenu": "La sourate Sad (Sad / ص) est la 38ème sourate du Coran. C'est une sourate mecquoise composée de 88 versets.",
+    "mots_cles": ["sad", "sourate 38", "mecquoise", "38"]
+  },
+  {
+    "id": 43,
+    "titre": "Sourate 39 : Les Groupes (Az-Zumar - الزمر)",
+    "categorie": "Coran (Mecquoise)",
+    "contenu": "La sourate Az-Zumar (Les Groupes / الزمر) est la 39ème sourate du Coran. C'est une sourate mecquoise composée de 75 versets.",
+    "mots_cles": ["zumar", "groupes", "sourate 39", "mecquoise", "39"]
+  },
+  {
+    "id": 44,
+    "titre": "Sourate 40 : Le Pardonneur (Ghafir - غافر)",
+    "categorie": "Coran (Mecquoise)",
+    "contenu": "La sourate Ghafir (Le Pardonneur / غافر) est la 40ème sourate du Coran. C'est une sourate mecquoise composée de 85 versets.",
+    "mots_cles": ["ghafir", "pardonneur", "sourate 40", "mecquoise", "40"]
+  },
+  {
+    "id": 45,
+    "titre": "Sourate 41 : Les Versets Détaillés (Fussilat - فصلت)",
+    "categorie": "Coran (Mecquoise)",
+    "contenu": "La sourate Fussilat (Les Versets Détaillés / فصلت) est la 41ème sourate du Coran. C'est une sourate mecquoise composée de 54 versets.",
+    "mots_cles": ["fussilat", "détaillés", "sourate 41", "mecquoise", "41"]
+  },
+  {
+    "id": 46,
+    "titre": "Sourate 42 : La Consultation (Ash-Shuraa - الشورى)",
+    "categorie": "Coran (Mecquoise)",
+    "contenu": "La sourate Ash-Shuraa (La Consultation / الشورى) est la 42ème sourate du Coran. C'est une sourate mecquoise composée de 53 versets.",
+    "mots_cles": ["shuraa", "consultation", "sourate 42", "mecquoise", "42"]
+  },
+  {
+    "id": 47,
+    "titre": "Sourate 43 : L'Ornement (Az-Zukhruf - الزخرف)",
+    "categorie": "Coran (Mecquoise)",
+    "contenu": "La sourate Az-Zukhruf (L'Ornement / الزخرف) est la 43ème sourate du Coran. C'est une sourate mecquoise composée de 89 versets.",
+    "mots_cles": ["zukhruf", "ornement", "sourate 43", "mecquoise", "43"]
+  },
+  {
+    "id": 48,
+    "titre": "Sourate 44 : La Fumée (Ad-Dukhan - الدخان)",
+    "categorie": "Coran (Mecquoise)",
+    "contenu": "La sourate Ad-Dukhan (La Fumée / الدخان) est la 44ème sourate du Coran. C'est une sourate mecquoise composée de 59 versets.",
+    "mots_cles": ["dukhan", "fumée", "sourate 44", "mecquoise", "44"]
+  },
+  {
+    "id": 49,
+    "titre": "Sourate 45 : L'Agenouillée (Al-Jathiyah - الجاثية)",
+    "categorie": "Coran (Mecquoise)",
+    "contenu": "La sourate Al-Jathiyah (L'Agenouillée / الجاثية) est la 45ème sourate du Coran. C'est une sourate mecquoise composée de 37 versets.",
+    "mots_cles": ["jathiyah", "agenouillée", "sourate 45", "mecquoise", "45"]
+  },
+  {
+    "id": 50,
+    "titre": "Sourate 46 : Les Dunes (Al-Ahqaf - الأحقاف)",
+    "categorie": "Coran (Mecquoise)",
+    "contenu": "La sourate Al-Ahqaf (Les Dunes / الأحقاف) est la 46ème sourate du Coran. C'est une sourate mecquoise composée de 35 versets.",
+    "mots_cles": ["ahqaf", "dunes", "sourate 46", "mecquoise", "46"]
+  },
+  {
+    "id": 51,
+    "titre": "Sourate 47 : Muhammad (Muhammad - محمد)",
+    "categorie": "Coran (Médinoise)",
+    "contenu": "La sourate Muhammad (Muhammad / محمد) est la 47ème sourate du Coran. C'est une sourate médinoise composée de 38 versets.",
+    "mots_cles": ["muhammad", "mahomet", "sourate 47", "médinoise", "47"]
+  },
+  {
+    "id": 52,
+    "titre": "Sourate 48 : La Victoire Éclatante (Al-Fath - الفتح)",
+    "categorie": "Coran (Médinoise)",
+    "contenu": "La sourate Al-Fath (La Victoire Éclatante / الفتح) est la 48ème sourate du Coran. C'est une sourate médinoise composée de 29 versets.",
+    "mots_cles": ["fath", "victoire", "sourate 48", "médinoise", "48"]
+  },
+  {
+    "id": 53,
+    "titre": "Sourate 49 : Les Appartements (Al-Hujurat - الحجرات)",
+    "categorie": "Coran (Médinoise)",
+    "contenu": "La sourate Al-Hujurat (Les Appartements / الحجرات) est la 49ème sourate du Coran. C'est une sourate médinoise composée de 18 versets.",
+    "mots_cles": ["hujurat", "appartements", "sourate 49", "médinoise", "49"]
+  },
+  {
+    "id": 54,
+    "titre": "Sourate 50 : Qaf (Qaf - ق)",
+    "categorie": "Coran (Mecquoise)",
+    "contenu": "La sourate Qaf (Qaf / ق) est la 50ème sourate du Coran. C'est une sourate mecquoise composée de 45 versets.",
+    "mots_cles": ["qaf", "sourate 50", "mecquoise", "50"]
+  },
+  {
+    "id": 55,
+    "titre": "Sourate 51 : Qui Éparpillent (Adh-Dhariyat - الذاريات)",
+    "categorie": "Coran (Mecquoise)",
+    "contenu": "La sourate Adh-Dhariyat (Qui Éparpillent / الذاريات) est la 51ème sourate du Coran. C'est une sourate mecquoise composée de 60 versets.",
+    "mots_cles": ["dhariyat", "éparpillent", "sourate 51", "mecquoise", "51"]
+  },
+  {
+    "id": 56,
+    "titre": "Sourate 52 : Le Mont (At-Tur - الطور)",
+    "categorie": "Coran (Mecquoise)",
+    "contenu": "La sourate At-Tur (Le Mont / الطور) est la 52ème sourate du Coran. C'est une sourate mecquoise composée de 49 versets.",
+    "mots_cles": ["tur", "mont", "sourate 52", "mecquoise", "52"]
+  },
+  {
+    "id": 57,
+    "titre": "Sourate 53 : L'Étoile (An-Najm - النجم)",
+    "categorie": "Coran (Mecquoise)",
+    "contenu": "La sourate An-Najm (L'Étoile / النجم) est la 53ème sourate du Coran. C'est une sourate mecquoise composée de 62 versets.",
+    "mots_cles": ["najm", "étoile", "sourate 53", "mecquoise", "53"]
+  },
+  {
+    "id": 58,
+    "titre": "Sourate 54 : La Lune (Al-Qamar - القمر)",
+    "categorie": "Coran (Mecquoise)",
+    "contenu": "La sourate Al-Qamar (La Lune / القمر) est la 54ème sourate du Coran. C'est une sourate mecquoise composée de 55 versets.",
+    "mots_cles": ["qamar", "lune", "sourate 54", "mecquoise", "54"]
+  },
+  {
+    "id": 59,
+    "titre": "Sourate 55 : Le Tout Miséricordieux (Ar-Rahman - الرحمن)",
+    "categorie": "Coran (Médinoise)",
+    "contenu": "La sourate Ar-Rahman (Le Tout Miséricordieux / الرحمن) est la 55ème sourate du Coran. C'est une sourate médinoise composée de 78 versets.",
+    "mots_cles": ["rahman", "tout miséricordieux", "sourate 55", "médinoise", "55"]
+  },
+  {
+    "id": 60,
+    "titre": "Sourate 56 : L'Événement (Al-Waqi'ah - الواقعة)",
+    "categorie": "Coran (Mecquoise)",
+    "contenu": "La sourate Al-Waqi'ah (L'Événement / الواقعة) est la 56ème sourate du Coran. C'est une sourate mecquoise composée de 96 versets.",
+    "mots_cles": ["waqiah", "événement", "sourate 56", "mecquoise", "56"]
+  },
+  {
+    "id": 61,
+    "titre": "Sourate 57 : Le Fer (Al-Hadid - الحديد)",
+    "categorie": "Coran (Médinoise)",
+    "contenu": "La sourate Al-Hadid (Le Fer / الحديد) est la 57ème sourate du Coran. C'est une sourate médinoise composée de 29 versets.",
+    "mots_cles": ["hadid", "fer", "sourate 57", "médinoise", "57"]
+  },
+  {
+    "id": 62,
+    "titre": "Sourate 58 : La Discussion (Al-Mujadila - المجادلة)",
+    "categorie": "Coran (Médinoise)",
+    "contenu": "La sourate Al-Mujadila (La Discussion / المجادلة) est la 58ème sourate du Coran. C'est une sourate médinoise composée de 22 versets.",
+    "mots_cles": ["mujadila", "discussion", "sourate 58", "médinoise", "58"]
+  },
+  {
+    "id": 63,
+    "titre": "Sourate 59 : L'Exode (Al-Hashr - الحشر)",
+    "categorie": "Coran (Médinoise)",
+    "contenu": "La sourate Al-Hashr (L'Exode / الحشر) est la 59ème sourate du Coran. C'est une sourate médinoise composée de 24 versets.",
+    "mots_cles": ["hashr", "exode", "sourate 59", "médinoise", "59"]
+  },
+  {
+    "id": 64,
+    "titre": "Sourate 60 : L'Éprouvée (Al-Mumtahanah - الممتحنة)",
+    "categorie": "Coran (Médinoise)",
+    "contenu": "La sourate Al-Mumtahanah (L'Éprouvée / الممتحنة) est la 60ème sourate du Coran. C'est une sourate médinoise composée de 13 versets.",
+    "mots_cles": ["mumtahanah", "éprouvée", "sourate 60", "médinoise", "60"]
+  },
+  {
+    "id": 65,
+    "titre": "Sourate 61 : Le Rang (As-Saf - الصف)",
+    "categorie": "Coran (Médinoise)",
+    "contenu": "La sourate As-Saf (Le Rang / الصف) est la 61ème sourate du Coran. C'est une sourate médinoise composée de 14 versets.",
+    "mots_cles": ["saf", "rang", "sourate 61", "médinoise", "61"]
+  },
+  {
+    "id": 66,
+    "titre": "Sourate 62 : Le Vendredi (Al-Jumu'ah - الجمعة)",
+    "categorie": "Coran (Médinoise)",
+    "contenu": "La sourate Al-Jumu'ah (Le Vendredi / الجمعة) est la 62ème sourate du Coran. C'est une sourate médinoise composée de 11 versets.",
+    "mots_cles": ["jumuah", "vendredi", "sourate 62", "médinoise", "62"]
+  },
+  {
+    "id": 67,
+    "titre": "Sourate 63 : Les Hypocrites (Al-Munafiqun - المنافقون)",
+    "categorie": "Coran (Médinoise)",
+    "contenu": "La sourate Al-Munafiqun (Les Hypocrites / المنافقون) est la 63ème sourate du Coran. C'est une sourate médinoise composée de 11 versets.",
+    "mots_cles": ["munafiqun", "hypocrites", "sourate 63", "médinoise", "63"]
+  },
+  {
+    "id": 68,
+    "titre": "Sourate 64 : La Grande Perte (At-Taghabun - التغابن)",
+    "categorie": "Coran (Médinoise)",
+    "contenu": "La sourate At-Taghabun (La Grande Perte / التغابن) est la 64ème sourate du Coran. C'est une sourate médinoise composée de 18 versets.",
+    "mots_cles": ["taghabun", "grande perte", "sourate 64", "médinoise", "64"]
+  },
+  {
+    "id": 69,
+    "titre": "Sourate 65 : Le Divorce (At-Talaq - الطلاق)",
+    "categorie": "Coran (Médinoise)",
+    "contenu": "La sourate At-Talaq (Le Divorce / الطلاق) est la 65ème sourate du Coran. C'est une sourate médinoise composée de 12 versets.",
+    "mots_cles": ["talaq", "divorce", "sourate 65", "médinoise", "65"]
+  },
+  {
+    "id": 70,
+    "titre": "Sourate 66 : L'Interdiction (At-Tahrim - التحريم)",
+    "categorie": "Coran (Médinoise)",
+    "contenu": "La sourate At-Tahrim (L'Interdiction / التحريم) est la 66ème sourate du Coran. C'est une sourate médinoise composée de 12 versets.",
+    "mots_cles": ["tahrim", "interdiction", "sourate 66", "médinoise", "66"]
+  },
+  {
+    "id": 71,
+    "titre": "Sourate 67 : La Royauté (Al-Mulk - الملك)",
+    "categorie": "Coran (Mecquoise)",
+    "contenu": "La sourate Al-Mulk (La Royauté / الملك) est la 67ème sourate du Coran. C'est une sourate mecquoise composée de 30 versets.",
+    "mots_cles": ["mulk", "royauté", "sourate 67", "mecquoise", "67"]
+  },
+  {
+    "id": 72,
+    "titre": "Sourate 68 : La Plume (Al-Qalam - القلم)",
+    "categorie": "Coran (Mecquoise)",
+    "contenu": "La sourate Al-Qalam (La Plume / القلم) est la 68ème sourate du Coran. C'est une sourate mecquoise composée de 52 versets.",
+    "mots_cles": ["qalam", "plume", "sourate 68", "mecquoise", "68"]
+  },
+  {
+    "id": 73,
+    "titre": "Sourate 69 : La Vérité (Al-Haqqah - الحاقة)",
+    "categorie": "Coran (Mecquoise)",
+    "contenu": "La sourate Al-Haqqah (La Vérité / الحاقة) est la 69ème sourate du Coran. C'est une sourate mecquoise composée de 52 versets.",
+    "mots_cles": ["haqqah", "vérité", "sourate 69", "mecquoise", "69"]
+  },
+  {
+    "id": 74,
+    "titre": "Sourate 70 : Les Ascensions (Al-Ma'arij - المعارج)",
+    "categorie": "Coran (Mecquoise)",
+    "contenu": "La sourate Al-Ma'arij (Les Ascensions / المعارج) est la 70ème sourate du Coran. C'est une sourate mecquoise composée de 44 versets.",
+    "mots_cles": ["maarij", "ascensions", "sourate 70", "mecquoise", "70"]
+  },
+  {
+    "id": 75,
+    "titre": "Sourate 71 : Noé (Nuh - نوح)",
+    "categorie": "Coran (Mecquoise)",
+    "contenu": "La sourate Nuh (Noé / نوح) est la 71ème sourate du Coran. C'est une sourate mecquoise composée de 28 versets.",
+    "mots_cles": ["nuh", "noé", "sourate 71", "mecquoise", "71"]
+  },
+  {
+    "id": 76,
+    "titre": "Sourate 72 : Les Djinns (Al-Jinn - الجن)",
+    "categorie": "Coran (Mecquoise)",
+    "contenu": "La sourate Al-Jinn (Les Djinns / الجن) est la 72ème sourate du Coran. C'est une sourate mecquoise composée de 28 versets.",
+    "mots_cles": ["jinn", "djinns", "sourate 72", "mecquoise", "72"]
+  },
+  {
+    "id": 77,
+    "titre": "Sourate 73 : L'Enveloppé (Al-Muzzammil - المزمل)",
+    "categorie": "Coran (Mecquoise)",
+    "contenu": "La sourate Al-Muzzammil (L'Enveloppé / المزمل) est la 73ème sourate du Coran. C'est une sourate mecquoise composée de 20 versets.",
+    "mots_cles": ["muzzammil", "enveloppé", "sourate 73", "mecquoise", "73"]
+  },
+  {
+    "id": 78,
+    "titre": "Sourate 74 : Le Revêtu (Al-Muddaththir - المدثر)",
+    "categorie": "Coran (Mecquoise)",
+    "contenu": "La sourate Al-Muddaththir (Le Revêtu / المدثر) est la 74ème sourate du Coran. C'est une sourate mecquoise composée de 56 versets.",
+    "mots_cles": ["muddaththir", "revêtu", "sourate 74", "mecquoise", "74"]
+  },
+  {
+    "id": 79,
+    "titre": "Sourate 75 : La Résurrection (Al-Qiyamah - القيامة)",
+    "categorie": "Coran (Mecquoise)",
+    "contenu": "La sourate Al-Qiyamah (La Résurrection / القيامة) est la 75ème sourate du Coran. C'est une sourate mecquoise composée de 40 versets.",
+    "mots_cles": ["qiyamah", "résurrection", "sourate 75", "mecquoise", "75"]
+  },
+  {
+    "id": 80,
+    "titre": "Sourate 76 : L'Homme (Al-Insan - الانسان)",
+    "categorie": "Coran (Médinoise)",
+    "contenu": "La sourate Al-Insan (L'Homme / الانسان) est la 76ème sourate du Coran. C'est une sourate médinoise composée de 31 versets.",
+    "mots_cles": ["insan", "homme", "sourate 76", "médinoise", "76"]
+  },
+  {
+    "id": 81,
+    "titre": "Sourate 77 : Les Envoyés (Al-Mursalat - المرسلات)",
+    "categorie": "Coran (Mecquoise)",
+    "contenu": "La sourate Al-Mursalat (Les Envoyés / المرسلات) est la 77ème sourate du Coran. C'est une sourate mecquoise composée de 50 versets.",
+    "mots_cles": ["mursalat", "envoyés", "sourate 77", "mecquoise", "77"]
+  },
+  {
+    "id": 82,
+    "titre": "Sourate 78 : La Nouvelle (An-Naba - النبإ)",
+    "categorie": "Coran (Mecquoise)",
+    "contenu": "La sourate An-Naba (La Nouvelle / النبإ) est la 78ème sourate du Coran. C'est une sourate mecquoise composée de 40 versets.",
+    "mots_cles": ["naba", "nouvelle", "sourate 78", "mecquoise", "78"]
+  },
+  {
+    "id": 83,
+    "titre": "Sourate 79 : Les Anges (An-Nazi'at - النازعات)",
+    "categorie": "Coran (Mecquoise)",
+    "contenu": "La sourate An-Nazi'at (Les Anges / النازعات) est la 79ème sourate du Coran. C'est une sourate mecquoise composée de 46 versets.",
+    "mots_cles": ["naziat", "anges", "sourate 79", "mecquoise", "79"]
+  },
+  {
+    "id": 84,
+    "titre": "Sourate 80 : Le Renfrognement ('Abasa - عبس)",
+    "categorie": "Coran (Mecquoise)",
+    "contenu": "La sourate 'Abasa (Le Renfrognement / عبس) est la 80ème sourate du Coran. C'est une sourate mecquoise composée de 42 versets.",
+    "mots_cles": ["abasa", "renfrognement", "sourate 80", "mecquoise", "80"]
+  },
+  {
+    "id": 85,
+    "titre": "Sourate 81 : L'Obscurcissement (At-Takwir - التكوير)",
+    "categorie": "Coran (Mecquoise)",
+    "contenu": "La sourate At-Takwir (L'Obscurcissement / التكوير) est la 81ème sourate du Coran. C'est une sourate mecquoise composée de 29 versets.",
+    "mots_cles": ["takwir", "obscurcissement", "sourate 81", "mecquoise", "81"]
+  },
+  {
+    "id": 86,
+    "titre": "Sourate 82 : La Rupture (Al-Infitar - الإنفطار)",
+    "categorie": "Coran (Mecquoise)",
+    "contenu": "La sourate Al-Infitar (La Rupture / الإنفطار) est la 82ème sourate du Coran. C'est une sourate mecquoise composée de 19 versets.",
+    "mots_cles": ["infitar", "rupture", "sourate 82", "mecquoise", "82"]
+  },
+  {
+    "id": 87,
+    "titre": "Sourate 83 : Les Fraudeurs (Al-Mutaffifin - المطففين)",
+    "categorie": "Coran (Mecquoise)",
+    "contenu": "La sourate Al-Mutaffifin (Les Fraudeurs / المطففين) est la 83ème sourate du Coran. C'est une sourate mecquoise composée de 36 versets.",
+    "mots_cles": ["mutaffifin", "fraudeurs", "sourate 83", "mecquoise", "83"]
+  },
+  {
+    "id": 88,
+    "titre": "Sourate 84 : La Déchirure (Al-Inshiqaq - الإنشقاق)",
+    "categorie": "Coran (Mecquoise)",
+    "contenu": "La sourate Al-Inshiqaq (La Déchirure / الإنشقاق) est la 84ème sourate du Coran. C'est une sourate mecquoise composée de 25 versets.",
+    "mots_cles": ["inshiqaq", "déchirure", "sourate 84", "mecquoise", "84"]
+  },
+  {
+    "id": 89,
+    "titre": "Sourate 85 : Les Constellations (Al-Buruj - البروج)",
+    "categorie": "Coran (Mecquoise)",
+    "contenu": "La sourate Al-Buruj (Les Constellations / البروج) est la 85ème sourate du Coran. C'est une sourate mecquoise composée de 22 versets.",
+    "mots_cles": ["buruj", "constellations", "sourate 85", "mecquoise", "85"]
+  },
+  {
+    "id": 90,
+    "titre": "Sourate 86 : L'Astre Nocturne (At-Tariq - الطارق)",
+    "categorie": "Coran (Mecquoise)",
+    "contenu": "La sourate At-Tariq (L'Astre Nocturne / الطارق) est la 86ème sourate du Coran. C'est une sourate mecquoise composée de 17 versets.",
+    "mots_cles": ["tariq", "astre nocturne", "sourate 86", "mecquoise", "86"]
+  },
+  {
+    "id": 91,
+    "titre": "Sourate 87 : Le Très-Haut (Al-A'la - الأعلى)",
+    "categorie": "Coran (Mecquoise)",
+    "contenu": "La sourate Al-A'la (Le Très-Haut / الأعلى) est la 87ème sourate du Coran. C'est une sourate mecquoise composée de 19 versets.",
+    "mots_cles": ["ala", "très haut", "sourate 87", "mecquoise", "87"]
+  },
+  {
+    "id": 92,
+    "titre": "Sourate 88 : L'Enveloppante (Al-Ghashiyah - الغاشية)",
+    "categorie": "Coran (Mecquoise)",
+    "contenu": "La sourate Al-Ghashiyah (L'Enveloppante / الغاشية) est la 88ème sourate du Coran. C'est une sourate mecquoise composée de 26 versets.",
+    "mots_cles": ["ghashiyah", "enveloppante", "sourate 88", "mecquoise", "88"]
+  },
+  {
+    "id": 93,
+    "titre": "Sourate 89 : L'Aube (Al-Fajr - الفجر)",
+    "categorie": "Coran (Mecquoise)",
+    "contenu": "La sourate Al-Fajr (L'Aube / الفجر) est la 89ème sourate du Coran. C'est une sourate mecquoise composée de 30 versets.",
+    "mots_cles": ["fajr", "aube", "sourate 89", "mecquoise", "89"]
+  },
+  {
+    "id": 94,
+    "titre": "Sourate 90 : La Cité (Al-Balad - البلد)",
+    "categorie": "Coran (Mecquoise)",
+    "contenu": "La sourate Al-Balad (La Cité / البلد) est la 90ème sourate du Coran. C'est une sourate mecquoise composée de 20 versets.",
+    "mots_cles": ["balad", "cité", "sourate 90", "mecquoise", "90"]
+  },
+  {
+    "id": 95,
+    "titre": "Sourate 91 : Le Soleil (Ash-Shams - الشمس)",
+    "categorie": "Coran (Mecquoise)",
+    "contenu": "La sourate Ash-Shams (Le Soleil / الشمس) est la 91ème sourate du Coran. C'est une sourate mecquoise composée de 15 versets.",
+    "mots_cles": ["shams", "soleil", "sourate 91", "mecquoise", "91"]
+  },
+  {
+    "id": 96,
+    "titre": "Sourate 92 : La Nuit (Al-Layl - الليل)",
+    "categorie": "Coran (Mecquoise)",
+    "contenu": "La sourate Al-Layl (La Nuit / الليل) est la 92ème sourate du Coran. C'est une sourate mecquoise composée de 21 versets.",
+    "mots_cles": ["layl", "nuit", "sourate 92", "mecquoise", "92"]
+  },
+  {
+    "id": 97,
+    "titre": "Sourate 93 : Le Matin (Ad-Duhaa - الضحى)",
+    "categorie": "Coran (Mecquoise)",
+    "contenu": "La sourate Ad-Duhaa (Le Matin / الضحى) est la 93ème sourate du Coran. C'est une sourate mecquoise composée de 11 versets.",
+    "mots_cles": ["duhaa", "matin", "sourate 93", "mecquoise", "93"]
+  },
+  {
+    "id": 98,
+    "titre": "Sourate 94 : L'Ouverture (Ash-Sharh - الشرح)",
+    "categorie": "Coran (Mecquoise)",
+    "contenu": "La sourate Ash-Sharh (L'Ouverture / الشرح) est la 94ème sourate du Coran. C'est une sourate mecquoise composée de 8 versets.",
+    "mots_cles": ["sharh", "ouverture", "sourate 94", "mecquoise", "94"]
+  },
+  {
+    "id": 99,
+    "titre": "Sourate 95 : Le Figuier (At-Tin - التين)",
+    "categorie": "Coran (Mecquoise)",
+    "contenu": "La sourate At-Tin (Le Figuier / التين) est la 95ème sourate du Coran. C'est une sourate mecquoise composée de 8 versets.",
+    "mots_cles": ["tin", "figuier", "sourate 95", "mecquoise", "95"]
+  },
+  {
+    "id": 100,
+    "titre": "Sourate 96 : L'Adhérence (Al-'Alaq - العلق)",
+    "categorie": "Coran (Mecquoise)",
+    "contenu": "La sourate Al-'Alaq (L'Adhérence / العلق) est la 96ème sourate du Coran. C'est une sourate mecquoise composée de 19 versets.",
+    "mots_cles": ["alaq", "adhérence", "sourate 96", "mecquoise", "96"]
+  },
+  {
+    "id": 101,
+    "titre": "Sourate 97 : La Destinée (Al-Qadr - القدر)",
+    "categorie": "Coran (Mecquoise)",
+    "contenu": "La sourate Al-Qadr (La Destinée / القدر) est la 97ème sourate du Coran. C'est une sourate mecquoise composée de 5 versets.",
+    "mots_cles": ["qadr", "destinée", "sourate 97", "mecquoise", "97"]
+  },
+  {
+    "id": 102,
+    "titre": "Sourate 98 : La Preuve (Al-Bayyinah - البينة)",
+    "categorie": "Coran (Médinoise)",
+    "contenu": "La sourate Al-Bayyinah (La Preuve / البينة) est la 98ème sourate du Coran. C'est une sourate médinoise composée de 8 versets.",
+    "mots_cles": ["bayyinah", "preuve", "sourate 98", "médinoise", "98"]
+  },
+  {
+    "id": 103,
+    "titre": "Sourate 99 : La Secousse (Az-Zalzalah - الزلزلة)",
+    "categorie": "Coran (Médinoise)",
+    "contenu": "La sourate Az-Zalzalah (La Secousse / الزلزلة) est la 99ème sourate du Coran. C'est une sourate médinoise composée de 8 versets.",
+    "mots_cles": ["zalzalah", "secousse", "sourate 99", "médinoise", "99"]
+  },
+  {
+    "id": 104,
+    "titre": "Sourate 100 : Les Coursiers (Al-'Adiyat - العاديات)",
+    "categorie": "Coran (Mecquoise)",
+    "contenu": "La sourate Al-'Adiyat (Les Coursiers / العاديات) est la 100ème sourate du Coran. C'est une sourate mecquoise composée de 11 versets.",
+    "mots_cles": ["adiyat", "coursiers", "sourate 100", "mecquoise", "100"]
+  },
+  {
+    "id": 105,
+    "titre": "Sourate 101 : Le Fracas (Al-Qari'ah - القارعة)",
+    "categorie": "Coran (Mecquoise)",
+    "contenu": "La sourate Al-Qari'ah (Le Fracas / القارعة) est la 101ème sourate du Coran. C'est une sourate mecquoise composée de 11 versets.",
+    "mots_cles": ["qariah", "fracas", "sourate 101", "mecquoise", "101"]
+  },
+  {
+    "id": 106,
+    "titre": "Sourate 102 : La Course aux Richesses (At-Takathur - التكاثر)",
+    "categorie": "Coran (Mecquoise)",
+    "contenu": "La sourate At-Takathur (La Course aux Richesses / التكاثر) est la 102ème sourate du Coran. C'est une sourate mecquoise composée de 8 versets.",
+    "mots_cles": ["takathur", "course", "sourate 102", "mecquoise", "102"]
+  },
+  {
+    "id": 107,
+    "titre": "Sourate 103 : Le Temps (Al-'Asr - العصر)",
+    "categorie": "Coran (Mecquoise)",
+    "contenu": "La sourate Al-'Asr (Le Temps / العصر) est la 103ème sourate du Coran. C'est une sourate mecquoise composée de 3 versets.",
+    "mots_cles": ["asr", "temps", "sourate 103", "mecquoise", "103"]
+  },
+  {
+    "id": 108,
+    "titre": "Sourate 104 : Le Calomniateur (Al-Humazah - الهمزة)",
+    "categorie": "Coran (Mecquoise)",
+    "contenu": "La sourate Al-Humazah (Le Calomniateur / الهمزة) est la 104ème sourate du Coran. C'est une sourate mecquoise composée de 9 versets.",
+    "mots_cles": ["humazah", "calomniateur", "sourate 104", "mecquoise", "104"]
+  },
+  {
+    "id": 109,
+    "titre": "Sourate 105 : L'Éléphant (Al-Fil - الفيل)",
+    "categorie": "Coran (Mecquoise)",
+    "contenu": "La sourate Al-Fil (L'Éléphant / الفيل) est la 105ème sourate du Coran. C'est une sourate mecquoise composée de 5 versets.",
+    "mots_cles": ["fil", "éléphant", "sourate 105", "mecquoise", "105"]
+  },
+  {
+    "id": 110,
+    "titre": "Sourate 106 : Coraïsh (Quraysh - قريش)",
+    "categorie": "Coran (Mecquoise)",
+    "contenu": "La sourate Quraysh (Coraïsh / قريش) est la 106ème sourate du Coran. C'est une sourate mecquoise composée de 4 versets.",
+    "mots_cles": ["quraysh", "coraish", "sourate 106", "mecquoise", "106"]
+  },
+  {
+    "id": 111,
+    "titre": "Sourate 107 : L'Ustensile (Al-Ma'un - الماعون)",
+    "categorie": "Coran (Mecquoise)",
+    "contenu": "La sourate Al-Ma'un (L'Ustensile / الماعون) est la 107ème sourate du Coran. C'est une sourate mecquoise composée de 7 versets.",
+    "mots_cles": ["maun", "ustensile", "sourate 107", "mecquoise", "107"]
+  },
+  {
+    "id": 112,
+    "titre": "Sourate 108 : L'Abondance (Al-Kawthar - الكوثر)",
+    "categorie": "Coran (Mecquoise)",
+    "contenu": "La sourate Al-Kawthar (L'Abondance / الكوثر) est la 108ème sourate du Coran. C'est une sourate mecquoise composée de 3 versets.",
+    "mots_cles": ["kawthar", "abondance", "sourate 108", "mecquoise", "108"]
+  },
+  {
+    "id": 113,
+    "titre": "Sourate 109 : Les Infidèles (Al-Kafirun - الكافرون)",
+    "categorie": "Coran (Mecquoise)",
+    "contenu": "La sourate Al-Kafirun (Les Infidèles / الكافرون) est la 109ème sourate du Coran. C'est une sourate mecquoise composée de 6 versets.",
+    "mots_cles": ["kafirun", "infidèles", "sourate 109", "mecquoise", "109"]
+  },
+  {
+    "id": 114,
+    "titre": "Sourate 110 : Le Secours (An-Nasr - النصر)",
+    "categorie": "Coran (Médinoise)",
+    "contenu": "La sourate An-Nasr (Le Secours / النصر) est la 110ème sourate du Coran. C'est une sourate médinoise composée de 3 versets.",
+    "mots_cles": ["nasr", "secours", "sourate 110", "médinoise", "110"]
+  },
+  {
+    "id": 115,
+    "titre": "Sourate 111 : Les Fibres (Al-Masad - المسد)",
+    "categorie": "Coran (Mecquoise)",
+    "contenu": "La sourate Al-Masad (Les Fibres / المسد) est la 111ème sourate du Coran. C'est une sourate mecquoise composée de 5 versets.",
+    "mots_cles": ["masad", "fibres", "sourate 111", "mecquoise", "111"]
+  },
+  {
+    "id": 116,
+    "titre": "Sourate 112 : La Sincérité (Al-Ikhlas - الإخلاص)",
+    "categorie": "Coran (Mecquoise)",
+    "contenu": "La sourate Al-Ikhlas (La Sincérité / الإخلاص) est la 112ème sourate du Coran. C'est une sourate mecquoise composée de 4 versets.",
+    "mots_cles": ["ikhlas", "sincérité", "monothéisme", "sourate 112", "mecquoise", "112"]
+  },
+  {
+    "id": 117,
+    "titre": "Sourate 113 : L'Aube Naissante (Al-Falaq - الفلق)",
+    "categorie": "Coran (Mecquoise)",
+    "contenu": "La sourate Al-Falaq (L'Aube Naissante / الفلق) est la 113ème sourate du Coran. C'est une sourate mecquoise composée de 5 versets.",
+    "mots_cles": ["falaq", "aube", "sourate 113", "mecquoise", "113"]
+  },
+  {
+    "id": 118,
+    "titre": "Sourate 114 : Les Hommes (An-Nas - الناس)",
+    "categorie": "Coran (Mecquoise)",
+    "contenu": "La sourate An-Nas (Les Hommes / الناس) est la 114ème sourate du Coran. C'est une sourate mecquoise composée de 6 versets.",
+    "mots_cles": ["nas", "hommes", "sourate 114", "mecquoise", "114"]
+  }
+]
