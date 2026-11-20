@@ -1,0 +1,1978 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>Islam Agent Épistémique & Convertisseur</title>
+
+    <link rel="manifest" href="manifest.json" />
+    <link rel="apple-touch-icon" href="icon-192.png" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <meta name="theme-color" content="#F5E6D3" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="TOSSARA" />
+
+    <style>
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body {
+        font-family:'Segoe UI','Inter',system-ui,sans-serif;
+        background:#FAEBD7;
+        min-height:100vh;
+        display:flex; flex-direction:column; height:100dvh; overflow:hidden;
+        transition: background 0.3s ease;
+    }
+    :root {
+        --bg-main:#FAEBD7;
+        --text-main:#1a1a1a;
+        --orange-clair:#f5a623;
+        --orange-fonce:#D97B00;
+        --bleu-ciel:#87CEEB;
+        --vert-clair:#7bcb7b;
+        --champ-fond:#F5E6D3;
+        --blanc-pur:#FFFFFF;
+        --blanc-creme:#FFF8F0;
+        --orange-creme-bg:#FFF4E8;
+        --noir-fonce:#2a2a2a;
+        --vert-clair-bg:#F0FFF0;
+        --input-height:56px;
+    }
+    .header {
+        position:fixed; top:0; left:0; right:0;
+        background:var(--bg-main);
+        display:flex; flex-direction:column; align-items:center;
+        padding:12px 12px 16px;
+        z-index:100;
+        box-shadow:0 2px 8px rgba(0,0,0,0.05);
+        transition:padding 0.3s ease, background 0.3s ease;
+    }
+    .header-row {
+        display:flex; align-items:center; justify-content:space-between;
+        width:100%; margin-bottom:10px; gap:8px;
+    }
+    .header-left, .header-right {
+        display:flex; flex-direction:column; gap:8px; flex-shrink:0;
+    }
+    .header-left { align-items:flex-start; }
+    .header-right { align-items:flex-end; }
+
+    /* ✅ CORRECTION 1 : tous les boutons ont la même taille que "Avis" */
+    .button-oval {
+        padding:10px 16px; border-radius:50px; cursor:pointer;
+        font-size:0.95em; font-weight:bold; transition:all 0.22s;
+        white-space:nowrap; font-family:'Segoe UI',sans-serif;
+        line-height:1.2; background:var(--blanc-pur);
+        border:2.5px solid var(--vert-clair); color:var(--text-main);
+        position:relative; min-width:110px; text-align:center;
+        display:flex; flex-direction:row; align-items:center; justify-content:center;
+        gap:6px;
+        z-index: 101; box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+    }
+    #dons-btn { border-color:var(--vert-clair); }
+    #dons-btn:hover { background:var(--vert-clair); color:white; }
+    #audio-btn { border-color:var(--bleu-ciel); }
+    #audio-btn:hover { background:var(--bleu-ciel); color:white; }
+    #biblio-btn {
+        border: none !important; color: var(--noir-fonce) !important;
+        background: var(--blanc-pur); box-shadow: 0 2px 6px rgba(0,0,0,0.12);
+    }
+    #biblio-btn:hover { background:var(--bleu-ciel); color:white !important; }
+    #profil-btn { border-color:var(--orange-clair); }
+    #profil-btn:hover { background:var(--orange-clair); color:white; }
+    #avis-btn { border-color:var(--vert-clair); color:var(--text-main); }
+    #avis-btn:hover { background:var(--vert-clair); color:white; }
+    #converter-btn {
+        border-color: var(--orange-clair) !important;
+        color: #c25e00 !important;
+        font-weight: 800;
+        background: var(--blanc-pur);
+        box-shadow: 0 0 10px rgba(245,166,35,0.22);
+    }
+    #converter-btn:hover { background: var(--orange-clair) !important; color: white !important; }
+
+    .icon-container {
+        position:relative; width:64px; height:64px;
+        border:2px solid var(--vert-clair); border-radius:50%;
+        background:var(--blanc-pur); flex-shrink:0;
+        cursor:pointer; display:flex; align-items:center; justify-content:center;
+    }
+    .icon-inner { width:60px; height:60px; border-radius:50%; overflow:hidden; position:relative; }
+    .icon-inner img { width:60px; height:60px; object-fit:cover; }
+    .icon-overlay {
+        position:absolute; inset:0; background:rgba(0,0,0,0.38); border-radius:50%;
+        display:flex; flex-direction:column; align-items:center; justify-content:center;
+        opacity:0; transition:opacity 0.2s;
+    }
+    .icon-inner:hover .icon-overlay { opacity:1; }
+    .icon-overlay span { color:white; font-size:0.55em; font-weight:bold; text-align:center; }
+    .icon-download-btn {
+        position:absolute; bottom:-4px; right:-4px;
+        background:var(--vert-clair); border:2px solid white; border-radius:50%;
+        width:24px; height:24px; cursor:pointer;
+        display:flex; align-items:center; justify-content:center; z-index:20; padding:0;
+        box-shadow:0 1px 4px rgba(0,0,0,0.25);
+    }
+    .icon-download-btn:hover { background:#68b868; transform:scale(1.1); }
+    .icon-download-btn svg { width:12px; height:12px; pointer-events:none; }
+
+    .icon-theme-btn {
+        position:absolute; bottom:-4px; left:-4px;
+        background:var(--bleu-ciel); border:2px solid white; border-radius:50%;
+        width:24px; height:24px; cursor:pointer;
+        display:flex; align-items:center; justify-content:center;
+        z-index:20; padding:0; font-size:0.78em; line-height:1;
+        box-shadow:0 1px 4px rgba(0,0,0,0.25);
+        transition:transform 0.2s, background 0.2s;
+    }
+    .icon-theme-btn:hover { background:#68b8e0; transform:scale(1.12); }
+    body.dark-theme .icon-theme-btn { background:#f5a623; }
+
+    .welcome-text {
+        text-align:center; width:100%; padding:4px 6px 0;
+        display:flex; flex-direction:column; gap:4px; margin-top:4px;
+        transition: opacity 0.3s ease, max-height 0.3s ease;
+        max-height:200px; overflow:hidden; opacity:1;
+    }
+    .titre-agent { font-size:2.2em; font-weight:900; color:var(--bleu-ciel); font-family:'Georgia',serif; }
+    .titre-bienvenue { font-size:1.7em; color:var(--vert-clair); font-weight:800; }
+    .titre-expert { font-size:1.35em; color:var(--orange-clair); font-weight:700; font-style:italic; }
+
+    /* ✅ CORRECTION 2 : les 3 messages disparaissent pendant la lecture,
+       reviennent quand l'utilisateur commence à saisir une nouvelle requête */
+    .header.welcome-hidden .welcome-text { max-height:0; opacity:0; padding:0; margin:0; }
+    .header.welcome-hidden { padding-bottom:8px; }
+    .chat-container.welcome-hidden { margin-top:140px; }
+
+    .chat-container {
+        flex:1; margin-top:200px; padding:12px 10px 160px;
+        overflow-y:auto; -webkit-overflow-scrolling:touch;
+        display:flex; flex-direction:column;
+        transition:margin-top 0.3s ease, background 0.3s ease;
+    }
+
+    .msg {
+        width:100%; margin-bottom:14px; padding:14px 16px;
+        border-radius:16px; line-height:1.6; font-size:32px;
+        color:var(--noir-fonce); font-weight:bold;
+        border:2px solid var(--orange-clair);
+        background:var(--orange-clair);
+        position:relative; animation:fadeMsg 0.3s ease;
+    }
+    .msg::before { content:'★'; position:absolute; top:4px; right:10px; font-size:14px; color:var(--orange-fonce); opacity:0.7; }
+    .msg::after { content:'✦'; position:absolute; bottom:4px; left:10px; font-size:12px; color:var(--vert-clair); opacity:0.6; }
+    .user-msg { align-self:flex-end; background:var(--bleu-ciel); color:white; border-color:var(--bleu-ciel); }
+    .user-msg::before, .user-msg::after { display:none; }
+    .bot-msg { align-self:flex-start; background:var(--champ-fond); border-color:var(--orange-clair); }
+    .bot-msg h1 { color:var(--vert-clair); font-size:36px; font-weight:900; text-decoration:underline; text-decoration-color:var(--bleu-ciel); text-decoration-thickness:2px; margin:10px 0 6px; font-family:'Georgia',serif; }
+    .bot-msg h2, .bot-msg h3 { color:var(--vert-clair); font-size:30px; font-weight:800; text-decoration:underline; text-decoration-color:var(--bleu-ciel); text-decoration-thickness:2px; margin:8px 0 6px; }
+    .bot-msg p { color:var(--noir-fonce); font-weight:bold; font-size:24px; margin:6px 0; line-height:1.6; }
+    .bot-msg blockquote { background:var(--blanc-creme); border-left:5px solid var(--vert-clair); border-radius:0 10px 10px 0; padding:10px 16px; margin:8px 0; color:var(--orange-clair); font-weight:bold; font-size:24px; line-height:1.6; }
+
+    .typing-indicator {
+        position: fixed; bottom: 140px; left: 50%; transform: translateX(-50%);
+        z-index: 1000; display: none; align-items: center; gap: 6px;
+        padding: 8px 16px; background: white; border-radius: 20px;
+        border-left: 4px solid var(--vert-clair); box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+        white-space: nowrap;
+    }
+    .typing-indicator.show { display: flex; }
+    .typing-indicator span { width: 10px; height: 10px; border-radius: 50%; animation: bounceDot 1.2s infinite ease-in-out both; display: block; }
+    .typing-indicator span:nth-child(1) { background: var(--orange-clair); animation-delay: -0.32s; }
+    .typing-indicator span:nth-child(2) { background: var(--vert-clair); animation-delay: -0.16s; }
+    .typing-indicator span:nth-child(3) { background: var(--bleu-ciel); }
+    @keyframes bounceDot { 0%, 80%, 100% { transform: scale(0.6); opacity: 0.4; } 40% { transform: scale(1.0); opacity: 1; } }
+
+    .input-wrapper {
+        position: fixed; bottom: 0; left: 0; right: 0;
+        background: var(--bg-main); padding: 6px 8px 10px;
+        z-index: 200; box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
+        transition: background 0.3s ease;
+    }
+    .input-area {
+        display: flex; align-items: center; background: var(--orange-clair);
+        border: 2px solid var(--orange-fonce); border-radius: 40px;
+        padding: 6px 8px 6px 16px; width: 100%; min-height: 52px; gap: 8px;
+    }
+    .input-area input { flex: 1; background: transparent; border: none; outline: none; color: var(--noir-fonce); font-size: 20px; font-weight: bold; padding: 6px 4px 6px 0; min-width: 0; }
+    .input-area input::placeholder { color: #8c7b65; }
+
+    .send-btn {
+        width: 46px; height: 46px; min-width: 46px; flex-shrink: 0;
+        border-radius: 50%; background: #27ae60; border: none; cursor: pointer;
+        transition: background 0.2s, transform 0.1s;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+        color: white; font-size: 22px; line-height: 46px; text-align: center;
+        display: block; padding: 0;
+    }
+    .send-btn:hover { background: #2ecc71; }
+    .send-btn:active { transform: scale(0.92); background: #219a52; }
+
+    #dons-message { text-align: center; font-size: 0.85em; font-weight: bold; margin-bottom: 4px; color: var(--orange-clair); animation: blinkColor 3s infinite; }
+    @keyframes blinkColor { 0% { color: var(--orange-clair); } 33% { color: var(--bleu-ciel); } 66% { color: var(--vert-clair); } 100% { color: var(--orange-clair); } }
+
+    .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.5); backdrop-filter: blur(4px); z-index: 300; justify-content: center; align-items: center; padding: 10px; }
+    .modal-overlay.open { display: flex; }
+    .modal-box { background: var(--blanc-pur); padding: 20px 16px; border-radius: 18px; width: 92%; max-width: 440px; max-height: 85vh; overflow-y: auto; position: relative; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2); }
+    .modal-box h2 { margin: 0 0 12px; font-size: 1.25em; color: var(--text-main); border-bottom: 2px solid var(--orange-clair); padding-bottom: 8px; }
+    .modal-close { position: absolute; top: 10px; right: 14px; font-size: 1.5em; cursor: pointer; color: #888; background: none; border: none; transition: 0.2s; }
+    .modal-close:hover { color: var(--orange-clair); transform: rotate(90deg); }
+    .modal-input { width: 100%; padding: 10px 12px; margin: 6px 0 12px; border: 2px solid var(--bleu-ciel); border-radius: 10px; background: #FFFBF0; color: var(--text-main); font-size: 16px; outline: none; transition: 0.2s; font-weight:600; }
+    .modal-input:focus { border-color: var(--vert-clair); box-shadow: 0 0 0 3px rgba(123, 203, 123, 0.15); }
+    .modal-label { font-size: 0.9em; font-weight: bold; color: var(--text-main); margin-top: 6px; display: block; }
+
+    .avatar-wrapper { position: relative; width: 80px; height: 80px; margin: 0 auto 12px; cursor: pointer; border: 3px dashed var(--orange-clair); border-radius: 50%; padding: 2px; overflow: hidden; }
+    .avatar-wrapper img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; background: #EEE; }
+    .avatar-overlay { position: absolute; inset: 0; border-radius: 50%; background: rgba(0, 0, 0, 0.4); display: flex; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.2s; }
+    .avatar-wrapper:hover .avatar-overlay { opacity: 1; }
+    .avatar-overlay span { color: white; font-size: 0.6em; font-weight: bold; text-align: center; }
+
+    .api-key-block { background: #F4F9FF; border: 2px solid #4285F4; border-radius: 12px; padding: 12px; margin: 10px 0; }
+    .api-key-title { font-weight: bold; font-size: 0.9em; margin-bottom: 6px; color: #4285F4; }
+    .mode-selector-profil { display: flex; gap: 6px; margin: 8px 0 12px; flex-wrap: wrap; }
+    .mode-selector-profil button { flex: 1; min-width: 60px; padding: 8px 6px; border-radius: 30px; border: 2px solid #d6cec0; background: #f7f2e9; font-size: 11px; font-weight: bold; color: #5a5a5a; cursor: pointer; transition: 0.2s; }
+    .mode-selector-profil button.active { border-color: var(--vert-clair); background: var(--vert-clair); color: white; box-shadow: 0 2px 8px rgba(123, 203, 123, 0.2); }
+
+    .tabs-pay { display: flex; border-bottom: 2px solid var(--vert-clair); margin-bottom: 12px; }
+    .tab-pay { flex: 1; padding: 8px 4px; font-size: 0.85em; font-weight: bold; cursor: pointer; border: none; background: none; color: #777; border-bottom: 3px solid transparent; margin-bottom: -2px; transition: 0.2s; }
+    .tab-pay.active { color: var(--vert-clair); border-bottom-color: var(--vert-clair); }
+    .tab-content-pay { display: none; }
+    .tab-content-pay.active { display: block; }
+
+    .pay-info { font-size: 0.85em; color: #555; margin-bottom: 10px; padding: 8px 12px; background: #f8f4ed; border-radius: 8px; font-weight:600; }
+    .btn-pay { width: 100%; padding: 12px; border: none; border-radius: 12px; cursor: pointer; font-size: 1em; font-weight: bold; margin-top: 8px; background: var(--vert-clair); color: white; font-family: inherit; transition: 0.2s; }
+    .btn-pay:hover { background: #68b868; transform: scale(0.98); }
+    .btn-pay-blue { background: var(--bleu-ciel); }
+    .btn-pay-orange { background: var(--orange-clair); }
+
+    #toast { position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%); background: #222; color: white; padding: 10px 20px; border-radius: 25px; font-size: 0.9em; font-weight:bold; z-index: 9999; opacity: 0; transition: opacity 0.4s; pointer-events: none; }
+    #toast.show { opacity: 1; }
+
+    @keyframes fadeMsg { 0% { opacity: 0; transform: translateY(8px); } 100% { opacity: 1; transform: translateY(0); } }
+
+    #audio-modal .modal-box { width: 100%; max-width: 500px; height: 100dvh; max-height: 100dvh; padding: 10px 8px 8px; border-radius: 0; display: flex; flex-direction: column; justify-content: space-between; background: var(--orange-creme-bg); overflow: hidden; }
+    #audio-modal .modal-close { position: absolute; top: 6px; right: 10px; z-index: 1000; font-size: 1.6em; width: 34px; height: 34px; border-radius: 50%; background: rgba(0,0,0,0.08); display: flex; align-items: center; justify-content: center; }
+    .mini-agent-header { display: flex; flex-direction: column; align-items: center; gap: 6px; position: relative; padding-top: 4px; flex-shrink: 0; }
+    .btn-circle-dl { width: 68px; height: 68px; border-radius: 50%; border: 3.5px solid var(--vert-clair); background: var(--blanc-pur); color: var(--vert-clair); display: flex; align-items: center; justify-content: center; font-size: 1.8rem; cursor: pointer; transition: 0.2s; box-shadow: 0 3px 8px rgba(0,0,0,0.12); overflow: hidden; position: relative; flex-shrink: 0; }
+    .btn-circle-dl img { width: 100%; height: 100%; object-fit: cover; }
+    .btn-circle-dl:active { transform: scale(0.92); }
+    .btn-circle-dl input[type="file"] { position: absolute; inset: 0; opacity: 0; cursor: pointer; border-radius: 50%; width: 100%; height: 100%; }
+    .mini-agent-selectors { width: 100%; display: flex; justify-content: space-between; align-items: center; padding: 2px 4px; gap: 8px; }
+    .btn-oval-selector { background: var(--blanc-pur); padding: 8px 14px; border-radius: 20px; font-size: 0.88rem; font-weight: 800; cursor: pointer; display: flex; align-items: center; gap: 6px; border: 2px solid #ccc; white-space: nowrap; box-shadow: 0 2px 5px rgba(0,0,0,0.06); }
+    .btn-recitateur-style { border-color: var(--vert-clair); color: #2E7D32; }
+    .btn-sourate-style { border-color: var(--orange-clair); color: #E65100; }
+    .mini-agent-messages { text-align: center; margin: 2px 0; }
+    .msg-porte-epistemique { font-size: 1.25rem; font-weight: 900; color: var(--bleu-ciel); text-transform: uppercase; font-family: 'Georgia', serif; }
+    .msg-japprends { font-size: 0.95rem; font-weight: 800; color: var(--vert-clair); }
+    .mini-lang-bar { display: flex; gap: 8px; justify-content: center; }
+    .mini-lang-btn { padding: 4px 12px; border-radius: 12px; border: 1.5px solid #ccc; font-size: 0.78rem; font-weight: bold; cursor: pointer; background: #f0f0f0; }
+    .mini-lang-btn.active { background: var(--bleu-ciel); color: white; border-color: var(--bleu-ciel); }
+    .mini-reading-zone { flex: 0 1 40vh; height: 40vh; min-height: 140px; max-height: 40vh; background-color: var(--blanc-creme); border: 2.5px solid var(--vert-clair); border-radius: 12px; padding: 10px; overflow-y: auto; -webkit-overflow-scrolling: touch; margin: 6px 0; display: flex; flex-direction: column; gap: 8px; box-shadow: inset 0 2px 6px rgba(0,0,0,0.04); }
+    .mini-verse-card { background: var(--blanc-pur); border-radius: 10px; padding: 10px 12px; border: 1px solid rgba(0,0,0,0.08); transition: all 0.25s ease; }
+    .mini-verse-card.highlighted { background-color: var(--vert-clair-bg) !important; border: 2.5px solid var(--vert-clair) !important; box-shadow: 0 2px 8px rgba(129, 199, 132, 0.35); }
+    .mini-verse-bismillah { font-family: 'Amiri', serif; font-size: 1.5rem; text-align: right; direction: rtl; color: var(--orange-fonce); line-height: 2.2rem; font-weight: bold; padding-bottom: 8px; margin-bottom: 8px; border-bottom: 1px dashed rgba(0,0,0,0.15); }
+    .mini-verse-ar { font-family: 'Amiri', serif; font-size: 1.5rem; text-align: right; direction: rtl; color: #111; line-height: 2.2rem; font-weight: bold; }
+    .mini-verse-trans { font-size: 0.95rem; color: #333; margin-top: 6px; line-height: 1.4rem; font-weight: 600; }
+    .mini-bottom-controls { display: flex; flex-direction: column; gap: 10px; background: transparent; flex-shrink: 0; max-height: 52vh; overflow-y: auto; padding-bottom: 4px; }
+    .mini-control-block { background: #ffffff; border-radius: 12px; padding: 10px 8px; display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 6px; box-shadow: 0 2px 6px rgba(0,0,0,0.05); }
+    .mini-btn { background: var(--blanc-pur); border-radius: 50px; padding: 8px 14px; min-height: 38px; font-size: 0.88rem; font-weight: 800; cursor: pointer; display: inline-flex; align-items: center; gap: 5px; color: var(--noir-fonce); white-space: nowrap; box-shadow: 0 1px 4px rgba(0,0,0,0.06); transition: transform 0.1s, background 0.2s; }
+    .mini-btn:active { transform: scale(0.94); }
+    .mini-control-block.ctrl-block .mini-btn { border: 2.5px solid var(--vert-clair); }
+    .mini-control-block.ctrl-block .mini-btn-play { background: var(--vert-clair); color: white; padding: 8px 18px; }
+    .mini-control-block.media-block .mini-btn { border: 2.5px solid var(--orange-clair); }
+    .mini-control-block.media-block .mini-btn-mode.active { background: var(--orange-clair); color: white; border-color: var(--orange-fonce); }
+
+    #miniSelectionModal .modal-box { max-height: 70vh; }
+    #miniSelectionModal .modal-close { position: absolute; top: 10px; right: 14px; z-index: 50; width: 40px; height: 40px; padding: 0; display: flex; align-items: center; justify-content: center; font-size: 1.6em; line-height: 1; cursor: pointer; color: #666; background: rgba(255,255,255,0.96); border: 1px solid #ddd; border-radius: 50%; }
+
+    @media (max-width: 500px) {
+        .btn-circle-dl { width: 58px; height: 58px; font-size: 1.5rem; }
+        .mini-verse-ar { font-size: 1.3rem; line-height: 1.9rem; }
+        .mini-verse-bismillah { font-size: 1.3rem; line-height: 1.9rem; }
+        .mini-verse-trans { font-size: 0.88rem; }
+        .mini-reading-zone { height: 38vh; max-height: 38vh; min-height: 130px; }
+        .mini-btn { font-size: 0.8rem; padding: 7px 11px; min-height: 36px; }
+        .mini-control-block { gap: 5px; padding: 8px 6px; }
+        .btn-oval-selector { font-size: 0.78rem; padding: 6px 10px; }
+        .msg-porte-epistemique { font-size: 1.1rem; }
+        .msg-japprends { font-size: 0.85rem; }
+        .msg { font-size: 20px; padding: 12px 14px; }
+        .bot-msg h1 { font-size: 28px; }
+        .bot-msg h2, .bot-msg h3 { font-size: 24px; }
+        .bot-msg p, .bot-msg blockquote { font-size: 20px; }
+        .button-oval { font-size: 0.82em; padding: 8px 12px; min-width: 90px; }
+        .titre-agent { font-size: 1.6em; }
+        .titre-bienvenue { font-size: 1.2em; }
+        .titre-expert { font-size: 0.98em; }
+        .input-area input { font-size: 18px; }
+        .send-btn { width: 44px; height: 44px; min-width: 44px; font-size: 20px; line-height: 44px; }
+        .modal-box { padding: 16px 12px; }
+        #audio-modal .modal-box { padding: 8px 6px 6px; }
+    }
+    @media (max-width: 400px) {
+        .mini-reading-zone { height: 36vh; max-height: 36vh; min-height: 120px; }
+        .mini-btn { font-size: 0.74rem; padding: 6px 9px; min-height: 34px; }
+        .btn-oval-selector { font-size: 0.7rem; padding: 5px 8px; }
+        .msg { font-size: 18px; padding: 10px 12px; }
+        .bot-msg h1 { font-size: 24px; }
+        .bot-msg h2, .bot-msg h3 { font-size: 21px; }
+        .bot-msg p, .bot-msg blockquote { font-size: 18px; }
+        .button-oval { font-size: 0.76em; padding: 7px 10px; min-width: 82px; }
+    }
+
+    .biblio-clickable { cursor: pointer; transition: background 0.2s, border-color 0.2s; }
+    .biblio-clickable:hover { background: #f0f8ff !important; border-color: var(--bleu-ciel) !important; }
+    .biblio-sync-status { display:flex; align-items:center; gap:7px; margin:0 0 12px; padding:7px 10px; border-radius:10px; background:#f4fbff; border:1px solid #b9e4f5; color:#386273; font-size:0.78rem; font-weight:700; }
+    .biblio-sync-dot { width:9px; height:9px; border-radius:50%; background:#f0ad4e; flex:0 0 9px; box-shadow:0 0 0 3px rgba(240,173,78,.16); }
+    .biblio-sync-dot.is-ready { background:#27ae60; box-shadow:0 0 0 3px rgba(39,174,96,.16); }
+    .biblio-sync-dot.is-error { background:#d9534f; box-shadow:0 0 0 3px rgba(217,83,79,.16); }
+
+    /* ✅ CORRECTION 3 : bouton de suppression individuelle dans la biblio agent */
+    .biblio-delete-btn {
+        background: #e74c3c; color: #fff; border: none;
+        border-radius: 50%; width: 28px; height: 28px; min-width: 28px;
+        cursor: pointer; font-size: 1rem; font-weight: 900; padding: 0;
+        display: flex; align-items: center; justify-content: center;
+        flex-shrink: 0; transition: background 0.2s, transform 0.1s;
+        font-family: inherit; line-height: 1;
+    }
+    .biblio-delete-btn:hover { background: #c0392b; }
+    .biblio-delete-btn:active { transform: scale(0.88); }
+
+    /* ✅ CORRECTION 3 : bloc "Page enregistrée" */
+    .page-save-block {
+        background: #f0f8ff; border: 1.5px solid #b9e4f5;
+        border-radius: 10px; padding: 10px; margin-bottom: 12px;
+    }
+    .page-save-block .title {
+        font-size: 0.85rem; font-weight: bold; color: #1a5276; margin-bottom: 6px;
+    }
+
+    .dropzone-box { border: 2px dashed var(--vert-clair); border-radius: 12px; padding: 12px; text-align: center; background: #fafffa; cursor: pointer; transition: all 0.2s; margin: 6px 0 10px; }
+    .dropzone-box:hover, .dropzone-box.dragover { background: #e8f9e8; border-color: #27ae60; transform: scale(1.01); }
+    .storage-bar-wrapper { background: #eee; border-radius: 10px; height: 12px; width: 100%; overflow: hidden; margin: 4px 0 8px; }
+    .storage-bar-fill { height: 100%; border-radius: 10px; background: var(--vert-clair); width: 0%; transition: width 0.3s; }
+    .storage-bar-fill.large { background: #38bdf8; }
+
+    #test-media-btn {
+        width: 100%; padding: 18px 20px; margin-top: 10px;
+        font-size: 1.1em; font-weight: 900; letter-spacing: 0.5px;
+        text-transform: uppercase; border: 3px solid #4a9fd8;
+        border-radius: 14px; cursor: pointer;
+        background: linear-gradient(180deg, #bfe7ff 0%, #87CEEB 100%);
+        color: #0b3a55;
+        box-shadow: 0 6px 18px rgba(135,206,235,0.55), inset 0 1px 0 rgba(255,255,255,0.6);
+        transition: transform 0.12s, box-shadow 0.2s;
+        font-family: inherit;
+    }
+    #test-media-btn:hover { box-shadow: 0 8px 24px rgba(135,206,235,0.75); }
+    #test-media-btn:active { transform: scale(0.97); }
+
+    body.dark-theme { background: #0A0B0D; }
+    body.dark-theme .header { background: #121417; box-shadow: 0 2px 10px rgba(0,0,0,0.5); border-bottom: 1px solid rgba(255,255,255,0.06); }
+    body.dark-theme .chat-container { background: #0A0B0D; }
+    body.dark-theme .input-wrapper { background: #121417; box-shadow: 0 -2px 10px rgba(0,0,0,0.4); border-top: 1px solid rgba(255,255,255,0.06); }
+    </style>
+</head>
+
+<body>
+
+<script>
+/* ✅ CORRECTION 4 : escapeHtml exposé globalement (le bug était que le convertisseur
+   ne pouvait pas y accéder depuis son IIFE, d'où l'absence d'affichage des items) */
+window.escapeHtml = function(value) {
+    return String(value == null ? '' : value).replace(/[&<>"']/g, function(c) {
+        return { '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c];
+    });
+};
+
+window.openModal = function(id) {
+    var el = document.getElementById(id);
+    if (el) el.classList.add('open');
+};
+window.closeModal = function(id) {
+    var el = document.getElementById(id);
+    if (el) el.classList.remove('open');
+};
+</script>
+
+<!-- ============ EN-TÊTE PRINCIPAL ============ -->
+<div class="header" id="mainHeader">
+<div class="header-row">
+    <div class="header-left">
+        <button id="dons-btn" class="button-oval" onclick="openModal('paiement-modal')">💚 Dons</button>
+        <button id="audio-btn" class="button-oval" onclick="openModal('audio-modal')">🎵 Audio Coran</button>
+        <button id="biblio-btn" class="button-oval" onclick="openModal('biblio-modal')">☰ Biblio</button>
+    </div>
+    <div class="icon-container" id="iconContainer">
+        <div class="icon-inner" onclick="document.getElementById('icon-file-input').click()" title="Changer l'icône TOSSARA">
+            <img id="main-icon-img" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%2327AE60'/><path d='M65 30 A 28 28 0 1 1 35 70 A 32 32 0 1 0 65 30 Z' fill='%23FFFFFF'/></svg>" alt="Icône TOSSARA" />
+            <div class="icon-overlay"><span>📷 Changer<br>l'icône</span></div>
+        </div>
+        <button class="icon-download-btn" title="Télécharger l'icône" onclick="downloadCurrentIcon(event)">
+            <svg viewBox="0 0 24 24" fill="none"><path d="M12 4v11M8 11l4 4 4-4M4 19h16" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <button class="icon-theme-btn" id="theme-toggle-btn" title="Thème sombre / clair" onclick="toggleDarkTheme()">🌙</button>
+    </div>
+    <input type="file" id="icon-file-input" accept="image/*" style="display:none" onchange="changeMainIcon(event)" />
+    <div class="header-right">
+        <button id="profil-btn" class="button-oval" onclick="openModal('profil-modal')">👤 Profil</button>
+        <button id="avis-btn" class="button-oval" onclick="openModal('suggestion-modal')">💬 Avis</button>
+        <button id="converter-btn" class="button-oval" onclick="openModal('converter-modal')">⚡ Converter</button>
+    </div>
+</div>
+<div class="welcome-text" id="welcomeText">
+    <p class="titre-agent">☪ Islam Agent Épistémique</p>
+    <p class="titre-bienvenue">Bienvenue sur les pages de la théologie islamique</p>
+    <p class="titre-expert">✨ Je suis votre premier Agent Épistémique d'Afrique pour l'islam</p>
+</div>
+</div>
+
+<div class="chat-container" id="chat"></div>
+
+<div class="typing-indicator" id="typingIndicator">
+<span></span><span></span><span></span>
+</div>
+
+<div class="input-wrapper">
+    <div id="dons-message">🤲 Soutenez-nous avec un don volontaire pour la gratuité du savoir</div>
+    <div class="input-area">
+        <input type="text" id="userInput" name="chat_query_question" placeholder="Posez votre question sur l'Islam..." autocomplete="one-time-code" autocorrect="off" autocapitalize="sentences" spellcheck="false" data-lpignore="true" />
+        <button class="send-btn" id="sendBtn" type="button" title="Envoyer" aria-label="Envoyer la question">➤</button>
+    </div>
+</div>
+
+<div id="toast"></div>
+
+<!-- ============ MODALE BIBLIO (avec Page enregistrée + suppression individuelle) ============ -->
+<div class="modal-overlay" id="biblio-modal">
+<div class="modal-box">
+    <button class="modal-close" onclick="closeModal('biblio-modal')">&times;</button>
+    <h2 style="color:var(--bleu-ciel); border-bottom-color:var(--bleu-ciel);">📚 Bibliothèque &amp; Documents</h2>
+
+    <!-- ✅ CORRECTION 3 : bloc pour enregistrer une page utile -->
+    <div class="page-save-block">
+        <div class="title">🔖 Enregistrer une page utile trouvée pendant la recherche</div>
+        <input type="url" id="pageSaveUrl" class="modal-input" placeholder="URL de la page (ex: https://...)" style="margin:0 0 6px; font-size:0.85em; padding:8px 10px;" />
+        <input type="text" id="pageSaveTitle" class="modal-input" placeholder="Titre de la page (optionnel)" style="margin:0 0 6px; font-size:0.85em; padding:8px 10px;" />
+        <button class="btn-pay" onclick="enregistrerPageUtile()" style="padding:10px; margin-top:0; font-size:0.9em; background:var(--bleu-ciel);">🔖 Page enregistrée</button>
+    </div>
+
+    <div class="pay-info">📄 Ressources disponibles (cliquez sur un élément pour l'ouvrir ; × pour supprimer) :</div>
+    <div id="biblioSyncStatus" class="biblio-sync-status" role="status" aria-live="polite">
+        <span id="biblioSyncDot" class="biblio-sync-dot"></span>
+        <span id="biblioSyncText">Synchronisation en préparation…</span>
+    </div>
+    <div id="biblioList" style="display:flex; flex-direction:column; gap:8px; margin-top:10px;"></div>
+</div>
+</div>
+
+<!-- ============ MODALE CONVERTISSEUR ============ -->
+<div class="modal-overlay" id="converter-modal">
+<div class="modal-box" style="max-width:540px;">
+    <button class="modal-close" onclick="closeModal('converter-modal')">&times;</button>
+    <h2 style="color:var(--orange-clair); border-bottom-color:var(--orange-clair); display:flex; align-items:center; gap:8px;">
+        <span>⚡ Convertisseur de Ressources (JSON)</span>
+    </h2>
+
+    <div class="pay-info">
+        🌐 Convertissez et synchronisez automatiquement toutes vos ressources du Net (textes, images, livres, audios, vidéos) vers la <strong>Biblio Locale</strong> et la <strong>Biblio de l'Agent Principal</strong>.
+    </div>
+
+    <div style="background:#f4f9ff; border:1.5px solid #b9e4f5; border-radius:10px; padding:10px; margin-bottom:12px;">
+        <div style="display:flex; justify-content:space-between; font-size:0.8rem; font-weight:bold; color:#1a5276;">
+            <span>📊 Métadonnées JSON (localStorage) :</span>
+            <span id="storageMetaLabel">0 Ko</span>
+        </div>
+        <div class="storage-bar-wrapper"><div id="storageMetaBar" class="storage-bar-fill"></div></div>
+        <div style="display:flex; justify-content:space-between; font-size:0.8rem; font-weight:bold; color:#1a5276; margin-top:6px;">
+            <span>💾 Stockage Haute Capacité (~15 Go disponible) :</span>
+            <span id="storageLargeLabel">IndexedDB Prêt</span>
+        </div>
+        <div class="storage-bar-wrapper"><div id="storageLargeBar" class="storage-bar-fill large" style="width:12%;"></div></div>
+    </div>
+
+    <div style="margin-bottom:12px;">
+        <span class="modal-label">📄 1. Textes, Livres &amp; Images (.txt, .md, .pdf, .docx, .epub, .jpg, .png) :</span>
+        <div class="dropzone-box" id="dropzoneDocs" onclick="document.getElementById('fileInputDocs').click()">
+            <div style="font-size:1.8rem; color:var(--vert-clair);"><i class="fa-solid fa-file-arrow-up"></i></div>
+            <div style="font-size:0.85rem; font-weight:bold; color:#2E7D32;">Glissez-déposez ou cliquez pour parcourir les documents / images</div>
+            <div style="font-size:0.75rem; color:#666;">Formats acceptés : PDF, TXT, MD, DOCX, EPUB, JPG, PNG</div>
+        </div>
+        <input type="file" id="fileInputDocs" multiple accept=".txt,.md,.pdf,.docx,.epub,.html,.jpg,.jpeg,.png,.webp" style="display:none;" onchange="handleSelectedFiles(event, 'document')" />
+        <textarea id="pasteTextDocs" class="modal-input" style="height:60px; resize:vertical; font-size:13px;" placeholder="Ou collez ici directement un texte brut, résumé de livre ou URL du Net..."></textarea>
+    </div>
+
+    <div style="margin-bottom:12px;">
+        <span class="modal-label">🎬 2. Fichiers Audio MP3 &amp; Vidéos MP4 (.mp3, .wav, .m4a, .mp4, .webm) :</span>
+        <div class="dropzone-box" id="dropzoneMedia" onclick="document.getElementById('fileInputMedia').click()" style="border-color:var(--orange-clair); background:#fffdf8;">
+            <div style="font-size:1.8rem; color:var(--orange-clair);"><i class="fa-solid fa-photo-film"></i></div>
+            <div style="font-size:0.85rem; font-weight:bold; color:var(--orange-fonce);">Glissez-déposez ou cliquez pour parcourir les Audios / Vidéos</div>
+            <div style="font-size:0.75rem; color:#666;">Formats acceptés : MP3, WAV, M4A, OGG, MP4, WEBM, MKV</div>
+        </div>
+        <input type="file" id="fileInputMedia" multiple accept=".mp3,.wav,.ogg,.m4a,.mp4,.webm,.mkv" style="display:none;" onchange="handleSelectedFiles(event, 'media')" />
+        <input type="url" id="pasteMediaUrl" class="modal-input" placeholder="Ou collez l'URL d'un flux audio / vidéo distant..." />
+    </div>
+
+    <div style="display:flex; flex-direction:column; gap:6px;">
+        <button class="btn-pay" style="background:var(--vert-clair); color:#fff; font-size:1em; font-weight:900;" onclick="convertirEtAjouterAuto()">
+            ⚡ Convertir en JSON &amp; Ajouter (Synchro Directe Biblio Agent)
+        </button>
+
+        <button id="test-media-btn" onclick="testerLectureMediaConverti()">
+            🔊 🎧 Tester la lecture Audio &amp; Vidéo
+        </button>
+
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px; margin-top:6px;">
+            <button class="btn-pay" style="background:#e8f4ff; color:#1a5276; border:1.5px solid var(--bleu-ciel);" onclick="telechargerDernierJson()">⬇️ Télécharger JSON</button>
+            <button class="btn-pay" style="background:#e8f8e8; color:#196f3d; border:1.5px solid var(--vert-clair);" onclick="exporterTouteLaBiblioJson()">📤 Exporter Tout (JSON)</button>
+        </div>
+
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px;">
+            <button class="btn-pay" style="background:#fdfefe; color:#333; border:1.5px solid #ccc;" onclick="document.getElementById('importJsonFileInput').click()">📥 Importer JSON</button>
+            <input type="file" id="importJsonFileInput" accept=".json" style="display:none;" onchange="importerFichierJsonConverter(event)" />
+            <button class="btn-pay" style="background:#fef9e7; color:#b7950b; border:1.5px solid #f1c40f;" onclick="verifierEtAllouerStockage15Go()">💾 Stockage 15 Go</button>
+        </div>
+
+        <button class="btn-pay btn-pay-orange" onclick="forcerSynchronisationConvertisseur()">🔄 Forcer la Synchronisation (Convertisseur ⇄ Agent)</button>
+    </div>
+
+    <div style="margin-top:16px; border-top:2px solid #eee; padding-top:10px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+            <span style="font-weight:bold; font-size:0.95rem; color:#333;">📁 Biblio Locale du Convertisseur :</span>
+            <span id="converterCountBadge" style="background:var(--vert-clair); color:#fff; padding:2px 8px; border-radius:10px; font-size:0.75rem; font-weight:bold;">0 ressource</span>
+        </div>
+        <div id="converterLocalList" style="display:flex; flex-direction:column; gap:6px; max-height:220px; overflow-y:auto; padding-right:4px;">
+            <div style="text-align:center; padding:15px; color:#888; font-size:0.85rem;">Aucune ressource convertie pour le moment.</div>
+        </div>
+        <div style="display:flex; gap:6px; margin-top:10px;">
+            <button class="btn-pay" style="background:#f8d7da; color:#721c24; flex:1; font-size:0.78rem;" onclick="viderBiblioLocaleConvertisseur()">🗑️ Vider Biblio Locale</button>
+            <button class="btn-pay" style="background:#f5c6cb; color:#721c24; flex:1; font-size:0.78rem;" onclick="viderBiblioAgentPrincipal()">🗑️ Vider Biblio Agent</button>
+        </div>
+    </div>
+</div>
+</div>
+
+<!-- ============ AUTRES MODALES (inchangées) ============ -->
+<div class="modal-overlay" id="liste-avis-modal">
+<div class="modal-box">
+    <button class="modal-close" onclick="closeModal('liste-avis-modal')">&times;</button>
+    <h2 style="color:var(--bleu-ciel); border-bottom-color:var(--bleu-ciel);">📥 Avis &amp; Suggestions Reçus</h2>
+    <div id="containerListeAvis" style="display:flex; flex-direction:column; gap:10px; margin-top:10px; max-height:50vh; overflow-y:auto;"></div>
+    <div style="display:flex; gap:8px; margin-top:14px;">
+        <button class="btn-pay" style="background:#d9534f; flex:1;" onclick="effacerLesAvisRecus()">🗑️ Vider la liste</button>
+        <button class="btn-pay" style="flex:1;" onclick="closeModal('liste-avis-modal')">Fermer</button>
+    </div>
+</div>
+</div>
+
+<div class="modal-overlay" id="suggestion-modal">
+<div class="modal-box">
+    <button class="modal-close" onclick="closeModal('suggestion-modal')">&times;</button>
+    <h2 style="color:var(--vert-clair); border-bottom-color:var(--vert-clair);">💬 Votre Avis & Suggestions</h2>
+    <div class="pay-info">💡 Votre opinion compte énormément ! Laissez un encouragement, une remarque ou signalez ce qu'il faudrait améliorer.</div>
+    <span class="modal-label">Votre Nom / Pseudo (optionnel) :</span>
+    <input type="text" id="sugNom" class="modal-input" placeholder="Ex: Un utilisateur / Un frère" />
+    <span class="modal-label">Votre avis ou suggestion :</span>
+    <textarea id="sugMessage" class="modal-input" style="height:100px; resize:vertical; font-family:inherit; padding:10px;" placeholder="Merci pour cette application ! J'aimerais suggérer que..."></textarea>
+    <button class="btn-pay" onclick="sendUserSuggestion()">💌 Envoyer mon avis</button>
+</div>
+</div>
+
+<div class="modal-overlay" id="profil-modal">
+<div class="modal-box">
+    <button class="modal-close" onclick="closeModal('profil-modal')">&times;</button>
+    <h2 style="color:var(--orange-clair); border-bottom-color:var(--orange-clair);">👤 Profil de l'Auteur</h2>
+    <div class="avatar-wrapper" onclick="document.getElementById('avatar-file-input').click()">
+        <img id="author-avatar-img" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23CCC'><circle cx='12' cy='8' r='4'/><path d='M12 14c-6.1 0-10 4-10 10h20c0-6-3.9-10-10-10z'/></svg>" alt="Auteur" />
+        <div class="avatar-overlay"><span>Télécharger<br>Photo</span></div>
+    </div>
+    <input type="file" id="avatar-file-input" accept="image/*" style="display:none" onchange="changeAuthorAvatar(event)" />
+    <span class="modal-label">Nom :</span>
+    <input type="text" id="authNom" class="modal-input" placeholder="Entrez le nom de l'auteur" />
+    <span class="modal-label">Prénom :</span>
+    <input type="text" id="authPrenom" class="modal-input" placeholder="Entrez le prénom de l'auteur" />
+    <span class="modal-label">Titre de l'auteur :</span>
+    <input type="text" id="authTitre" class="modal-input" placeholder="Ex: Expert en Théologie Islamique" />
+    <span class="modal-label">⚙️ Mode de Connexion IA :</span>
+    <div class="mode-selector-profil" id="modeSelectorProfil">
+        <button data-mode="local" class="activer">📁 Hors-Ligne</button>
+        <button data-mode="hybrid">🔁 Hybride (MCP + RAG)</button>
+        <button data-mode="online">🌐 En Ligne (Gemini IA)</button>
+    </div>
+    <div class="api-key-block">
+        <div class="api-key-title">🔑 Clé API Gemini</div>
+        <input type="password" id="freeApiKey" class="modal-input" style="margin-bottom:0;" placeholder="Collez votre clé API Gemini ici" />
+        <p style="font-size:0.75em;color:#666;margin-top:4px;">💡 Obtenez votre clé sur <a href="https://aistudio.google.com/apikey" target="_blank" style="color:var(--bleu-ciel);">Google AI Studio</a></p>
+    </div>
+    <button class="btn-pay btn-pay-blue" style="margin-top:10px;" onclick="afficherLesAvisRecus()">📥 Voir la liste des avis reçus</button>
+    <button class="btn-pay btn-pay-orange" onclick="saveProfilData()">💾 Enregistrer le profil</button>
+</div>
+</div>
+
+<div class="modal-overlay" id="paiement-modal">
+<div class="modal-box">
+    <button class="modal-close" onclick="closeModal('paiement-modal')">&times;</button>
+    <h2 style="color:var(--vert-clair); border-bottom-color:var(--vert-clair);">💚 Dons Volontaires</h2>
+    <div class="tabs-pay">
+        <button class="tab-pay active" onclick="switchPayTab(event, 'pay-local')">📱 Local</button>
+        <button class="tab-pay" onclick="switchPayTab(event, 'pay-inter')">🌍 International</button>
+        <button class="tab-pay" onclick="switchPayTab(event, 'pay-online')">💳 En Ligne</button>
+    </div>
+    <div id="pay-local" class="tab-content-pay active">
+        <div class="pay-info">💚 Soutien instantané via réseaux mobiles locaux.</div>
+        <span class="modal-label">Opérateur :</span>
+        <select class="modal-input" id="opLocal"><option value="tmoney">T-Money</option><option value="flooz">Flooz</option></select>
+        <span class="modal-label">Numéro de téléphone :</span>
+        <input type="tel" class="modal-input" placeholder="Ex: 01 XX XX XX XX" />
+        <span class="modal-label">Montant (XOF) :</span>
+        <input type="number" class="modal-input" placeholder="Ex: 5000" min="100" />
+        <button class="btn-pay" onclick="processDonation('Local')">✅ Confirmer le transfert</button>
+    </div>
+    <div id="pay-inter" class="tab-content-pay">
+        <div class="pay-info">🌍 Fonds internationaux via agences sécurisées.</div>
+        <span class="modal-label">Méthode :</span>
+        <select class="modal-input" id="opInter"><option value="wu">Western Union</option><option value="mg">MoneyGram</option></select>
+        <span class="modal-label">Code de référence / MTCN :</span>
+        <input type="text" class="modal-input" placeholder="Entrez le code de transaction" />
+        <span class="modal-label">Montant (USD/EUR) :</span>
+        <input type="number" class="modal-input" placeholder="Ex: 50" min="10" />
+        <button class="btn-pay" onclick="processDonation('International')">✅ Soumettre les détails</button>
+    </div>
+    <div id="pay-online" class="tab-content-pay">
+        <div class="pay-info">🔗 Redirection vers le portail sécurisé CinetPay.</div>
+        <span class="modal-label">Montant d'appui :</span>
+        <input type="number" class="modal-input" placeholder="Montant en devises" min="1" />
+        <span class="modal-label">Email de confirmation :</span>
+        <input type="email" class="modal-input" placeholder="votre@email.com" />
+        <button class="btn-pay btn-pay-blue" onclick="redirectCinetPay()">🔗 Aller sur CinetPay</button>
+    </div>
+</div>
+</div>
+
+<div class="modal-overlay" id="audio-modal">
+<div class="modal-box">
+    <button class="modal-close" onclick="closeModal('audio-modal')" title="Fermer">&times;</button>
+    <div class="mini-agent-header">
+        <div class="btn-circle-dl" id="miniAgentLogoBtn" title="Télécharger le logo du mini-agent">
+            <i class="fa-solid fa-robot" style="font-size:1.8rem; color:var(--vert-clair);"></i>
+        </div>
+        <div class="mini-agent-selectors">
+            <button class="btn-oval-selector btn-recitateur-style" id="btnOpenReciterModal">
+                <i class="fa-solid fa-microphone"></i>
+                <span id="labelReciter">Al-Afasy</span>
+            </button>
+            <button class="btn-oval-selector btn-sourate-style" id="btnOpenSurahModal">
+                <span id="labelSurah">Sourate 1</span>
+                <i class="fa-solid fa-book-quran"></i>
+            </button>
+        </div>
+        <div class="mini-agent-messages">
+            <div class="msg-porte-epistemique">Porte épistémique</div>
+            <div class="msg-japprends">J'apprends comme toi</div>
+        </div>
+        <div class="mini-lang-bar">
+            <button class="mini-lang-btn active" id="btnLangFR">Arabe - Français</button>
+            <button class="mini-lang-btn" id="btnLangEN">Arabe - English</button>
+        </div>
+    </div>
+    <div class="mini-reading-zone" id="miniReadingZone">
+        <div style="text-align:center; padding:20px; color:#777; font-weight:bold;">Chargement de la sourate...</div>
+    </div>
+    <div class="mini-bottom-controls">
+        <div class="mini-control-block ctrl-block">
+            <button class="mini-btn" id="mBtnMute"><i class="fa-solid fa-volume-high"></i></button>
+            <button class="mini-btn" id="mBtnPrev"><i class="fa-solid fa-backward-step"></i></button>
+            <button class="mini-btn mini-btn-play" id="mBtnPlay"><i class="fa-solid fa-play"></i> Play</button>
+            <button class="mini-btn" id="mBtnStop"><i class="fa-solid fa-stop"></i></button>
+            <button class="mini-btn" id="mBtnNext"><i class="fa-solid fa-forward-step"></i></button>
+            <button class="mini-btn" id="mBtnRepeat"><i class="fa-solid fa-rotate-right"></i></button>
+            <button class="mini-btn" id="mBtnSpeed">1x</button>
+        </div>
+        <div class="mini-control-block media-block">
+            <button class="mini-btn" id="mBtnBiblio"><i class="fa-solid fa-book"></i> Biblio</button>
+            <button class="mini-btn" id="mBtnExport"><i class="fa-solid fa-file-export"></i> Exp</button>
+            <button class="mini-btn" id="mBtnImport"><i class="fa-solid fa-file-import"></i> Imp</button>
+            <input type="file" id="mInputImport" accept=".json" style="display:none;" />
+            <button class="mini-btn" id="mBtnDL"><i class="fa-solid fa-download"></i> DL</button>
+            <button class="mini-btn" id="mBtnMP3">MP3</button>
+            <button class="mini-btn" id="mBtnMP4">MP4</button>
+            <button class="mini-btn" id="mBtnStorage"><i class="fa-solid fa-database"></i> Stockage</button>
+            <button class="mini-btn mini-btn-mode active" id="mModeLocal">Local</button>
+            <button class="mini-btn mini-btn-mode" id="mModeHybride">Hybride</button>
+            <button class="mini-btn mini-btn-mode" id="mModeOnline">En ligne</button>
+        </div>
+    </div>
+</div>
+</div>
+
+<div class="modal-overlay" id="miniSelectionModal" style="z-index:400;">
+<div class="modal-box" style="max-height:70vh;">
+    <button class="modal-close" onclick="closeModal('miniSelectionModal')" aria-label="Fermer">&times;</button>
+    <h3 id="miniModalTitle" style="color:var(--bleu-ciel); margin-bottom:12px;">Sélectionner</h3>
+    <div id="miniModalList" style="display:flex; flex-direction:column; gap:6px; max-height:50vh; overflow-y:auto;"></div>
+</div>
+</div>
+
+<div class="modal-overlay" id="miniBiblioModal" style="z-index:450;">
+<div class="modal-box" style="max-height:85vh;">
+    <button class="modal-close" onclick="closeModal('miniBiblioModal')" aria-label="Fermer">&times;</button>
+    <h3 style="color:var(--bleu-ciel); margin-bottom:12px;">📚 Biblio partagée</h3>
+    <div id="miniBiblioList" style="display:flex; flex-direction:column; gap:8px; max-height:65vh; overflow-y:auto;"></div>
+</div>
+</div>
+
+<div class="modal-overlay" id="miniMediaPlayerModal" style="z-index:500;">
+<div class="modal-box" style="max-height:90vh; max-width:600px;">
+    <button class="modal-close" onclick="closeModal('miniMediaPlayerModal'); document.getElementById('miniMediaPlayerBody').innerHTML='';">&times;</button>
+    <h3 id="miniMediaTitle" style="color:var(--orange-fonce); margin-bottom:12px;"></h3>
+    <div id="miniMediaPlayerBody"></div>
+</div>
+</div>
+
+<audio id="miniAudioPlayer"></audio>
+
+<!-- ================= SCRIPTS ================= -->
+
+<script>
+/* ============================================================
+   THÈME SOMBRE
+   ============================================================ */
+(function() {
+    window.toggleDarkTheme = function() {
+        const isDark = document.body.classList.toggle('dark-theme');
+        localStorage.setItem('tossara_theme', isDark ? 'dark' : 'light');
+        const btn = document.getElementById('theme-toggle-btn');
+        if (btn) btn.textContent = isDark ? '☀️' : '🌙';
+    };
+    function applyStoredTheme() {
+        if (localStorage.getItem('tossara_theme') === 'dark') {
+            document.body.classList.add('dark-theme');
+            const btn = document.getElementById('theme-toggle-btn');
+            if (btn) btn.textContent = '☀️';
+        }
+    }
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', applyStoredTheme);
+    else applyStoredTheme();
+})();
+</script>
+
+<script>
+/* ============================================================
+   BIBLIO PARTAGÉE
+   ============================================================ */
+(function() {
+  const DB_NAME = 'tossara_biblio';
+  const STORE   = 'fichiers';
+  let   _db     = null;
+
+  function ouvrirDB() {
+    return new Promise((resolve, reject) => {
+      if (_db) return resolve(_db);
+      const req = indexedDB.open(DB_NAME, 1);
+      req.onupgradeneeded = e => {
+        const db = e.target.result;
+        if (!db.objectStoreNames.contains(STORE)) db.createObjectStore(STORE, { keyPath: 'id' });
+      };
+      req.onsuccess = e => { _db = e.target.result; resolve(_db); };
+      req.onerror   = e => reject(e.target.error);
+    });
+  }
+  async function putBlob(id, blob) {
+    const db = await ouvrirDB();
+    return new Promise((res, rej) => {
+      const tx = db.transaction(STORE, 'readwrite');
+      tx.objectStore(STORE).put({ id, blob });
+      tx.oncomplete = () => res(); tx.onerror = () => rej(tx.error);
+    });
+  }
+  async function getBlob(id) {
+    const db = await ouvrirDB();
+    return new Promise((res, rej) => {
+      const tx = db.transaction(STORE, 'readonly');
+      const r  = tx.objectStore(STORE).get(id);
+      r.onsuccess = () => res(r.result ? r.result.blob : null);
+      r.onerror   = () => rej(r.error);
+    });
+  }
+  async function deleteBlob(id) {
+    const db = await ouvrirDB();
+    return new Promise((res, rej) => {
+      const tx = db.transaction(STORE, 'readwrite');
+      tx.objectStore(STORE).delete(id);
+      tx.oncomplete = () => res(); tx.onerror = () => rej(tx.error);
+    });
+  }
+
+  window.BiblioPartagee = {
+    lister() {
+      try { return JSON.parse(localStorage.getItem('biblio_meta') || '[]'); } catch { return []; }
+    },
+    async ajouter(item) {
+      const meta = this.lister();
+      const id   = 'bib_' + Date.now() + '_' + Math.random().toString(36).slice(2, 7);
+      const entree = {
+        id,
+        titre:     item.titre     || 'Sans titre',
+        type:      item.type      || 'document',
+        sousType:  item.sousType  || '',
+        date:      new Date().toISOString(),
+        taille:    item.blob ? item.blob.size : (item.data ? JSON.stringify(item.data).length : 0),
+        aBlob:     !!item.blob,
+        mime:      item.mime || '',
+        data:      item.blob ? null : (item.data || null),
+        extra:     item.extra || {}
+      };
+      meta.push(entree);
+      localStorage.setItem('biblio_meta', JSON.stringify(meta));
+      if (item.blob) await putBlob(id, item.blob);
+      window.dispatchEvent(new CustomEvent('biblio:maj', {
+        detail: { source: 'local', action: 'add', item: entree }
+      }));
+      return entree;
+    },
+    async recupererBlob(id) { return await getBlob(id); },
+    async obtenirURL(id) {
+      const meta = this.lister().find(m => m.id === id);
+      if (!meta) return null;
+      if (meta.aBlob) {
+        const blob = await getBlob(id);
+        if (!blob) return null;
+        return URL.createObjectURL(blob);
+      }
+      if (meta.data && meta.data.url)   return meta.data.url;
+      if (meta.data && meta.data.audio) return meta.data.audio;
+      if (meta.data && meta.data.src)   return meta.data.src;
+      return null;
+    },
+    async supprimer(id) {
+      const meta = this.lister().filter(m => m.id !== id);
+      localStorage.setItem('biblio_meta', JSON.stringify(meta));
+      await deleteBlob(id);
+      window.dispatchEvent(new CustomEvent('biblio:maj', { detail: { source: 'local', action: 'remove', id } }));
+    },
+    async vider() {
+      const meta = this.lister();
+      for (const m of meta) await deleteBlob(m.id);
+      localStorage.removeItem('biblio_meta');
+      window.dispatchEvent(new CustomEvent('biblio:maj', { detail: { source: 'local', action: 'clear' } }));
+    }
+  };
+  console.log('✅ BiblioPartagee chargée');
+})();
+</script>
+
+<script>
+/* ============================================================
+   CONVERTISSEUR
+   ✅ CORRECTION 4 : utilise window.escapeHtml global, ce qui corrige
+   l'absence d'affichage des items dans la biblio locale.
+   ============================================================ */
+(function() {
+    'use strict';
+    let pendingFiles = [];
+    let lastConvertedJson = null;
+    const esc = window.escapeHtml || function(s){ return String(s==null?'':s); };
+
+    function bindDropzone(id, type) {
+        const zone = document.getElementById(id);
+        if (!zone) return;
+        ['dragenter','dragover'].forEach(n => zone.addEventListener(n, e => { e.preventDefault(); zone.classList.add('dragover'); }));
+        ['dragleave','drop'].forEach(n => zone.addEventListener(n, e => { e.preventDefault(); zone.classList.remove('dragover'); }));
+        zone.addEventListener('drop', e => {
+            if (e.dataTransfer && e.dataTransfer.files.length) handleFileList(e.dataTransfer.files, type);
+        });
+    }
+    bindDropzone('dropzoneDocs', 'document');
+    bindDropzone('dropzoneMedia', 'media');
+
+    window.handleSelectedFiles = function(e, type) {
+        if (e.target.files && e.target.files.length) handleFileList(e.target.files, type);
+    };
+
+    function handleFileList(fileList, type) {
+        for (let i = 0; i < fileList.length; i++) pendingFiles.push({ file: fileList[i], type });
+        showToast(`📁 ${fileList.length} fichier(s) prêt(s) pour la conversion`);
+        renderConverterLocalList();
+    }
+
+    window.convertirEtAjouterAuto = async function() {
+        const textValue = document.getElementById('pasteTextDocs') ? document.getElementById('pasteTextDocs').value.trim() : '';
+        const mediaUrl  = document.getElementById('pasteMediaUrl')  ? document.getElementById('pasteMediaUrl').value.trim()  : '';
+        if (pendingFiles.length === 0 && !textValue && !mediaUrl) {
+            showToast('⚠️ Veuillez glisser un fichier ou coller un texte/URL.'); return;
+        }
+        let ajouts = 0;
+        for (const item of pendingFiles) {
+            const f = item.file;
+            const ext = f.name.split('.').pop().toLowerCase();
+            let sousType = 'document';
+            if (item.type === 'media') {
+                sousType = (ext === 'mp4' || ext === 'webm' || ext === 'mkv') ? 'video' : 'audio';
+            } else if (ext === 'pdf') sousType = 'pdf';
+            else if (['jpg','jpeg','png','webp','gif'].includes(ext)) sousType = 'image';
+            await window.BiblioPartagee.ajouter({
+                titre: f.name, type: item.type === 'media' ? 'media' : 'document',
+                sousType, mime: f.type, blob: f,
+                data: { nomOriginal: f.name, tailleOctets: f.size, formatJson: true, horodatage: Date.now() }
+            });
+            ajouts++;
+        }
+        if (textValue) {
+            await window.BiblioPartagee.ajouter({
+                titre: textValue.slice(0, 35) + '...', type: 'document', sousType: 'texte',
+                mime: 'text/plain',
+                data: { contenu: textValue, longueur: textValue.length, formatJson: true }
+            });
+            ajouts++;
+            document.getElementById('pasteTextDocs').value = '';
+        }
+        if (mediaUrl) {
+            const isVid = /\.(mp4|webm|mkv)(\?|$)/i.test(mediaUrl) || /video/i.test(mediaUrl);
+            await window.BiblioPartagee.ajouter({
+                titre: 'Flux Net : ' + mediaUrl.slice(0, 30) + '...',
+                type: 'media', sousType: isVid ? 'video' : 'audio',
+                mime: isVid ? 'video/mp4' : 'audio/mpeg',
+                data: { url: mediaUrl, formatJson: true }
+            });
+            ajouts++;
+            document.getElementById('pasteMediaUrl').value = '';
+        }
+        pendingFiles = [];
+        showToast(`✅ ${ajouts} ressource(s) convertie(s) en JSON & synchronisée(s) !`);
+        renderConverterLocalList();
+        updateStorageMeters();
+    };
+
+    window.testerLectureMediaConverti = async function() {
+        const items = window.BiblioPartagee.lister();
+        const media = items.filter(m =>
+            m.type === 'media' || m.sousType === 'audio' || m.sousType === 'video'
+        );
+        if (media.length === 0) {
+            showToast('ℹ️ Aucun média (audio/vidéo) converti à tester. Convertissez d\'abord un fichier.');
+            return;
+        }
+        const dernierMedia = media[media.length - 1];
+        if (typeof window.ouvrirElementBiblio !== 'function') {
+            showToast('❌ Lecteur non initialisé.'); return;
+        }
+        await window.ouvrirElementBiblio(dernierMedia);
+    };
+
+    window.telechargerDernierJson = function() {
+        const items = window.BiblioPartagee.lister();
+        if (items.length === 0) { showToast('ℹ️ Aucune donnée convertie.'); return; }
+        const toExport = lastConvertedJson || items[items.length - 1];
+        const blob = new Blob([JSON.stringify(toExport, null, 2)], { type: 'application/json' });
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = `ressource_convertie_${Date.now()}.json`;
+        document.body.appendChild(a); a.click(); a.remove();
+        showToast('⬇️ Téléchargement JSON lancé');
+    };
+
+    window.exporterTouteLaBiblioJson = function() {
+        const items = window.BiblioPartagee.lister();
+        if (items.length === 0) { showToast('ℹ️ Bibliothèque vide.'); return; }
+        const blob = new Blob([JSON.stringify(items, null, 2)], { type: 'application/json' });
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = `biblio_complete_tossara_${Date.now()}.json`;
+        document.body.appendChild(a); a.click(); a.remove();
+        showToast('📤 Export complet JSON généré');
+    };
+
+    window.importerFichierJsonConverter = function(e) {
+        const file = e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = async function(ev) {
+            try {
+                const parsed = JSON.parse(ev.target.result);
+                const list = Array.isArray(parsed) ? parsed : [parsed];
+                for (const elem of list) await window.BiblioPartagee.ajouter(elem);
+                showToast(`✅ ${list.length} élément(s) importé(s) depuis le JSON !`);
+                renderConverterLocalList();
+                updateStorageMeters();
+            } catch (err) { showToast('❌ Format JSON invalide.'); }
+        };
+        reader.readAsText(file);
+        e.target.value = '';
+    };
+
+    window.forcerSynchronisationConvertisseur = function() {
+        if (window.TossaraBiblioSync && typeof window.TossaraBiblioSync.demanderSynchronisation === 'function') {
+            window.TossaraBiblioSync.demanderSynchronisation();
+        }
+        window.dispatchEvent(new CustomEvent('biblio:maj', { detail: { source: 'converter', action: 'manual' } }));
+        updateStorageMeters();
+        showToast('🔄 Synchronisation Convertisseur ⇄ Agent effectuée');
+    };
+
+    window.verifierEtAllouerStockage15Go = async function() {
+        if (navigator.storage && navigator.storage.persist) {
+            const isPersisted = await navigator.storage.persist();
+            if (navigator.storage.estimate) {
+                const estimate = await navigator.storage.estimate();
+                const totalGo = (estimate.quota / (1024 * 1024 * 1024)).toFixed(1);
+                const usedMo = (estimate.usage / (1024 * 1024)).toFixed(1);
+                showToast(`💾 Stockage persistant : ${usedMo} Mo / ~${totalGo} Go`);
+            } else showToast('💾 Stockage persistant haute capacité (~15 Go) garanti.');
+        } else showToast('💾 IndexedDB prêt pour le stockage haute capacité.');
+    };
+
+    window.viderBiblioLocaleConvertisseur = function() {
+        pendingFiles = [];
+        renderConverterLocalList();
+        showToast('🗑️ Fichiers en attente du convertisseur effacés.');
+    };
+
+    window.viderBiblioAgentPrincipal = async function() {
+        if (confirm('Voulez-vous supprimer toutes les ressources de la bibliothèque de l\'agent ?')) {
+            await window.BiblioPartagee.vider();
+            renderConverterLocalList();
+            updateStorageMeters();
+            showToast('🗑️ Bibliothèque de l\'agent vidée.');
+        }
+    };
+
+    /* ✅ CORRECTION 4 : rendu correct + bouton suppression individuelle
+       + bouton ▶ de test par item */
+    function renderConverterLocalList() {
+        const container = document.getElementById('converterLocalList');
+        const badge = document.getElementById('converterCountBadge');
+        if (!container) return;
+        const items = window.BiblioPartagee.lister();
+        if (badge) badge.textContent = `${items.length} ressource(s)`;
+
+        if (items.length === 0 && pendingFiles.length === 0) {
+            container.innerHTML = '<div style="text-align:center; padding:15px; color:#888; font-size:0.85rem;">Aucune ressource convertie pour le moment.</div>';
+            return;
+        }
+        let html = '';
+        pendingFiles.forEach((p, idx) => {
+            html += `<div style="background:#fff9e6; border:1px dashed #f5a623; border-radius:8px; padding:6px 10px; font-size:0.82rem; display:flex; justify-content:space-between; align-items:center; gap:6px;">
+                <span style="font-weight:bold; color:#d97b00; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; flex:1;">⏳ En attente : ${esc(p.file.name)}</span>
+                <span style="font-size:0.7rem; background:#f5a623; color:#fff; padding:2px 6px; border-radius:6px;">${esc(p.type)}</span>
+            </div>`;
+        });
+        items.forEach(it => {
+            const ico = it.type === 'media'
+                ? (it.sousType === 'video' ? '🎬' : '🎧')
+                : (it.sousType === 'image' ? '🖼️' : (it.sousType === 'pdf' ? '📕' : '📄'));
+            html += `<div style="background:#f8faff; border:1px solid #cce5ff; border-radius:8px; padding:6px 10px; font-size:0.82rem; display:flex; justify-content:space-between; align-items:center; gap:8px;">
+                <span style="font-weight:bold; color:#1a252f; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; flex:1;">${ico} ${esc(it.titre)}</span>
+                <div style="display:flex; gap:4px; flex-shrink:0;">
+                    <button onclick="window.ouvrirDepuisBiblioAgent('${it.id}')" title="Tester la lecture" style="border:none; background:#27ae60; color:#fff; border-radius:5px; padding:4px 8px; cursor:pointer; font-size:0.75rem; font-weight:bold;">▶</button>
+                    <button onclick="window.supprimerItemConvertisseur('${it.id}')" title="Supprimer ce fichier" style="border:none; background:#e74c3c; color:#fff; border-radius:5px; padding:4px 8px; cursor:pointer; font-size:0.75rem; font-weight:bold;">✕</button>
+                </div>
+            </div>`;
+        });
+        container.innerHTML = html;
+    }
+    window.supprimerItemConvertisseur = async function(id) {
+        const item = window.BiblioPartagee.lister().find(m => m.id === id);
+        const nom = item ? item.titre : 'cette ressource';
+        if (!confirm('Supprimer « ' + nom + ' » ?')) return;
+        await window.BiblioPartagee.supprimer(id);
+        renderConverterLocalList();
+        updateStorageMeters();
+        showToast('🗑️ Ressource supprimée');
+    };
+
+    function updateStorageMeters() {
+        const metaStr = localStorage.getItem('biblio_meta') || '[]';
+        const bytes = metaStr.length * 2;
+        const ko = (bytes / 1024).toFixed(1);
+        const metaLabel = document.getElementById('storageMetaLabel');
+        const metaBar = document.getElementById('storageMetaBar');
+        if (metaLabel) metaLabel.textContent = `${ko} Ko / ~5 Mo`;
+        if (metaBar) metaBar.style.width = Math.min(100, Math.max(3, (ko / 5000) * 100)) + '%';
+    }
+
+    window.addEventListener('biblio:maj', () => { renderConverterLocalList(); updateStorageMeters(); });
+    setTimeout(() => { renderConverterLocalList(); updateStorageMeters(); }, 400);
+})();
+</script>
+
+<script src="db.js"></script>
+<script src="rag_engine.js"></script>
+<script src="app.js"></script>
+<script>
+/* ============================================================
+   PROTOCOLE DE SYNCHRONISATION
+   ============================================================ */
+(function() {
+  'use strict';
+  const PROTOCOL = 'tossara-biblio-sync-v1';
+  const BUS_KEY = 'tossara_sync_bus';
+  const META_KEY = 'biblio_meta';
+  const CHANNEL_KEY = 'tossara_biblio_sync';
+  const CLIENT_KEY = 'tossara_sync_client_id';
+  const clientId = sessionStorage.getItem(CLIENT_KEY) || ('client_' + Date.now() + '_' + Math.random().toString(36).slice(2, 8));
+  sessionStorage.setItem(CLIENT_KEY, clientId);
+  let channel = null, peerCount = 0, lastSignature = '', lastLocalChangeAt = 0;
+
+  function listMeta() {
+    try { const v = JSON.parse(localStorage.getItem(META_KEY) || '[]'); return Array.isArray(v) ? v : []; }
+    catch { return []; }
+  }
+  function itemSignature(items) {
+    return (items || []).map(i => [i.id || '', i.date || '', i.taille || 0, i.aBlob ? 'blob' : 'data'].join(':')).join('|');
+  }
+  function isValidItem(item) {
+    return item && typeof item === 'object' && typeof item.id === 'string' && item.id.length > 0 && typeof item.titre === 'string';
+  }
+  function setSyncStatus(text, state) {
+    const label = document.getElementById('biblioSyncText');
+    const dot = document.getElementById('biblioSyncDot');
+    if (label) label.textContent = text;
+    if (dot) { dot.classList.toggle('is-ready', state === 'ready'); dot.classList.toggle('is-error', state === 'error'); }
+  }
+  function makeMessage(type, payload) {
+    return { protocol: PROTOCOL, type, sender: clientId, sentAt: new Date().toISOString(), payload: payload || {} };
+  }
+  function publish(message) {
+    if (!message || message.sender !== clientId) return;
+    if (channel) try { channel.postMessage(message); } catch (e) {}
+    try { localStorage.setItem(BUS_KEY, JSON.stringify(message)); } catch (e) {}
+  }
+  function send(type, payload) { publish(makeMessage(type, payload)); }
+  function emitLibraryRefresh(source, action) {
+    window.dispatchEvent(new CustomEvent('biblio:maj', { detail: { source: source || 'sync', action: action || 'merge' } }));
+  }
+  function mergeItems(incoming, source) {
+    const remoteItems = Array.isArray(incoming) ? incoming.filter(isValidItem) : [];
+    if (!remoteItems.length) return 0;
+    const localItems = listMeta();
+    const known = new Set(localItems.map(i => i.id));
+    const additions = remoteItems.filter(i => !known.has(i.id));
+    if (!additions.length) return 0;
+    const merged = localItems.concat(additions);
+    localStorage.setItem(META_KEY, JSON.stringify(merged));
+    lastSignature = itemSignature(merged);
+    emitLibraryRefresh(source || 'sync', 'merge');
+    return additions.length;
+  }
+  function handleMessage(message) {
+    if (!message || message.protocol !== PROTOCOL || message.sender === clientId || !message.type) return;
+    peerCount = Math.max(peerCount, 1);
+    setSyncStatus('Connecté · échange avec l\'autre entité', 'ready');
+    const payload = message.payload || {};
+    switch (message.type) {
+      case 'HELLO': send('HELLO_ACK', { itemCount: listMeta().length, state: listMeta() }); send('SYNC_REQUEST', { reason: 'handshake' }); break;
+      case 'HELLO_ACK': mergeItems(payload.state, 'hello-ack'); break;
+      case 'SYNC_REQUEST': send('SYNC_STATE', { revision: itemSignature(listMeta()), items: listMeta() }); break;
+      case 'SYNC_STATE': mergeItems(payload.items, 'sync-state'); send('SYNC_ACK', { itemCount: listMeta().length, added: 0 }); break;
+      case 'FILE_ADDED': mergeItems(payload.items, 'file-added'); send('SYNC_ACK', { itemCount: listMeta().length, added: Array.isArray(payload.items) ? payload.items.length : 0 }); break;
+      case 'SYNC_ACK': break;
+    }
+  }
+  function onLocalLibraryChange(event) {
+    const detail = event && event.detail ? event.detail : {};
+    if (['sync','sync-state','file-added','storage'].includes(detail.source)) return;
+    lastLocalChangeAt = Date.now();
+    const items = listMeta();
+    lastSignature = itemSignature(items);
+    if (detail.action === 'add' && detail.item) send('FILE_ADDED', { items: [detail.item] });
+    else send('SYNC_STATE', { revision: lastSignature, items });
+    setSyncStatus('Synchronisé · dernière mise à jour locale', 'ready');
+  }
+  function onStorage(event) {
+    if (event.key === META_KEY) {
+      const items = listMeta(), sig = itemSignature(items);
+      if (sig !== lastSignature) { lastSignature = sig; emitLibraryRefresh('storage', 'merge'); setSyncStatus('Synchronisé · fichier reçu', 'ready'); }
+      return;
+    }
+    if (event.key === BUS_KEY && event.newValue) {
+      try { handleMessage(JSON.parse(event.newValue)); } catch (e) {}
+    }
+  }
+  function requestInitialSync() {
+    lastSignature = itemSignature(listMeta());
+    setSyncStatus('En attente du convertisseur…', '');
+    send('HELLO', { role: 'agent-principal', itemCount: listMeta().length, state: listMeta() });
+    send('SYNC_REQUEST', { reason: 'initialisation' });
+  }
+  try {
+    if ('BroadcastChannel' in window) {
+      try {
+        channel = new BroadcastChannel(CHANNEL_KEY);
+        channel.addEventListener('message', e => handleMessage(e.data));
+      } catch (e) { channel = null; }
+    }
+    window.addEventListener('storage', onStorage);
+    window.addEventListener('biblio:maj', onLocalLibraryChange);
+    requestInitialSync();
+    setInterval(() => send('HELLO', { role: 'agent-principal', itemCount: listMeta().length }), 15000);
+  } catch (e) { setSyncStatus('Synchronisation indisponible', 'error'); }
+
+  window.TossaraBiblioSync = {
+    protocol: PROTOCOL,
+    demanderSynchronisation: function() { send('SYNC_REQUEST', { reason: 'manual' }); setSyncStatus('Synchronisation demandée…', ''); },
+    etat: function() { return { protocol: PROTOCOL, clientId, peers: peerCount, itemCount: listMeta().length, lastLocalChangeAt }; }
+  };
+})();
+</script>
+
+<script>
+/* ============================================================
+   AGENT PRINCIPAL — chat, profil, biblio (avec suppression + page enregistrée),
+   mini-agent, welcome toggle
+   ============================================================ */
+(function() {
+    'use strict';
+
+    const chatContainer = document.getElementById('chat');
+    const userInput = document.getElementById('userInput');
+    const sendBtn = document.getElementById('sendBtn');
+    const mainHeader = document.getElementById('mainHeader');
+    const typingIndicator = document.getElementById('typingIndicator');
+    const toastEl = document.getElementById('toast');
+
+    let currentMode = localStorage.getItem('ia_mode') || 'local';
+    if (currentMode === 'hybride') currentMode = 'hybrid';
+    let isProcessing = false, conversationStarted = false;
+    let apiKey = localStorage.getItem('api_key') || '';
+    const SERVER_BASE = (() => { const h = location.hostname; return (h==='localhost'||h==='127.0.0.1') ? 'http://localhost:8080' : ''; })();
+
+    const escapeHtml = window.escapeHtml;
+
+    function showTyping() { typingIndicator.classList.add('show'); }
+    function hideTyping() { typingIndicator.classList.remove('show'); }
+
+    /* ✅ CORRECTION 2 : gestion de la visibilité des messages d'accueil */
+    let welcomeTimeout = null;
+    function setWelcomeVisible(visible) {
+        if (welcomeTimeout) { clearTimeout(welcomeTimeout); welcomeTimeout = null; }
+        if (visible) {
+            mainHeader.classList.remove('welcome-hidden');
+            chatContainer.classList.remove('welcome-hidden');
+        } else if (conversationStarted) {
+            mainHeader.classList.add('welcome-hidden');
+            chatContainer.classList.add('welcome-hidden');
+        }
+    }
+    function hideWelcomeAfterDelay() {
+        // Après un envoi, on laisse le temps de voir la réponse puis on masque
+        if (welcomeTimeout) clearTimeout(welcomeTimeout);
+        welcomeTimeout = setTimeout(() => setWelcomeVisible(false), 800);
+    }
+
+    userInput.addEventListener('focus', () => setWelcomeVisible(true));
+    userInput.addEventListener('blur', () => {
+        // Si la zone est vide, on masque les messages d'accueil (mode lecture)
+        setTimeout(() => {
+            if (!userInput.value.trim()) setWelcomeVisible(false);
+        }, 150);
+    });
+
+    async function appelMCP(tool, params) {
+        try {
+            const url = SERVER_BASE ? SERVER_BASE + '/mcp' : '/mcp';
+            const response = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ tool, params }) });
+            if (!response.ok) throw new Error('HTTP ' + response.status);
+            return await response.json();
+        } catch (e) { console.warn('MCP indisponible:', e.message); return null; }
+    }
+    async function appelGemini(prompt, cleApi) {
+        const MODELE = 'gemini-3.1-flash-lite';
+        const url = 'https://generativelanguage.googleapis.com/v1beta/models/' + MODELE + ':generateContent?key=' + encodeURIComponent(cleApi);
+        const res = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }], generationConfig: { temperature: 0.6, maxOutputTokens: 2048 } }) });
+        if (!res.ok) { const errData = await res.json().catch(() => ({})); throw new Error('Gemini API : ' + ((errData.error && errData.error.message) || ('HTTP ' + res.status))); }
+        const data = await res.json();
+        const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
+        if (!text) throw new Error('Réponse vide de Gemini.');
+        return text;
+    }
+
+    async function traiterRequeteUtilisateur(question) {
+        const cleApi = apiKey || localStorage.getItem('api_key') || '';
+        if (currentMode === 'local' || !navigator.onLine) {
+            if (typeof processLocalRAGQuery === 'function') return await processLocalRAGQuery(question);
+            return "⚠️ Moteur RAG local non chargé.";
+        }
+        let mcpResults = null, source = 'locale';
+        try {
+            let rep = await appelMCP('search_quran', { query: question, max_results: 3 });
+            if (rep && rep.count > 0) { mcpResults = rep.results; source = 'Coran (MCP)'; }
+            else {
+                rep = await appelMCP('search_hadiths', { query: question, max_results: 3 });
+                if (rep && rep.count > 0) { mcpResults = rep.results; source = 'Hadiths (MCP)'; }
+                else { rep = await appelMCP('search_tafsir', { query: question, max_results: 2 }); if (rep && rep.count > 0) { mcpResults = rep.results; source = 'Tafsir (MCP)'; } }
+            }
+        } catch (e) { console.warn('MCP indisponible, fallback local.'); }
+        let reponseMCPFormatee = '';
+        if (mcpResults && mcpResults.length > 0) {
+            reponseMCPFormatee = '📖 **Source : ' + source + '**\n\n';
+            for (const item of mcpResults) {
+                if (item.type === 'verset') reponseMCPFormatee += '**Sourate ' + item.sourate_id + '** — Verset ' + item.verset_id + ' :\n« ' + (item.traduction || item.texte) + ' »\n\n';
+                else if (item.type === 'sourate') reponseMCPFormatee += '**Sourate ' + item.sourate_id + ' : ' + (item.nom_fr || item.nom) + '**\nNombre de versets : ' + (item.versets || item.nb_versets) + '\n\n';
+                else if (item.type === 'hadith') reponseMCPFormatee += '**Hadith** (source : ' + (item.source || 'authentique') + ') :\n« ' + item.texte + ' »\n\n';
+                else if (item.type === 'tafsir') reponseMCPFormatee += '**Tafsir** (verset ' + (item.verset || item.id) + ') :\n' + item.texte + '\n\n';
+                else reponseMCPFormatee += (item.texte || item.traduction || item.content) + '\n\n';
+            }
+        }
+        if (currentMode === 'online' && cleApi && cleApi.length > 10) {
+            showTyping();
+            try {
+                const systemPrompt = "Tu es Islam Agent Épistémique, expert en théologie islamique d'Afrique. Réponds avec précision en t'appuyant sur le Coran et les Hadiths authentiques. Sois respectueux, structuré et clair. Utilise des titres (##) et des citations (>) dans ta réponse.";
+                const contextLocal = typeof processLocalRAGQuery === 'function' ? await processLocalRAGQuery(question) : '';
+                const prompt = systemPrompt + '\n\nContexte disponible :\n' + (reponseMCPFormatee || contextLocal) + '\n\nQuestion : "' + question + '"';
+                const texteIA = await appelGemini(prompt, cleApi);
+                hideTyping();
+                let reponseFinale = '';
+                if (reponseMCPFormatee) reponseFinale += '📚 **Sources islamiques (MCP) :**\n' + reponseMCPFormatee + '\n\n---\n\n';
+                reponseFinale += '🤖 **Réponse de l\'IA islamique :**\n\n' + texteIA;
+                return reponseFinale;
+            } catch (e) {
+                hideTyping();
+                if (e.message.includes('API_KEY') || e.message.includes('401') || e.message.includes('403')) return '❌ **Clé API invalide ou expirée.**\n\nVérifiez votre clé dans **Profil → Clé API Gemini**.';
+                const fallback = reponseMCPFormatee || (typeof processLocalRAGQuery === 'function' ? await processLocalRAGQuery(question) : '');
+                return '⚠️ **L\'IA en ligne est temporairement indisponible.** Réponse locale :\n\n' + fallback;
+            }
+        }
+        if (reponseMCPFormatee) return reponseMCPFormatee;
+        return typeof processLocalRAGQuery === 'function' ? await processLocalRAGQuery(question) : 'Aucun résultat trouvé.';
+    }
+
+    function safeResourceUrl(value) {
+        try {
+            const url = new URL(String(value || ''), window.location.href);
+            if (['https:','http:','blob:'].includes(url.protocol)) return url.href;
+        } catch (e) {}
+        return '';
+    }
+    function markdownToHtml(text) {
+        let html = escapeHtml(text)
+            .replace(/^### (.+)$/gm, '<h3>$1</h3>').replace(/^## (.+)$/gm, '<h2>$1</h2>').replace(/^# (.+)$/gm, '<h1>$1</h1>')
+            .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>').replace(/\*(.+?)\*/g, '<em>$1</em>')
+            .replace(/^&gt; (.+)$/gm, '<blockquote>$1</blockquote>').replace(/\n/g, '<br>');
+        html = html.replace(/\[AUDIO:(medias\/[^\s\]]+)\]/gi, (m, url) => '<div style="margin-top:12px;"><audio controls style="width:100%; border-radius:12px;"><source src="' + url + '" type="audio/mpeg">Lecteur audio non supporté.</audio></div>');
+        html = html.replace(/\[VIDEO:(medias\/[^\s\]]+)\]/gi, (m, url) => '<div style="margin-top:12px;"><video controls style="width:100%; max-height:260px; border-radius:12px; background:black;"><source src="' + url + '" type="video/mp4">Lecteur vidéo non supporté.</video></div>');
+        return html;
+    }
+    function addMessage(content, sender) {
+        const div = document.createElement('div');
+        div.className = 'msg ' + (sender === 'user' ? 'user-msg' : 'bot-msg');
+        if (sender === 'bot') div.innerHTML = markdownToHtml(content); else div.textContent = content;
+        chatContainer.appendChild(div);
+        setTimeout(() => { chatContainer.scrollTop = chatContainer.scrollHeight; }, 100);
+    }
+    function startConversation() {
+        if (!conversationStarted) conversationStarted = true;
+    }
+    async function handleSend() {
+        const query = userInput.value.trim();
+        if (!query || isProcessing) return;
+        isProcessing = true;
+        sendBtn.style.opacity = '0.5'; sendBtn.style.pointerEvents = 'none';
+        startConversation();
+        // ✅ Masquer les messages d'accueil immédiatement pour libérer la zone de lecture
+        mainHeader.classList.add('welcome-hidden');
+        chatContainer.classList.add('welcome-hidden');
+        addMessage(query, 'user');
+        userInput.value = ''; userInput.blur();
+        showTyping();
+        try { const reponse = await traiterRequeteUtilisateur(query); addMessage(reponse, 'bot'); }
+        catch (e) { console.error('Erreur:', e); addMessage('❌ Erreur inattendue. Veuillez réessayer.', 'bot'); }
+        finally {
+            hideTyping(); isProcessing = false;
+            sendBtn.style.opacity = '1'; sendBtn.style.pointerEvents = 'auto';
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+            hideWelcomeAfterDelay();
+        }
+    }
+    window.handleSend = handleSend;
+
+    window.sendUserSuggestion = function() {
+        var nomInput = document.getElementById('sugNom'), msgInput = document.getElementById('sugMessage');
+        var nom = nomInput ? nomInput.value.trim() : '', msg = msgInput ? msgInput.value.trim() : '';
+        if (!msg) { showToast('⚠️ Veuillez entrer votre avis ou remarque.'); return; }
+        var suggestions = [];
+        try { var s = JSON.parse(localStorage.getItem('user_suggestions') || '[]'); suggestions = Array.isArray(s) ? s : []; } catch (e) {}
+        suggestions.push({ nom: nom || 'Anonyme', message: msg, date: new Date().toLocaleString('fr-FR') });
+        localStorage.setItem('user_suggestions', JSON.stringify(suggestions));
+        showToast('Barakallahou feek ! Merci pour votre avis 💚');
+        if (msgInput) msgInput.value = ''; if (nomInput) nomInput.value = '';
+        closeModal('suggestion-modal');
+    };
+
+    window.afficherLesAvisRecus = function() {
+        var suggestions = [];
+        try { var s = JSON.parse(localStorage.getItem('user_suggestions') || '[]'); suggestions = Array.isArray(s) ? s : []; } catch (e) {}
+        var container = document.getElementById('containerListeAvis');
+        if (!container) return;
+        if (suggestions.length === 0) container.innerHTML = '<div style="text-align:center; padding:20px; color:#777; font-weight:bold;">📭 Aucun avis reçu pour le moment.</div>';
+        else container.innerHTML = suggestions.map(s => '<div style="background:#FFFBF0; border:1px solid var(--orange-clair); border-radius:10px; padding:10px; text-align:left;"><div style="font-size:12px; color:var(--orange-fonce); font-weight:bold; display:flex; justify-content:space-between;"><span>👤 ' + escapeHtml(s.nom || 'Anonyme') + '</span><span style="font-weight:normal; color:#888;">' + escapeHtml(s.date || '') + '</span></div><div style="font-size:15px; font-weight:bold; color:var(--noir-fonce); margin-top:6px; line-height:1.4;">' + escapeHtml(s.message || '') + '</div></div>').join('');
+        openModal('liste-avis-modal');
+    };
+    window.effacerLesAvisRecus = function() {
+        if (confirm("Voulez-vous vraiment effacer tous les avis enregistrés ?")) {
+            localStorage.removeItem('user_suggestions'); showToast("🗑️ Liste des avis vidée."); afficherLesAvisRecus();
+        }
+    };
+
+    sendBtn.addEventListener('click', handleSend);
+    userInput.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); handleSend(); } });
+
+    document.querySelectorAll('#modeSelectorProfil button').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.mode === currentMode);
+        btn.addEventListener('click', function() {
+            document.querySelectorAll('#modeSelectorProfil button').forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+            currentMode = this.dataset.mode;
+            localStorage.setItem('ia_mode', currentMode);
+            var names = { local: '📁 Hors-Ligne', hybrid: '🔁 Hybride (MCP)', online: '🌐 En Ligne (Gemini)' };
+            showToast('Mode : ' + (names[currentMode] || currentMode));
+        });
+    });
+
+    window.showToast = function(msg) {
+        if (!toastEl) return;
+        toastEl.textContent = msg;
+        toastEl.classList.add('show');
+        clearTimeout(window.toastTimer);
+        window.toastTimer = setTimeout(() => toastEl.classList.remove('show'), 3000);
+    };
+
+    document.querySelectorAll('.modal-overlay').forEach(overlay => {
+        overlay.addEventListener('click', function(e) { if (e.target === this) this.classList.remove('open'); });
+    });
+    document.addEventListener('keydown', e => {
+        if (e.key === 'Escape') document.querySelectorAll('.modal-overlay.open').forEach(m => m.classList.remove('open'));
+    });
+
+    window.switchPayTab = function(event, tabId) {
+        document.querySelectorAll('.tab-pay').forEach(t => t.classList.remove('active'));
+        if (event && event.target) event.target.classList.add('active');
+        document.querySelectorAll('.tab-content-pay').forEach(c => c.classList.remove('active'));
+        var el = document.getElementById(tabId); if (el) el.classList.add('active');
+    };
+    window.processDonation = function(type) { showToast('ℹ️ Le paiement ' + type + ' doit encore être connecté à un prestataire.'); };
+    window.redirectCinetPay = function() { showToast('ℹ️ Configurez d\'abord l\'URL de paiement CinetPay.'); };
+
+    window.changeAuthorAvatar = function(e) {
+        var file = e.target.files[0];
+        if (file) { var r = new FileReader(); r.onload = ev => document.getElementById('author-avatar-img').src = ev.target.result; r.readAsDataURL(file); }
+    };
+    window.changeMainIcon = function(e) {
+        var file = e.target.files[0];
+        if (file) { var r = new FileReader(); r.onload = ev => document.getElementById('main-icon-img').src = ev.target.result; r.readAsDataURL(file); }
+    };
+    window.downloadCurrentIcon = function(e) {
+        e.stopPropagation();
+        var a = document.createElement('a');
+        a.href = document.getElementById('main-icon-img').src;
+        a.download = 'icone_tossara.png';
+        document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    };
+    window.saveProfilData = function() {
+        var nom = document.getElementById('authNom')?.value;
+        var prenom = document.getElementById('authPrenom')?.value;
+        var titre = document.getElementById('authTitre')?.value;
+        var key = document.getElementById('freeApiKey')?.value;
+        if (nom) localStorage.setItem('profile_nom', nom);
+        if (prenom) localStorage.setItem('profile_prenom', prenom);
+        if (titre) localStorage.setItem('profile_titre', titre);
+        if (key) { apiKey = key; localStorage.setItem('api_key', key); }
+        showToast('✅ Profil enregistré !');
+        closeModal('profil-modal');
+    };
+    function loadProfileData() {
+        var nom = localStorage.getItem('profile_nom'), prenom = localStorage.getItem('profile_prenom');
+        var titre = localStorage.getItem('profile_titre'), key = localStorage.getItem('api_key');
+        if (nom) document.getElementById('authNom').value = nom;
+        if (prenom) document.getElementById('authPrenom').value = prenom;
+        if (titre) document.getElementById('authTitre').value = titre;
+        if (key) { apiKey = key; document.getElementById('freeApiKey').value = key; }
+    }
+
+    /* ✅ CORRECTION 3 : "Page enregistrée" */
+    window.enregistrerPageUtile = async function() {
+        const urlInput = document.getElementById('pageSaveUrl');
+        const titleInput = document.getElementById('pageSaveTitle');
+        const url = urlInput ? urlInput.value.trim() : '';
+        const title = titleInput ? titleInput.value.trim() : '';
+        if (!url) { showToast('⚠️ Veuillez entrer une URL.'); return; }
+        // Validation
+        const safe = safeResourceUrl(url);
+        if (!safe) { showToast('❌ URL invalide (http/https uniquement).'); return; }
+        await window.BiblioPartagee.ajouter({
+            titre: '🔖 ' + (title || safe),
+            type: 'document',
+            sousType: 'page',
+            mime: 'text/html',
+            data: { url: safe, savedAt: new Date().toISOString(), formatJson: true }
+        });
+        if (urlInput) urlInput.value = '';
+        if (titleInput) titleInput.value = '';
+        showToast('🔖 Page enregistrée dans la biblio !');
+        renderBiblioAgent();
+    };
+
+    /* ============ BIBLIO DYNAMIQUE (avec suppression individuelle) ============ */
+    function renderBiblioAgent() {
+        const container = document.getElementById('biblioList');
+        if (!container) return;
+        const items = window.BiblioPartagee ? window.BiblioPartagee.lister() : [];
+        if (items.length === 0) {
+            container.innerHTML = '<div style="text-align:center; padding:20px; color:#777; font-weight:bold;">📭 Aucune ressource dans la biblio.<br><br>Ouvrez le convertisseur pour en ajouter.</div>';
+            return;
+        }
+        const iconMap = { coran: '📖', media: '🎬', document: '📄' };
+        container.innerHTML = items.map(item => {
+            const ico = iconMap[item.type] || '📁';
+            const badgeColor = item.type === 'coran' ? 'background:#e8f8e8; color:#27ae60;'
+                : item.type === 'media' ? 'background:#fff0e0; color:#e67e22;'
+                : 'background:#e8f4ff; color:#2980b9;';
+            const typeLabel = item.sousType ? item.sousType.toUpperCase() : String(item.type || 'document').toUpperCase();
+            return `<div style="padding:10px 12px; background:#FFFBF0; border:1px solid var(--bleu-ciel); border-radius:10px; font-weight:bold; font-size:15px; display:flex; justify-content:space-between; align-items:center; gap:8px;">
+                <span class="biblio-clickable" data-bib-id="${escapeHtml(item.id)}"
+                      style="min-width:0; flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; padding:2px 0;">${ico} ${escapeHtml(item.titre)}</span>
+                <span style="font-size:11px; ${badgeColor} padding:3px 8px; border-radius:12px; white-space:nowrap;">${escapeHtml(typeLabel)}</span>
+                <button class="biblio-delete-btn" data-bib-del="${escapeHtml(item.id)}" title="Supprimer cette ressource" aria-label="Supprimer">×</button>
+            </div>`;
+        }).join('');
+
+        // Clic sur le titre → ouvre la ressource
+        container.querySelectorAll('[data-bib-id]').forEach(el => {
+            el.addEventListener('click', () => {
+                el.style.opacity = '0.5';
+                window.ouvrirDepuisBiblioAgent(el.dataset.bibId).finally(() => el.style.opacity = '1');
+            });
+        });
+        // ✅ Clic sur la croix → supprime l'élément
+        container.querySelectorAll('[data-bib-del]').forEach(btn => {
+            btn.addEventListener('click', async (e) => {
+                e.stopPropagation();
+                const id = btn.dataset.bibDel;
+                const item = window.BiblioPartagee.lister().find(m => m.id === id);
+                const nom = item ? item.titre : 'cette ressource';
+                if (!confirm('Supprimer « ' + nom + ' » de la bibliothèque ?')) return;
+                await window.BiblioPartagee.supprimer(id);
+                showToast('🗑️ Ressource supprimée');
+                renderBiblioAgent();
+            });
+        });
+    }
+
+    window.ouvrirDepuisBiblioAgent = async function(id) {
+        const item = window.BiblioPartagee.lister().find(m => m.id === id);
+        if (!item) { showToast('❌ Élément introuvable.'); return; }
+        closeModal('biblio-modal');
+
+        if (item.type === 'coran' && item.data && item.data.verses) {
+            openModal('audio-modal');
+            setTimeout(() => {
+                if (typeof window.ouvrirElementBiblio === 'function') window.ouvrirElementBiblio(item);
+            }, 300);
+            return;
+        }
+        if (typeof window.ouvrirElementBiblio === 'function') {
+            window.ouvrirElementBiblio(item);
+        } else {
+            showToast('❌ Lecteur non disponible.');
+        }
+    };
+    window.addEventListener('biblio:maj', renderBiblioAgent);
+
+    /* ============ MINI-AGENT CORANIQUE ============ */
+    let mSurah = 1, mLang = 'fr', mReciter = 'ar.alafasy', mVerses = [];
+    let mCurrentIndex = 0, mIsPlaying = false, mSpeed = 1.0, mRepeat = false;
+
+    const miniAudio = document.getElementById('miniAudioPlayer');
+    const miniReadingZone = document.getElementById('miniReadingZone');
+    const mBtnPlay = document.getElementById('mBtnPlay');
+    const labelSurah = document.getElementById('labelSurah');
+    const labelReciter = document.getElementById('labelReciter');
+
+    const recitersList = [
+      { id: 'ar.alafasy', name: 'Mishary Rashid Alafasy' },
+      { id: 'ar.abdulbasitmurattal', name: 'AbdulBaset Murattal' },
+      { id: 'ar.ghamadi', name: 'Saad Al-Ghamdi' }
+    ];
+
+    async function loadMiniSurah(num) {
+      try { miniAudio.pause(); miniAudio.currentTime = 0; miniAudio.removeAttribute('src'); miniAudio.load(); } catch (e) {}
+      mIsPlaying = false; mCurrentIndex = 0;
+      if (mBtnPlay) mBtnPlay.innerHTML = '<i class="fa-solid fa-play"></i> Play';
+      mSurah = num; labelSurah.textContent = `Sourate ${num}`;
+      miniReadingZone.innerHTML = '<div style="text-align:center; padding:20px; font-weight:bold; color:#777;">Chargement du texte et audio...</div>';
+      const editionTrans = mLang === 'fr' ? 'fr.hamidullah' : 'en.sahih';
+      try {
+        const [resAr, resTrans, resAudio] = await Promise.all([
+          fetch(`https://api.alquran.cloud/v1/surah/${num}/quran-uthmani`),
+          fetch(`https://api.alquran.cloud/v1/surah/${num}/${editionTrans}`),
+          fetch(`https://api.alquran.cloud/v1/surah/${num}/${mReciter}`)
+        ]);
+        if (!resAr.ok || !resTrans.ok || !resAudio.ok) throw new Error('Service indisponible (HTTP ' + [resAr.status, resTrans.status, resAudio.status].join(', ') + ').');
+        const dataAr = await resAr.json(), dataTrans = await resTrans.json(), dataAudio = await resAudio.json();
+        if (!dataAr.data || !dataTrans.data || !dataAudio.data) throw new Error('Données incomplètes');
+        mVerses = dataAr.data.ayahs.map((ayah, i) => ({
+          num: ayah.numberInSurah, ar: ayah.text,
+          trans: dataTrans.data.ayahs[i]?.text || '',
+          audio: dataAudio.data.ayahs[i]?.audio || '',
+          bismillah: (num !== 1 && num !== 9 && i === 0)
+        }));
+        renderMiniVerses(); mCurrentIndex = 0;
+      } catch (err) {
+        const e = document.createElement('div');
+        e.style.cssText = 'color:red; text-align:center; font-weight:bold;';
+        e.textContent = 'Erreur réseau : ' + (err.message || 'chargement impossible');
+        miniReadingZone.replaceChildren(e);
+      }
+    }
+    function renderMiniVerses() {
+      miniReadingZone.innerHTML = '';
+      const BISMILLAH_AR = "بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ";
+      mVerses.forEach((v, i) => {
+        const card = document.createElement('div');
+        card.className = 'mini-verse-card'; card.id = `mVerse-${i}`;
+        card.onclick = () => playMiniVerse(i);
+        card.innerHTML = `${v.bismillah ? `<div class="mini-verse-bismillah">${BISMILLAH_AR}</div>` : ''}<div class="mini-verse-ar">${escapeHtml(v.ar)} <span style="font-size:0.9rem; color:var(--orange-fonce);">(${escapeHtml(v.num)})</span></div><div class="mini-verse-trans">${escapeHtml(v.trans)}</div>`;
+        miniReadingZone.appendChild(card);
+      });
+    }
+    function playMiniVerse(index) {
+      if (index < 0 || index >= mVerses.length) return;
+      mCurrentIndex = index;
+      document.querySelectorAll('.mini-verse-card').forEach(c => c.classList.remove('highlighted'));
+      const card = document.getElementById(`mVerse-${index}`);
+      if (card) { card.classList.add('highlighted'); card.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
+      const audioUrl = mVerses[index].audio;
+      if (!audioUrl) { showToast("Aucun fichier audio pour ce verset."); return; }
+      miniAudio.src = audioUrl; miniAudio.playbackRate = mSpeed;
+      miniAudio.play().catch(() => showToast("Appuyez sur Play pour autoriser l'audio."));
+      mIsPlaying = true; mBtnPlay.innerHTML = '<i class="fa-solid fa-pause"></i> Pause';
+    }
+    miniAudio.onended = () => {
+      if (mRepeat) playMiniVerse(mCurrentIndex);
+      else if (mCurrentIndex + 1 < mVerses.length) playMiniVerse(mCurrentIndex + 1);
+      else { mIsPlaying = false; mBtnPlay.innerHTML = '<i class="fa-solid fa-play"></i> Play'; }
+    };
+    mBtnPlay.onclick = () => {
+      if (mIsPlaying) { miniAudio.pause(); mIsPlaying = false; mBtnPlay.innerHTML = '<i class="fa-solid fa-play"></i> Play'; }
+      else {
+        if (!miniAudio.src) { if (mVerses.length) playMiniVerse(0); else showToast("Aucune sourate chargée."); }
+        else { miniAudio.play(); mIsPlaying = true; mBtnPlay.innerHTML = '<i class="fa-solid fa-pause"></i> Pause'; }
+      }
+    };
+    document.getElementById('mBtnStop').onclick = () => {
+      miniAudio.pause(); miniAudio.currentTime = 0; mIsPlaying = false;
+      mBtnPlay.innerHTML = '<i class="fa-solid fa-play"></i> Play';
+    };
+    document.getElementById('mBtnPrev').onclick = () => playMiniVerse(mCurrentIndex - 1);
+    document.getElementById('mBtnNext').onclick = () => playMiniVerse(mCurrentIndex + 1);
+    document.getElementById('mBtnRepeat').onclick = () => {
+      mRepeat = !mRepeat;
+      document.getElementById('mBtnRepeat').classList.toggle('active', mRepeat);
+      showToast(mRepeat ? "Répétition activée" : "Répétition désactivée");
+    };
+    document.getElementById('mBtnSpeed').onclick = (e) => {
+      const speeds = [0.75, 1.0, 1.25, 1.5];
+      let idx = (speeds.indexOf(mSpeed) + 1) % speeds.length;
+      mSpeed = speeds[idx]; e.target.textContent = mSpeed + 'x'; miniAudio.playbackRate = mSpeed;
+    };
+    document.getElementById('mBtnMute').onclick = () => {
+      miniAudio.muted = !miniAudio.muted;
+      document.getElementById('mBtnMute').innerHTML = miniAudio.muted ? '<i class="fa-solid fa-volume-xmark"></i>' : '<i class="fa-solid fa-volume-high"></i>';
+    };
+    document.getElementById('btnLangFR').onclick = (e) => {
+      document.getElementById('btnLangEN').classList.remove('active'); e.target.classList.add('active');
+      mLang = 'fr'; loadMiniSurah(mSurah);
+    };
+    document.getElementById('btnLangEN').onclick = (e) => {
+      document.getElementById('btnLangFR').classList.remove('active'); e.target.classList.add('active');
+      mLang = 'en'; loadMiniSurah(mSurah);
+    };
+    document.getElementById('btnOpenSurahModal').onclick = async () => {
+      const title = document.getElementById('miniModalTitle');
+      const list = document.getElementById('miniModalList');
+      title.textContent = "Choisir une Sourate (1 à 114)";
+      list.innerHTML = "Chargement...";
+      openModal('miniSelectionModal');
+      try {
+        const res = await fetch('https://api.alquran.cloud/v1/surah');
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        const data = await res.json();
+        list.innerHTML = '';
+        data.data.forEach(s => {
+          const item = document.createElement('div');
+          item.style.cssText = 'padding:10px; border-bottom:1px solid #eee; cursor:pointer; font-weight:bold;';
+          item.textContent = `${s.number}. ${s.name} (${s.englishName})`;
+          item.onclick = () => { closeModal('miniSelectionModal'); loadMiniSurah(s.number); };
+          list.appendChild(item);
+        });
+      } catch (e) {
+        const err = document.createElement('div');
+        err.style.cssText = 'color:red; font-weight:bold;';
+        err.textContent = 'Erreur de chargement des sourates.';
+        list.replaceChildren(err);
+      }
+    };
+    document.getElementById('btnOpenReciterModal').onclick = () => {
+      const title = document.getElementById('miniModalTitle');
+      const list = document.getElementById('miniModalList');
+      title.textContent = "Choisir un Récitateur"; list.innerHTML = '';
+      openModal('miniSelectionModal');
+      recitersList.forEach(r => {
+        const item = document.createElement('div');
+        item.style.cssText = 'padding:10px; border-bottom:1px solid #eee; cursor:pointer; font-weight:bold;';
+        item.textContent = r.name;
+        item.onclick = () => {
+          mReciter = r.id; labelReciter.textContent = r.name.split(' ')[0];
+          closeModal('miniSelectionModal'); loadMiniSurah(mSurah);
+        };
+        list.appendChild(item);
+      });
+    };
+
+    document.getElementById('mBtnExport').onclick = async () => {
+      if (!mVerses.length) { showToast('Aucune sourate à exporter.'); return; }
+      const entry = { surah: mSurah, name: labelSurah.textContent.replace('Sourate ', ''), lang: mLang, reciter: mReciter,
+        verses: mVerses.map(v => ({ num: v.num, ar: v.ar, trans: v.trans, audio: v.audio })) };
+      await window.BiblioPartagee.ajouter({ titre: `Sourate ${mSurah} (${mLang.toUpperCase()})`, type: 'coran', sousType: 'json', data: entry });
+      showToast('✅ Sourate ajoutée à la biblio partagée.');
+    };
+    const importInput = document.getElementById('mInputImport');
+    document.getElementById('mBtnImport').onclick = () => importInput.click();
+    importInput.onchange = async (e) => {
+      const file = e.target.files[0]; if (!file) return;
+      const reader = new FileReader();
+      reader.onload = async (ev) => {
+        try {
+          let data = JSON.parse(ev.target.result);
+          if (Array.isArray(data)) { if (data.length === 0) { showToast('Fichier vide.'); return; } data = data[0]; }
+          if (data.surah && data.verses) {
+            mSurah = data.surah; mLang = data.lang || 'fr'; mReciter = data.reciter || 'ar.alafasy';
+            mVerses = data.verses.map((v, i) => ({ num: v.num, ar: v.ar, trans: v.trans, audio: v.audio, bismillah: (data.surah !== 1 && data.surah !== 9 && i === 0) }));
+            labelSurah.textContent = `Sourate ${mSurah}`;
+            document.getElementById('btnLangFR').classList.toggle('active', mLang === 'fr');
+            document.getElementById('btnLangEN').classList.toggle('active', mLang === 'en');
+            renderMiniVerses();
+            await window.BiblioPartagee.ajouter({ titre: `Import : Sourate ${mSurah}`, type: 'coran', sousType: 'json', data });
+            showToast('✅ Importé + ajouté à la biblio.');
+          } else showToast('Fichier invalide.');
+        } catch (err) { showToast('Erreur de lecture du fichier.'); }
+      };
+      reader.readAsText(file); importInput.value = '';
+    };
+    document.getElementById('mBtnDL').onclick = () => {
+      if (!mVerses.length || !mVerses[0].audio) { showToast('Aucun audio disponible.'); return; }
+      const a = document.createElement('a');
+      a.href = mVerses[0].audio; a.download = `sourate_${mSurah}.mp3`;
+      document.body.appendChild(a); a.click(); a.remove();
+      showToast('Téléchargement de l\'audio en cours...');
+    };
+    document.getElementById('mBtnMP3').onclick = () => { localStorage.setItem('mini_format','mp3'); showToast('Format audio : MP3'); };
+    document.getElementById('mBtnMP4').onclick = () => { localStorage.setItem('mini_format','mp4'); showToast('Format audio : MP4 (simulé)'); };
+    document.getElementById('mBtnStorage').onclick = () => {
+      const items = window.BiblioPartagee.lister();
+      let total = 0;
+      for (let k in localStorage) if (localStorage.hasOwnProperty(k)) total += localStorage[k].length * 2;
+      showToast(`Biblio : ${items.length} élément(s) · localStorage : ${(total/1024).toFixed(2)} Ko`);
+    };
+
+    const miniLogoBtn = document.getElementById('miniAgentLogoBtn');
+    function loadMiniAgentLogo() {
+      const saved = localStorage.getItem('mini_agent_logo');
+      if (saved) {
+        miniLogoBtn.innerHTML = `<img src="${saved}" alt="Logo" /><input type="file" id="miniAgentLogoInput" accept="image/*" />`;
+        miniLogoBtn.querySelector('input[type="file"]')?.addEventListener('change', handleMiniLogoUpload);
+      } else {
+        miniLogoBtn.innerHTML = `<i class="fa-solid fa-robot" style="font-size:1.8rem; color:var(--vert-clair);"></i><input type="file" id="miniAgentLogoInput" accept="image/*" />`;
+        miniLogoBtn.querySelector('input[type="file"]')?.addEventListener('change', handleMiniLogoUpload);
+      }
+    }
+    loadMiniAgentLogo();
+    function handleMiniLogoUpload(e) {
+      const file = e.target.files[0]; if (!file) return;
+      const r = new FileReader();
+      r.onload = ev => { localStorage.setItem('mini_agent_logo', ev.target.result); loadMiniAgentLogo(); showToast('Logo du mini-agent mis à jour ✓'); };
+      r.readAsDataURL(file); e.target.value = '';
+    }
+
+    const miniModeMap = { mModeLocal: 'local', mModeHybride: 'hybrid', mModeOnline: 'online' };
+    document.querySelectorAll('.mini-btn-mode').forEach(btn => {
+      const mode = miniModeMap[btn.id];
+      btn.classList.toggle('active', mode === currentMode);
+      btn.onclick = () => {
+        document.querySelectorAll('.mini-btn-mode').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        document.querySelectorAll('#modeSelectorProfil button').forEach(b => { b.classList.remove('active'); if (b.dataset.mode === mode) b.classList.add('active'); });
+        currentMode = mode; localStorage.setItem('ia_mode', mode);
+        showToast("Mode IA : " + btn.textContent.trim());
+      };
+    });
+
+    /* ============ BIBLIO MINI-AGENT (avec suppression aussi) ============ */
+    async function openMiniBiblio() {
+      const list = document.getElementById('miniBiblioList');
+      list.innerHTML = '<div style="text-align:center; padding:20px; font-weight:bold; color:#777;">Chargement...</div>';
+      openModal('miniBiblioModal');
+      const items = window.BiblioPartagee.lister();
+      if (items.length === 0) {
+        list.innerHTML = '<div style="text-align:center; padding:20px; font-weight:bold; color:#777;">📭 Biblio vide.<br><br>Utilisez « Exp » ou « Imp » pour y ajouter des éléments.</div>';
+        return;
+      }
+      list.innerHTML = '';
+      items.forEach(item => {
+        const div = document.createElement('div');
+        div.style.cssText = 'padding:12px; background:#FFFBF0; border:1px solid var(--orange-clair); border-radius:10px; display:flex; justify-content:space-between; align-items:center; gap:10px; margin-bottom:6px;';
+        const icoMap = { coran: '📖', media: '🎬', document: '📄' };
+        const ico = icoMap[item.type] || '📁';
+        div.innerHTML = `<div style="min-width:0; flex:1; cursor:pointer;"><div style="font-weight:800; color:var(--noir-fonce); font-size:0.95rem; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${ico} ${escapeHtml(item.titre)}</div><div style="font-size:0.72rem; color:#777; margin-top:2px;">${escapeHtml(String(item.sousType || item.type || 'document').toUpperCase())} · ${escapeHtml(new Date(item.date).toLocaleString('fr-FR'))}</div></div>
+          <button class="biblio-delete-btn" title="Supprimer">×</button>`;
+        div.querySelector('div').onclick = () => ouvrirElementBiblio(item);
+        div.querySelector('button').onclick = async (e) => {
+          e.stopPropagation();
+          if (!confirm('Supprimer « ' + item.titre + ' » ?')) return;
+          await window.BiblioPartagee.supprimer(item.id);
+          showToast('🗑️ Ressource supprimée');
+          openMiniBiblio();
+        };
+        list.appendChild(div);
+      });
+    }
+
+    async function ouvrirElementBiblio(item) {
+        if (!item) { showToast('❌ Ressource introuvable.'); return; }
+
+        // 1. Coran
+        if (item.type === 'coran' && item.data && item.data.verses) {
+            closeModal('miniBiblioModal');
+            try { miniAudio.pause(); miniAudio.currentTime = 0; miniAudio.removeAttribute('src'); miniAudio.load(); } catch (e) {}
+            mIsPlaying = false; mCurrentIndex = 0;
+            mBtnPlay.innerHTML = '<i class="fa-solid fa-play"></i> Play';
+            mSurah = item.data.surah;
+            mLang = item.data.lang || 'fr';
+            mReciter = item.data.reciter || 'ar.alafasy';
+            mVerses = item.data.verses.map((v, i) => ({
+                num: v.num, ar: v.ar, trans: v.trans, audio: v.audio,
+                bismillah: (item.data.surah !== 1 && item.data.surah !== 9 && i === 0)
+            }));
+            labelSurah.textContent = `Sourate ${mSurah}`;
+            document.getElementById('btnLangFR').classList.toggle('active', mLang === 'fr');
+            document.getElementById('btnLangEN').classList.toggle('active', mLang === 'en');
+            renderMiniVerses();
+            showToast(`📖 ${item.titre} chargée`);
+            return;
+        }
+
+        const title = document.getElementById('miniMediaTitle');
+        const body  = document.getElementById('miniMediaPlayerBody');
+
+        // 2. Texte collé
+        if (item.data && item.data.contenu) {
+            closeModal('miniBiblioModal');
+            closeModal('biblio-modal');
+            title.textContent = '📄 ' + item.titre;
+            body.innerHTML = `<div style="max-height:65vh; overflow-y:auto; padding:16px; background:#FFFBF0; border:2px solid var(--vert-clair); border-radius:10px; white-space:pre-wrap; font-size:15px; line-height:1.65; color:#1a1a1a; font-weight:600;">${escapeHtml(item.data.contenu)}</div>`;
+            openModal('miniMediaPlayerModal');
+            return;
+        }
+
+        // 3. URL distante (page enregistrée, flux net...)
+        const url = await window.BiblioPartagee.obtenirURL(item.id);
+        if (!url) { showToast('❌ Fichier introuvable ou non lisible.'); return; }
+        const safeUrl = safeResourceUrl(url);
+        if (!safeUrl) { showToast('❌ Ressource bloquée : URL invalide.'); return; }
+
+        title.textContent = item.titre;
+        body.innerHTML = '';
+        const mime = item.mime || '';
+        const sousType = item.sousType || '';
+        const isVideo = sousType === 'video' || mime.startsWith('video/');
+        const isAudio = sousType === 'audio' || mime.startsWith('audio/');
+
+        closeModal('miniBiblioModal');
+        closeModal('biblio-modal');
+
+        // Page web enregistrée : ouvrir dans un nouvel onglet + iframe
+        if (sousType === 'page' || mime === 'text/html') {
+            body.innerHTML = `
+                <div style="text-align:center; padding:12px 4px;">
+                    <div style="font-size:3rem; margin-bottom:8px;">🔖</div>
+                    <div style="font-size:1rem; font-weight:800; color:#1a5276; margin-bottom:10px; word-break:break-word;">${escapeHtml(item.titre)}</div>
+                    <a href="${safeUrl}" target="_blank" rel="noopener" style="display:inline-block; padding:10px 22px; background:var(--bleu-ciel); color:white; border-radius:20px; font-weight:bold; text-decoration:none;">🌐 Ouvrir dans un nouvel onglet</a>
+                    <div style="margin-top:12px; width:100%; height:55vh; border:1px solid #ddd; border-radius:10px; overflow:hidden;">
+                        <iframe title="Aperçu de la page" src="${safeUrl}" style="width:100%; height:100%; border:none; background:white;" referrerpolicy="no-referrer"></iframe>
+                    </div>
+                </div>`;
+            openModal('miniMediaPlayerModal');
+            return;
+        }
+
+        if (isVideo) {
+            body.innerHTML = `<video id="biblioMediaPlayer" controls autoplay playsinline style="width:100%; border-radius:10px; background:black; box-shadow:0 4px 14px rgba(0,0,0,0.3);" src="${safeUrl}"></video>`;
+        } else if (isAudio) {
+            body.innerHTML = `
+                <div style="text-align:center; padding:14px 4px;">
+                    <div style="font-size:3.4rem; margin-bottom:6px;">🎧</div>
+                    <div style="font-size:1rem; font-weight:800; color:#1a5276; margin-bottom:10px; word-break:break-word;">${escapeHtml(item.titre)}</div>
+                    <audio id="biblioMediaPlayer" controls autoplay style="width:100%;" src="${safeUrl}"></audio>
+                    <div style="margin-top:10px; font-size:0.82rem; color:#27ae60; font-weight:bold;">🔊 Lecture à volume maximal</div>
+                </div>`;
+        } else if (sousType === 'pdf' || mime === 'application/pdf') {
+            body.innerHTML = `<iframe title="Aperçu du document" src="${safeUrl}" style="width:100%; height:60vh; border-radius:10px; border:1px solid #ddd; background:white;"></iframe>`;
+        } else if (sousType === 'image' || mime.startsWith('image/')) {
+            body.innerHTML = `<img src="${safeUrl}" alt="${escapeHtml(item.titre)}" style="width:100%; border-radius:10px; max-height:70vh; object-fit:contain; background:#f7f7f7;">`;
+        } else {
+            body.innerHTML = `
+                <div style="text-align:center; padding:30px; background:#FFFBF0; border-radius:10px;">
+                    <div style="font-size:3rem; margin-bottom:12px;">📄</div>
+                    <p style="font-weight:bold;">${escapeHtml(item.titre)}</p>
+                    <a href="${safeUrl}" download="${escapeHtml(item.titre)}" rel="noopener" style="display:inline-block; margin-top:14px; padding:10px 22px; background:var(--orange-clair); color:white; border-radius:20px; font-weight:bold; text-decoration:none;">⬇️ Télécharger</a>
+                </div>`;
+        }
+        openModal('miniMediaPlayerModal');
+
+        // Volume à 100 %
+        setTimeout(() => {
+            const player = document.getElementById('biblioMediaPlayer');
+            if (player) {
+                player.volume = 1.0;
+                const p = player.play();
+                if (p && typeof p.catch === 'function') {
+                    p.catch(() => showToast('ℹ️ Appuyez sur ▶ pour démarrer la lecture'));
+                }
+            }
+        }, 150);
+    }
+    window.ouvrirElementBiblio = ouvrirElementBiblio;
+
+    document.getElementById('mBtnBiblio').onclick = openMiniBiblio;
+    window.addEventListener('biblio:maj', () => {
+      if (document.getElementById('miniBiblioModal').classList.contains('open')) openMiniBiblio();
+    });
+
+    /* ============ INITIALISATION ============ */
+    function init() {
+        loadProfileData();
+        addMessage('☪️ **Salam alaykum !** Je suis votre **Agent Épistémique Islamique**.', 'bot');
+        addMessage('📚 **Mode Hors-Ligne actif** — Chargement de la base de données IndexedDB locale...', 'bot');
+        if (typeof initDatabase === 'function') initDatabase();
+        renderBiblioAgent();
+    }
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
+    else init();
+    loadMiniSurah(1);
+})();
+</script>
+
+<script>
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', function() {
+        navigator.serviceWorker.register('./sw.js')
+            .then(reg => console.log('Service Worker enregistré. Scope:', reg.scope))
+            .catch(err => console.warn('Échec SW:', err));
+    });
+}
+</script>
+
+</body>
+</html>
