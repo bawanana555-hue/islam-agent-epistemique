@@ -3,6 +3,7 @@
   "short_name": "TOSSARA",
   "description": "Premier Agent Épistémique d'Afrique pour l'Islam",
   "start_url": "/",
+  "scope": "/",
   "display": "standalone",
   "background_color": "#FAEBD7",
   "theme_color": "#27AE60",
