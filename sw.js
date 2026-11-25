@@ -1,51 +1,49 @@
 // Service Worker — Islam Agent Épistémique (TOSSARA)
-const CACHE_NAME = 'tossara-v1';
+const CACHE_NAME = 'tossara-v2';
+const APP_ROOT = self.registration.scope;
 const ASSETS_TO_CACHE = [
-  '/',
-  '/index.html',
-  '/manifest.json',
-  '/db.js',
-  '/rag_engine.js',
-  '/app.js'
-];
+  './',
+  './index.html',
+  './manifest.json',
+  './db.js',
+  './rag_engine.js',
+  './islam_data.json',
+  './icon-192.png',
+  './icon-512.png'
+].map(path => new URL(path, APP_ROOT).toString());
 
-// Installation
-self.addEventListener('install', (event) => {
+self.addEventListener('install', event => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
-      console.log('[Service Worker] Mise en cache des ressources TOSSARA');
-      return cache.addAll(ASSETS_TO_CACHE).catch(err => console.warn('Cache partiel:', err));
-    })
+    caches.open(CACHE_NAME)
+      .then(cache => cache.addAll(ASSETS_TO_CACHE))
+      .catch(error => console.warn('[Service Worker] Cache initial incomplet:', error))
   );
   self.skipWaiting();
 });
 
-// Activation
-self.addEventListener('activate', (event) => {
+self.addEventListener('activate', event => {
   event.waitUntil(
-    caches.keys().then((keys) => {
-      return Promise.all(
-        keys.map((key) => {
-          if (key !== CACHE_NAME) return caches.delete(key);
-        })
-      );
-    })
+    caches.keys().then(keys => Promise.all(
+      keys.filter(key => key.startsWith('tossara-') && key !== CACHE_NAME)
+        .map(key => caches.delete(key))
+    )).then(() => self.clients.claim())
   );
-  self.clients.claim();
 });
 
-// Interception des requêtes (Mode Hors-ligne)
-self.addEventListener('fetch', (event) => {
+self.addEventListener('fetch', event => {
   if (event.request.method !== 'GET') return;
-  event.respondWith(
-    caches.match(event.request).then((cachedResponse) => {
-      if (cachedResponse) return cachedResponse;
-      return fetch(event.request).catch(() => {
-        // Fallback en cas d'absence de réseau
-        if (event.request.mode === 'navigate') {
-          return caches.match('/index.html');
-        }
-      });
-    })
-  );
+
+  event.respondWith((async () => {
+    const cached = await caches.match(event.request);
+    if (cached) return cached;
+
+    try {
+      return await fetch(event.request);
+    } catch (error) {
+      if (event.request.mode === 'navigate') {
+        return (await caches.match(new URL('./index.html', APP_ROOT).toString())) || Response.error();
+      }
+      return Response.error();
+    }
+  })());
 });
