@@ -750,7 +750,7 @@ window.closeModal = function(id) {
     function applyStoredTheme() {
         if (localStorage.getItem('tossara_theme') === 'dark') {
             document.body.classList.add('dark-theme');
-            const btn = document.getElementById('theme-toggle-btn');
+            const btn = document.getElementByIôd('theme-toggle-btn');
             if (btn) btn.textContent = '☀️';
         }
     }
@@ -1967,7 +1967,7 @@ window.closeModal = function(id) {
 <script>
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', function() {
-        navigator.serviceWorker.register('./sw.js')
+        navigator.serviceWorker.register('./service-worker.js')
             .then(reg => console.log('Service Worker enregistré. Scope:', reg.scope))
             .catch(err => console.warn('Échec SW:', err));
     });
